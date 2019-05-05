@@ -1,10 +1,96 @@
 // This is a canvas based class to support charts
-// TODO: Implement state object
-//       Implement defaults object
-//       Add horitontal and vertical bars option
+//
+// TODO: 
+//      Implement state
+//      Implement defaults
+//      Implement storage class - save/load state - local browser/server database?
+//      Implement GUI as classes Gui2d and Gui3D
+//      Implement help system - include feedback/question/request option per panel
+//      Implement data input/fetch
+//  
+//      Implement Options menu
+//      Implement Object/Label menu
+//      Implement Drill Down system
+//      Implement series
+//      Implement palette options
+//      Implement custom colors
+//      Implement file download
+//
+//      Add bar value normalization/remap to default width/height
+//      Add Scales/Axis options
+//      Add horitontal and vertical bars option
+//      Add background - image/color
+//      Add logo placement
+//
+//      Server side with database?
+//      User accounts?
+//
+//////////////// GUI //////////////////
+//
+//      GUIs should be their own class Gui2d/Gui3d
+//
+//      Object alignment arrows in base gui object
+//      Object sizing in base gui object
+//      Help in base gui object
+//
+//      'Options' button
+//          Scene options
+//              Camera 
+//                  Location
+//                  Lock/Unlock Camera
+//              Lighting and effects
+//                  Light brightness
+//                  Light Color
+//              Ground
+//                  Enabled
+//                  Logo
+//                  Color
+//              Background
+//                  Enabled
+//                  Logo
+//                  Color
+//              
+//          Graph options
+//              Title
+//                  Text
+//                  Attributes
+//              Type
+//                  Pie
+//                  Bar
+//                  Line
+//              
+//              Labels
+//                  2D floating labels
+//                      Attributes
+//                  2D legend
+//                      Attributes
+//                  3D floating
+//                      Attributes
+//                  3D Legend
+//                      Attributes
+//              Save/DL image 
+//          Help
+//              Help '?' on every gui element
+//      
+//      Add object clicks
+//          click to select
+//              glow: on/off
+//          right click for options and details
+//              options: change color
+//              options: make camera target
+//
+//      Add label clicks
+//          click to select
+//              glow: on/off
+//          right click for options and details
+//              options: change color
+//              options: make camera target              
+//          click/hold to move lobel
+//
 
 
-class Chart {
+
+class Chart {   // Base Chart Class
 
     constructor(options) {
         this.options = options;
@@ -30,7 +116,8 @@ class Chart {
         }
 
         this.state = {
-
+            root: this,
+            options: options            
         };
 
         this.defaults = {
@@ -52,18 +139,69 @@ class Chart {
         this.scene = this.createScene(canvas);
 
         this.buildMaterials.bind(this);
-        this.materials = this.buildMaterials(this.options.data.length, this.scene);
+        this.materials = this.buildMaterials(this.options.data.length);
+
+        this.buildCustomMaterials.bind(this);
+        this.customMaterials = this.buildCustomMaterials();
+
+        this.gui2D = new Gui2D(this);
+        this.gui3D = new Gui3D();
+
+        // let guiManager3D = new BABYLON.GUI.GUI3DManager(this.scene);
+        // // Create a horizontal stack panel
+        // var panel = new BABYLON.GUI.StackPanel3D();
+        // panel.margin = 0.02;
+    
+        // guiManager3D.addControl(panel);
+        // panel.position.z = -1.5;
+        // panel.position.y = 5;
+
+        // // Let's add some buttons!
+        // var addButton = function() {
+        //     var button = new BABYLON.GUI.Button3D("orientation");
+        //     panel.addControl(button);
+        //     button.onPointerUpObservable.add(function(){
+        //         panel.isVertical = !panel.isVertical;
+        //     });   
+            
+        //     var text1 = new BABYLON.GUI.TextBlock();
+        //     text1.text = "change orientation";
+        //     text1.color = "white";
+        //     text1.fontSize = 24;
+        //     button.content = text1;  
+        // }
+
+        // addButton();    
+        // addButton();
+        // addButton();
+
+        // var anchor = new BABYLON.AbstractMesh("anchor", this.scene);
+
+        // // Let's add a button
+        // var button = new BABYLON.GUI.HolographicButton("down");
+        // guiManager3D.addControl(button);
+        // button.linkToTransformNode(anchor);
+        // button.position.z = -1.5;
+        // button.position.y = 2.5;
+        // button.width = 50;
+        // button.height = 100;
+        // button.length = 200;
+
+        // button.text = "rotate";
+        // button.imageUrl = "./textures/down.png";
+        // button.onPointerUpObservable.add(function(){
+        // });
 
 
-        let guiManager = new BABYLON.GUI.GUI3DManager(this.scene);
+
         
         // this.lastFrameTime = Date.now();
         // this.frameTimes = [];
 
-        this.initializeGUI.bind(this);
-        this.initializeGUI();
+        // this.initializeGUI.bind(this);
+        // this.initializeGUI();
 
-        this.build.bind(this);
+        // this.build.bind(this);
         this.build();
         
         let myScene = this.scene;
@@ -134,57 +272,101 @@ class Chart {
     //     GUI methods     //
     /////////////////////////
 
-    initializeGUI(){
 
-        this.advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+    // initializeGUI(){
 
-        // var rect1 = new BABYLON.GUI.Rectangle();
-        // rect1.width = 0.15;
-        // rect1.height = "30px";
-        // rect1.cornerRadius = 2;
-        // // rect1.color = "Black";
-        // rect1.thickness = 1;
-        // rect1.background = "white";
-        // advancedTexture.addControl(rect1);
-        
-        // var label = new BABYLON.GUI.TextBlock();
-        // label.text = "January";
-        // label.fontSize = 10;
-        // rect1.addControl(label);
-        
-        // rect1.linkWithMesh(ground);   
-        // rect1.linkOffsetY = -50;
-        
-        function buttonClick () {
-            alert("Options Clicked!!");
-        }
+    //     this.advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
 
-        let buttonOptions = {};
-        this.addButton("optionsButton", "Options", buttonClick, buttonOptions);
+    //     // var rect1 = new BABYLON.GUI.Rectangle();
+    //     // rect1.width = 0.15;
+    //     // rect1.height = "30px";
+    //     // rect1.cornerRadius = 2;
+    //     // // rect1.color = "Black";
+    //     // rect1.thickness = 1;
+    //     // rect1.background = "white";
+    //     // advancedTexture.addControl(rect1);
+        
+    //     // var label = new BABYLON.GUI.TextBlock();
+    //     // label.text = "January";
+    //     // label.fontSize = 10;
+    //     // rect1.addControl(label);
+        
+    //     // rect1.linkWithMesh(ground);   
+    //     // rect1.linkOffsetY = -50;
+        
+    //     function buttonClick () {
+    //         alert("Options Clicked!!");
+    //     }
+
+    //     let buttonOptions = {};
+    //     this.addButton("optionsButton", "Options", buttonClick, buttonOptions);
+
+    //     // this.addColorPanel({});
+    //     // this.addGrid();
 
  
-    }  //  end initializeGUI method
+    // }  //  end initializeGUI method
 
-    addButton (id, text, callBack, options){
+    // addButton (id, text, callBack, options){
 
-        let button = BABYLON.GUI.Button.CreateSimpleButton(id, text);
-            button.width = "100px"
-            button.height = "20px";
-            button.color = "black";
-            button.fontSize = 10;
-            button.paddingTop = 5;
-            button.paddingLeft = 5;
+    //     let button = BABYLON.GUI.Button.CreateSimpleButton(id, text);
+    //         button.width  = options.width ? options.width : "60px"
+    //         button.height = options.height ? options.height : "30px";
+    //         button.color    = options.color ? options.color : "black";
+    //         button.fontSize = options.fontSize ? options.fontSize : 10;
+    //         button.paddingTop    = options.paddingTop ? options.paddingTop : 5;
+    //         button.paddingBottom = options.paddingBottom ? options.paddingBottom : 5;
+    //         button.paddingLeft   = options.paddingLeft ? options.paddingLeft : 5;
+    //         button.paddingRight  = options.paddingRight ? options.paddingRight : 5;
         
-            button.cornerRadius = 5;
-            button.background = "white";
-            button.onPointerUpObservable.add(callBack);
+    //         button.cornerRadius = options.radius ? options.radius : 5;
+    //         button.background = options.backgroundColor ? optiopns.backgroundColor : "white";
+    //         button.onPointerUpObservable.add(callBack);
 
-            button.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
-            button.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+    //         button.horizontalAlignment = options.horizontal ? options.horizontal : BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+    //         button.verticalAlignment = options.vertical ? options.vertical : BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
 
-        this.advancedTexture.addControl(button);  
+    //     this.advancedTexture.addControl(button);  
 
-    } //  end addButton method
+    // } //  end addButton method
+
+    // addGrid(){
+    //     var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+
+    //     var displayGrid = new BABYLON.GUI.DisplayGrid();
+    //     displayGrid.width = "50px";
+    //     displayGrid.height = "50px";
+    //     displayGrid.zIndex = 5;
+    //     advancedTexture.addControl(displayGrid);  
+    // }
+
+    // addColorPanel(options){
+    //     var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+    //     advancedTexture.layer.layerMask = 2;
+    
+    //     var panel3 = new BABYLON.GUI.StackPanel();
+    //     panel3.width = "160px";
+    //     panel3.fontSize = "14px";
+    //     panel3.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+    //     panel3.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
+    //     panel3.cornerRadius = 10;
+    //     panel3.thickness = 1;
+    //     panel3.color = 'black';
+    //     // panel3.cornerRadius = options.radius ? options.radius : 5;
+    //     panel3.background = options.backgroundColor ? optiopns.backgroundColor : "white";
+    //     advancedTexture.addControl(panel3);   
+    
+    //     var picker = new BABYLON.GUI.ColorPicker();
+    //     picker.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+    //     // picker.value = sphereMaterial.diffuseColor;
+    //     picker.height = "150px";
+    //     picker.width = "150px";
+    //     picker.onValueChangedObservable.add(function(value) { // value is a color3
+    //         // sphereMaterial.diffuseColor = value;
+    //         console.log(value);
+    //     });    
+    //     panel3.addControl(picker);  
+    // }
 
     /////////////////////////
     //   Palette Methods   //
@@ -209,6 +391,19 @@ class Chart {
 
         return materials;
     }  //  end buildMaterials method
+
+    buildCustomMaterials(){
+        let customMaterials = [];
+
+        for (let index = 0; index < 10; index++) {
+            let mat = new BABYLON.StandardMaterial("Custom "+index, this.scene);
+                mat.sideOrientation = BABYLON.Mesh.DOUBLESIDE ;
+
+            customMaterials.push(mat);        
+        }
+
+        return customMaterials;
+    }
 
     // Build a palette array[1530] of colors
 
@@ -475,7 +670,8 @@ class PieChart extends Chart {
             label.width = "75px";
             label.cornerRadius = 10;
             label.thickness = 1;
-            // label.linkOffsetX = offsetX * 150;
+            label.zIndex = 10;
+            label.linkOffsetX = offsetX * 150;
             // label.linkOffsetY = offsetZ * 150;
             // label.linkOffsetZ = offsetZ * 150;
             gui.addControl(label); 
@@ -487,9 +683,30 @@ class PieChart extends Chart {
             text1.fontSize = 10;
 
             label.addControl(text1);  
+
+
+            var line = new BABYLON.GUI.Line();
+            // line.alpha = 0.5;
+            line.lineWidth = 1;
+            // line.dash = [5, 10];
+            line.zIndex = 5;
+            line.color = 'black';
+            gui.addControl(line); 
+            line.linkWithMesh(mesh);
+            line.connectedControl = label;
+        
+            var endRound = new BABYLON.GUI.Ellipse();
+            endRound.width = "5px";
+            endRound.background = "black";
+            endRound.height = "5px";
+            endRound.color = "black";
+            gui.addControl(endRound);
+            endRound.linkWithMesh(mesh);
+
         }  
 
-        createLabel(slice, this.advancedTexture);
+
+        // createLabel(slice, this.advancedTexture);
 
 
 
@@ -541,7 +758,7 @@ class BarChart extends Chart {
         // basic settings for a bar
         let settings = {
             width: 1,
-            height: options.data,
+            height: options.value/2,
             depth: this.options.depth ? this.options.depth : .25,
             sideOrientation: BABYLON.Mesh.DOUBLESIDE
         };
@@ -556,35 +773,71 @@ class BarChart extends Chart {
         }
         
         bar.position.x = options.startPosition - 10.5;
+        bar.position.y = options.value/4;
         bar.material = options.mat;
 
         if (this.options.shadows){
             this.shadowGenerator.getShadowMap().renderList.push(bar);
         }
 
-        function createLabel(mesh, gui) {
-            var label = new BABYLON.GUI.Rectangle("label for " + mesh.name);
-            label.background = "white"
-            label.height = "15px";
-            // label.alpha = 0.5;
-            label.width = "75px";
-            label.cornerRadius = 10;
-            label.thickness = 1;
-            label.linkOffsetY = 50;
-            gui.addControl(label); 
-            label.linkWithMesh(mesh);
+        // function create2DLabel(mesh, gui, index) {
+        //     var label = new BABYLON.GUI.Rectangle("label for " + mesh.name);
+        //     label.background = "white"
+        //     label.height = "15px";
+        //     // label.alpha = 0.5;
+        //     label.width = "40px";
+        //     label.cornerRadius = 10;
+        //     label.thickness = 1;
+        //     label.color = 'black';
+        //     if ((index%2) == 0){ // even
+        //         if ((index%4) === 0) {
+        //             label.linkOffsetY = -50;
+        //         } else {
+        //             label.linkOffsetY = -25;
+        //         }
+        //     } else { // odd
+        //         if (((index-1)%4) === 0) {
+        //             label.linkOffsetY = 50;
+        //         } else {
+        //             label.linkOffsetY = 25;
+        //         }            }
+        //     // label.linkOffsetY = 50 * (index %2 ? -1 : 1) * (index%4 ? 2:1); 
+        //     label.zIndex = 10;
+        //     gui.addControl(label); 
+        //     label.linkWithMesh(mesh);
     
-            var text1 = new BABYLON.GUI.TextBlock();
-            text1.text = options.name;
-            text1.color = "black";
-            text1.fontSize = 10;
+        //     var text1 = new BABYLON.GUI.TextBlock();
+        //     text1.text = options.name;
+        //     text1.color = "black";
+        //     text1.fontSize = 10;
 
-            label.addControl(text1);  
+        //     label.addControl(text1);  
 
-        }  // end createLabel function
 
-        createLabel(bar, this.advancedTexture);
+        //     var line = new BABYLON.GUI.Line();
+        //     // line.alpha = 0.5;
+        //     line.lineWidth = 2;
+        //     // line.dash = [5, 10];
+        //     line.zIndex = 5;
+        //     line.color = 'black';
+        //     gui.addControl(line); 
+        //     line.linkWithMesh(mesh);
+        //     line.connectedControl = label;
+        
+        //     var endRound = new BABYLON.GUI.Ellipse();
+        //     endRound.width = "5px";
+        //     endRound.background = "black";
+        //     endRound.height = "5px";
+        //     endRound.color = "black";
+        //     gui.addControl(endRound);
+        //     endRound.linkWithMesh(mesh);
 
+        // }  // end createLabel function
+
+
+        if (this.options.label2D){
+            // this.gui2D.create2DLabel(bar, options.index);
+        }
     }  // end addBar method
 
     build(){
@@ -603,7 +856,7 @@ class BarChart extends Chart {
         });
     
         let start_pos = 0;
-        this.options.data.forEach(element => {
+        this.options.data.forEach((element, index) => {
             // let slice_angle = 2 * Math.PI * element.value / total_value;
             let bar = this.addBar({
                 graph: this.scene,
@@ -611,7 +864,8 @@ class BarChart extends Chart {
                 startPosition: start_pos,
                 mat: this.materials[color_index % this.materials.length],
                 name: element.label,
-                value: element.value
+                value: element.value,
+                index: index
             });
     
             start_pos += 1.1;
@@ -631,26 +885,9 @@ class LineChart extends Chart {
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
 let dataSet = [];
-for (let index = 1; index < 10; index++) { dataSet.push({label: 'label '+index, value: 50, details : { detail1: index, detail2: index*index, detail3: 1/index}})}
-for (let index = 1; index < 10; index++) { dataSet.push({label: 'label '+index, value: 25, details : { detail1: index, detail2: index*index, detail3: 1/index}})}
+for (let index = 1; index <= 10; index++) { dataSet.push({label: 'label '+index, value: Math.abs(5-index) + 1, details : { detail1: index, detail2: index*index, detail3: 1/index}})}
+for (let index = 11; index <= 20; index++) { dataSet.push({label: 'label '+index, value: 15-index+6, details : { detail1: index, detail2: index*index, detail3: 1/index}})}
 
-let pieChart = new PieChart({
-    id: 'pie',     // required - id of canvas element to use
-    data: dataSet, // required - array of data objects     { label: "July", value: 100 }
-
-    ///////////////////////
-    // optional settings //
-    ///////////////////////
-
-    width: 500,     // <default 300>
-    height: 300,    // <default 200>
-    shadows: true   // <default false>
-
-    // ground color
-    // camera distance
-    // intro animation
-
-} );
 
 let barChart = new BarChart({
     id: 'bar1',     // required - id of canvas element to use
@@ -660,12 +897,13 @@ let barChart = new BarChart({
     // optional settings //
     ///////////////////////
 
-    ,width: 500     // <default 300>
+    ,width: 800     // <default 300>
     ,height: 300    // <default 200>
     // ,shadows: false   // <default false>
     ,round: false    // <default false>
     ,depth: .25       // <default .25 >
     // ,logo: 'logo.png'
+    ,label2D: false
 
     // ground color
     // camera distance
@@ -673,45 +911,65 @@ let barChart = new BarChart({
 
 } );
 
-let barChart2 = new BarChart({
-    id: 'bar2',     // required - id of canvas element to use
-    data: dataSet, // required - array of data objects     { label: "July", value: 100 }
+// let barChart2 = new BarChart({
+//     id: 'bar2',     // required - id of canvas element to use
+//     data: dataSet, // required - array of data objects     { label: "July", value: 100 }
 
-    ///////////////////////
-    // optional settings //
-    ///////////////////////
+//     ///////////////////////
+//     // optional settings //
+//     ///////////////////////
 
-    width: 500,     // <default 300>
-    height: 300,    // <default 200>
-    shadows: true,   // <default false>
-    round: true,     // <default false>
-    depth: 1,        // <default .25 >
-    logo: 'logo.png'
+//     width: 400,     // <default 300>
+//     height: 300,    // <default 200>
+//     shadows: true,   // <default false>
+//     round: true,     // <default false>
+//     depth: 1,        // <default .25 >
+//     logo: 'logo.png',
+//     label2D: true
 
-    // ground color
-    // camera distance
-    // intro animation
+//     // ground color
+//     // camera distance
+//     // intro animation
 
-} );
+// } );
 
-let lineChart = new LineChart({
-    id: 'line',     // required - id of canvas element to use
-    data: dataSet   // required - array of data objects     { label: "July", value: 100 }
 
-    ///////////////////////
-    // optional settings //
-    ///////////////////////
+// let pieChart = new PieChart({
+//     id: 'pie',     // required - id of canvas element to use
+//     data: dataSet, // required - array of data objects     { label: "July", value: 100 }
 
-    ,width: 500     // <default 300>
-    ,height: 300    // <default 200>
-    ,shadows: true   // <default false>
-    ,round: true     // <default false>
-    ,depth: 1        // <default .25 >
-    // ,logo: 'logo.png'
+//     ///////////////////////
+//     // optional settings //
+//     ///////////////////////
 
-    // ground color
-    // camera distance
-    // intro animation
+//     width: 400,     // <default 300>
+//     height: 400,    // <default 200>
+//     shadows: true   // <default false>
+
+//     // ground color
+//     // camera distance
+//     // intro animation
+
+// } );
+
+// let lineChart = new LineChart({
+//     id: 'line',     // required - id of canvas element to use
+//     data: dataSet   // required - array of data objects     { label: "July", value: 100 }
+
+//     ///////////////////////
+//     // optional settings //
+//     ///////////////////////
+
+//     ,width: 400     // <default 300>
+//     ,height: 400    // <default 200>
+//     ,shadows: true   // <default false>
+//     ,round: true     // <default false>
+//     ,depth: 1        // <default .25 >
+//     // ,logo: 'logo.png'
+
+//     // ground color
+//     // camera distance
+//     // intro animation
     
-} );
+// } );
         
