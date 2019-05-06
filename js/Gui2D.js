@@ -16,9 +16,8 @@ class Gui2D {
 
         this.panelOptions = new BABYLON.GUI.StackPanel();
         formatMenuPanel(this.panelOptions);
-        // this.panelOptions.height = '60px';
         this.panelOptions.height = '5px';
-        this.panelOptions.onPointerEnterObservable.add(()=>{this.panelOptions.height= '120px'})
+        this.panelOptions.onPointerEnterObservable.add(()=>{this.panelOptions.height= '60px'})
         this.panelOptions.onPointerOutObservable.add(()=>{this.panelOptions.height= '5px'})
 
         this.advancedTexture.addControl(this.panelOptions);   
@@ -35,36 +34,9 @@ class Gui2D {
 
      }  //  end initializeGUI method
 
-
-    // optionsMenu(){
-    //     let advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
-
-    //     let panelOptions = new BABYLON.GUI.StackPanel();
-    //     formatMenuPanel(panelOptions);
-
-    //     advancedTexture.addControl(panelOptions);   
-
-    //     let buttonScreenOptions = BABYLON.GUI.Button.CreateSimpleButton('scene options button', 'Scene Options');
-    //     formatButton(buttonScreenOptions);
-    //     buttonScreenOptions.onPointerUpObservable.add(this.sceneOptionsMenu);
-    //     panelOptions.addControl(buttonScreenOptions);  
-
-    //     let buttonGraphOptions = BABYLON.GUI.Button.CreateSimpleButton('graph options button', 'Graph Options');
-    //     formatButton(buttonGraphOptions);
-    //     buttonGraphOptions.onPointerUpObservable.add(this.graphOptionsMenu);
-    //     panelOptions.addControl(buttonGraphOptions);  
-
-    //     let buttonBack = BABYLON.GUI.Button.CreateSimpleButton('options back button', 'Back');
-    //     formatButton(buttonBack);
-    //     buttonBack.onPointerUpObservable.add(()=>{advancedTexture.dispose()});
-    //     panelOptions.addControl(buttonBack);  
-    // }
-
     sceneOptionsMenu(){
-        console.log('in scene options menu');
-        console.log(this.parentThis);
-
-        // let advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+        // console.log('in scene options menu');
+        // console.log(this.parentThis);
 
         let panelSceneOptions = new BABYLON.GUI.StackPanel();
         formatMenuPanel(panelSceneOptions);
@@ -88,9 +60,8 @@ class Gui2D {
     }
 
     graphOptionsMenu(){
-        console.log('in graph options menu')
-        console.log(this.test);
-        // let advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+        // console.log('in graph options menu')
+        // console.log(this.test);
 
         let panelGraphOptions = new BABYLON.GUI.StackPanel();
         formatMenuPanel(panelGraphOptions);
@@ -113,26 +84,24 @@ class Gui2D {
         panelGraphOptions.addControl(buttonBack); 
     }
 
-
-
     thirdLevel(){
-        console.log('in third level menu')
-        console.log(this.test);
-        // let advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+        // console.log('in third level menu')
+        // console.log(this.test);
+        // console.log(this.parentThis); 
 
         let thirdGraphOptions = new BABYLON.GUI.StackPanel();
         formatMenuPanel(thirdGraphOptions);
 
         this.advancedTexture.addControl(thirdGraphOptions);   
 
-        let buttonGraphOption1 = BABYLON.GUI.Button.CreateSimpleButton('graph options third level', 'Graph Option third level');
+        let buttonGraphOption1 = BABYLON.GUI.Button.CreateSimpleButton('2D labels', '2D Labels');
         formatButton(buttonGraphOption1);
-        // buttonGraphOption1.onPointerUpObservable.add(this.sceneOptionsMenu);
+        buttonGraphOption1.onPointerUpObservable.add(()=>{ this.parentThis.options.label2D = !this.parentThis.options.label2D });
         thirdGraphOptions.addControl(buttonGraphOption1);  
 
-        let buttonGraphOption2 = BABYLON.GUI.Button.CreateSimpleButton('graph options 2', 'Graph Option 2');
+        let buttonGraphOption2 = BABYLON.GUI.Button.CreateSimpleButton('brightness', 'Brightness');
         formatButton(buttonGraphOption2);
-        // buttonGraphOption2.onPointerUpObservable.add(this.graphOptionsMenu);
+        buttonGraphOption2.onPointerUpObservable.add(() => { this.parentThis.scene.lights[1].intensity = (this.parentThis.scene.lights[1].intensity > .2 ? .2 : .65)});
         thirdGraphOptions.addControl(buttonGraphOption2);  
 
         let buttonBack = BABYLON.GUI.Button.CreateSimpleButton('options back button', 'Back');
@@ -182,11 +151,14 @@ class Gui2D {
     }
 
     create2DLabel(mesh, index, options) {
+
+// console.log(this.parentThis.labels2D);
+
         var label = new BABYLON.GUI.Rectangle("label for " + mesh.name);
         label.background = "white"
         label.height = "15px";
         // label.alpha = 0.5;
-        label.width = "40px";
+        label.width = "70px";
         label.cornerRadius = 10;
         label.thickness = 1;
         label.color = 'black';
@@ -203,35 +175,43 @@ class Gui2D {
                 label.linkOffsetY = 25;
             }            }
         // label.linkOffsetY = 50 * (index %2 ? -1 : 1) * (index%4 ? 2:1); 
-        label.zIndex = 10;
+        label.zIndex = -10;
         this.advancedTexture.addControl(label); 
         label.linkWithMesh(mesh);
 
         var text1 = new BABYLON.GUI.TextBlock();
-        text1.text = options.name;
+        text1.text = options.name +' - '+options.value;
         text1.color = "black";
         text1.fontSize = 10;
 
         label.addControl(text1);  
+
+        this.parentThis.labels2D.push(label);
 
 
         var line = new BABYLON.GUI.Line();
         // line.alpha = 0.5;
         line.lineWidth = 2;
         // line.dash = [5, 10];
-        line.zIndex = 5;
+        line.zIndex = -15;
         line.color = 'black';
         this.advancedTexture.addControl(line); 
         line.linkWithMesh(mesh);
         line.connectedControl = label;
+
+        this.parentThis.labels2D.push(line);
+
     
         var endRound = new BABYLON.GUI.Ellipse();
         endRound.width = "5px";
         endRound.background = "black";
+        endRound.zIndex = -15;
         endRound.height = "5px";
         endRound.color = "black";
         this.advancedTexture.addControl(endRound);
         endRound.linkWithMesh(mesh);
+
+        this.parentThis.labels2D.push(endRound);
 
     }  // end createLabel function
 
@@ -258,7 +238,7 @@ function formatMenuPanel(panel){
     panel.cornerRadius = 10;
     panel.thickness = 1;
     panel.color = 'black';
-    panel.background = "green";
+    panel.background = "lightgray";
     // panel.paddingTop    =  25;
     // panel.paddingLeft    =  25;
     panel.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
