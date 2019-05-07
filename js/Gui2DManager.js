@@ -1,4 +1,4 @@
-class Gui2D {
+class Gui2DManager {
     
     constructor(par){
         this.parentThis = par;
@@ -17,7 +17,7 @@ class Gui2D {
         this.panelOptions = new BABYLON.GUI.StackPanel();
         formatMenuPanel(this.panelOptions);
         this.panelOptions.height = '5px';
-        this.panelOptions.onPointerEnterObservable.add(()=>{this.panelOptions.height= '60px'})
+        this.panelOptions.onPointerEnterObservable.add(()=>{this.panelOptions.height= '90px'})
         this.panelOptions.onPointerOutObservable.add(()=>{this.panelOptions.height= '5px'})
 
         this.advancedTexture.addControl(this.panelOptions);   
@@ -32,6 +32,14 @@ class Gui2D {
         button2.onPointerUpObservable.add(this.graphOptionsMenu.bind(this));
         this.panelOptions.addControl(button2);  
 
+        
+        let button3 = BABYLON.GUI.Button.CreateSimpleButton("optionsButton3", "Help");
+        formatButton(button3);
+        // button3.onPointerUpObservable.add(this.graphOptionsMenu.bind(this));
+        this.panelOptions.addControl(button3);  
+
+        
+
      }  //  end initializeGUI method
 
     sceneOptionsMenu(){
@@ -40,18 +48,29 @@ class Gui2D {
 
         let panelSceneOptions = new BABYLON.GUI.StackPanel();
         formatMenuPanel(panelSceneOptions);
+        panelSceneOptions.height = '150px';
 
         this.advancedTexture.addControl(panelSceneOptions);   
 
-        let buttonScreenOptions = BABYLON.GUI.Button.CreateSimpleButton('scene options 1', 'Scene Option 1');
-        formatButton(buttonScreenOptions);
-        // buttonScreenOptions.onPointerUpObservable.add(this.sceneOptionsMenu);
-        panelSceneOptions.addControl(buttonScreenOptions);  
+        let buttonCameraOptions = BABYLON.GUI.Button.CreateSimpleButton('scene options 1', 'Camera');
+        formatButton(buttonCameraOptions);
+        // buttonCameraOptions.onPointerUpObservable.add(this.sceneOptionsMenu);
+        panelSceneOptions.addControl(buttonCameraOptions);  
 
-        let buttonGraphOptions = BABYLON.GUI.Button.CreateSimpleButton('scene options 2', 'Scene Option 2');
-        formatButton(buttonGraphOptions);
-        // buttonGraphOptions.onPointerUpObservable.add(this.graphOptionsMenu);
-        panelSceneOptions.addControl(buttonGraphOptions);  
+        let buttonLightsOptions = BABYLON.GUI.Button.CreateSimpleButton('scene options 2', 'Lights');
+        formatButton(buttonLightsOptions);
+        // buttonLightsOptions.onPointerUpObservable.add(this.graphOptionsMenu);
+        panelSceneOptions.addControl(buttonLightsOptions);  
+
+        let buttonGroundOptions = BABYLON.GUI.Button.CreateSimpleButton('scene options 2', 'Ground');
+        formatButton(buttonGroundOptions);
+        // buttonGroundOptions.onPointerUpObservable.add(this.graphOptionsMenu);
+        panelSceneOptions.addControl(buttonGroundOptions);  
+
+        let buttonBackgroundOptions = BABYLON.GUI.Button.CreateSimpleButton('scene options 2', 'Background');
+        formatButton(buttonBackgroundOptions);
+        // buttonBackgroundOptions.onPointerUpObservable.add(this.graphOptionsMenu);
+        panelSceneOptions.addControl(buttonBackgroundOptions);  
 
         let buttonBack = BABYLON.GUI.Button.CreateSimpleButton('options back button', 'Back');
         formatButton(buttonBack);
@@ -59,24 +78,63 @@ class Gui2D {
         panelSceneOptions.addControl(buttonBack);  
     }
 
+
+
+
     graphOptionsMenu(){
         // console.log('in graph options menu')
         // console.log(this.test);
 
+        let panelData = {
+                            title: 'Panel Title',
+                            buttons: {  
+                                        'graph options 1':  {   
+                                                                text: 'Title',
+                                                                callback: this.thirdLevel.bind(this)
+                                                            },
+                                        'graph options 2':  {   
+                                                                text: 'Graph Type',
+                                                                callback: this.thirdLevel.bind(this)
+                                                            },
+                                        'graph options 2':  {   
+                                                                text: 'Labels',
+                                                                callback: this.thirdLevel.bind(this)
+                                                            },
+                                        'graph options 2':  {   
+                                                                text: 'Save/DL',
+                                                                callback: this.thirdLevel.bind(this)
+                                                            }
+                                     }
+                        }
+    
+
         let panelGraphOptions = new BABYLON.GUI.StackPanel();
         formatMenuPanel(panelGraphOptions);
+        panelGraphOptions.height = '150px';
 
         this.advancedTexture.addControl(panelGraphOptions);   
 
-        let buttonGraphOption1 = BABYLON.GUI.Button.CreateSimpleButton('graph options 1', 'Graph Option 1');
-        formatButton(buttonGraphOption1);
-        buttonGraphOption1.onPointerUpObservable.add(this.thirdLevel.bind(this));
-        panelGraphOptions.addControl(buttonGraphOption1);  
+        let buttonTitleOption = BABYLON.GUI.Button.CreateSimpleButton('graph options 1', 'Title');
+        formatButton(buttonTitleOption);
+        buttonTitleOption.onPointerUpObservable.add(this.thirdLevel.bind(this));
+        panelGraphOptions.addControl(buttonTitleOption);  
 
-        let buttonGraphOption2 = BABYLON.GUI.Button.CreateSimpleButton('graph options 2', 'Graph Option 2');
-        formatButton(buttonGraphOption2);
-        buttonGraphOption2.onPointerUpObservable.add(this.thirdLevel.bind(this));
-        panelGraphOptions.addControl(buttonGraphOption2);  
+        let buttonGraphType = BABYLON.GUI.Button.CreateSimpleButton('graph options 2', 'Graph Type');
+        formatButton(buttonGraphType);
+        buttonGraphType.onPointerUpObservable.add(this.thirdLevel.bind(this));
+        panelGraphOptions.addControl(buttonGraphType);  
+
+        let buttonLabelOptions = BABYLON.GUI.Button.CreateSimpleButton('graph options 2', 'Labels');
+        formatButton(buttonLabelOptions);
+        buttonLabelOptions.onPointerUpObservable.add(this.thirdLevel.bind(this));
+        panelGraphOptions.addControl(buttonLabelOptions);  
+
+        let buttonDownload = BABYLON.GUI.Button.CreateSimpleButton('graph options 2', 'Save/DL');
+        formatButton(buttonDownload);
+        buttonDownload.onPointerUpObservable.add(() =>{BABYLON.Tools.CreateScreenshot(this.parentThis.engine, this.parentThis.scene.cameras, 200)});
+        buttonDownload.onPointerUpObservable.add(() =>{console.log(this.parentThis.engine)});
+        buttonDownload.onPointerUpObservable.add(() =>{console.log(this.parentThis.scene.cameras[0])});
+        panelGraphOptions.addControl(buttonDownload);  
 
         let buttonBack = BABYLON.GUI.Button.CreateSimpleButton('options back button', 'Back');
         formatButton(buttonBack);
@@ -91,6 +149,8 @@ class Gui2D {
 
         let thirdGraphOptions = new BABYLON.GUI.StackPanel();
         formatMenuPanel(thirdGraphOptions);
+        thirdGraphOptions.height = '150px';
+
 
         this.advancedTexture.addControl(thirdGraphOptions);   
 
@@ -234,7 +294,7 @@ function formatButton(button){
 
 function formatMenuPanel(panel){
     panel.width = "120px";
-    panel.height = "120px";
+    panel.height = "90px";
     panel.cornerRadius = 10;
     panel.thickness = 1;
     panel.color = 'black';
@@ -247,3 +307,8 @@ function formatMenuPanel(panel){
     // panel.paddingLeft   =  5;
     // panel.paddingRight  =  5;
 }
+
+function downloadImage(dlLink, canvas) {
+    dlLink.href = canvas.toDataURL('image/png');
+    dlLink.download = 'myGraph.png'
+  };

@@ -4,7 +4,7 @@
 //      Implement state
 //      Implement defaults
 //      Implement storage class - save/load state - local browser/server database?
-//      Implement GUI as classes Gui2d and Gui3D
+//      Implement GUI as classes Gui2d and Gui3D - WORKING ON IT
 //      Implement help system - include feedback/question/request option per panel
 //      Implement data input/fetch
 //  
@@ -17,6 +17,7 @@
 //      Implement file download
 //      Implement saveable frames perhaps animated for a moving presentation
 //
+//      Add 2D details panel
 //      Add bar value normalization/remap to default width/height
 //      Add Scales/Axis options
 //      Add horitontal and vertical bars option
@@ -37,8 +38,17 @@
 //      'Options' button
 //          Scene options
 //              Camera 
-//                  Location
+//                  position
+//                  target
+//                  alpha
+//                  beta
+//                  radius
+//                  lowerAlphaLimit
+//                  lowerBetaLimit
+//                  lowerRadiusLimit
+
 //                  Lock/Unlock Camera
+//
 //              Lighting and effects
 //                  Light brightness
 //                  Light Color
@@ -77,7 +87,8 @@
 //          click to select
 //              glow: on/off
 //          right click for options and details
-//              options: change color
+//              options: change color 
+//                       toggle label
 //              options: make camera target
 //
 //      Add label clicks
@@ -85,9 +96,11 @@
 //              glow: on/off
 //          right click for options and details
 //              options: change color
-//              options: make camera target              
+//                       hide label
+//                       make camera target              
 //          click/hold to move lobel
 //
+//      Add a label manager?
 
 
 
@@ -136,7 +149,7 @@ class Chart {   // Base Chart Class
             canvas.width = this.options.width ? this.options.width : 300;
             canvas.height = this.options.height ? this.options.height : 200;
 
-        let engine = new BABYLON.Engine(canvas, true);
+        this.engine = new BABYLON.Engine(canvas, true);
 
         this.createScene.bind(this);
         this.scene = this.createScene(canvas);
@@ -147,15 +160,16 @@ class Chart {   // Base Chart Class
         this.buildCustomMaterials.bind(this);
         this.customMaterials = this.buildCustomMaterials();
 
-        this.gui2D = new Gui2D(this);
-        this.gui3D = new Gui3D();
-
+        this.gui2D = new Gui2DManager(this);
+        
         // this.lastFrameTime = Date.now();
         // this.frameTimes = [];
-
+        
         this.build();
+        
+        this.gui3D = new Gui3DManager(this.scene, this.objects, this.options);
 
-        engine.runRenderLoop(()=>{
+        this.engine.runRenderLoop(()=>{
             this.updateScene.bind(this);
             this.updateScene();
             this.scene.render();
@@ -165,20 +179,17 @@ class Chart {   // Base Chart Class
 
     updateScene(){
 
-        // // console.log(this);
         if (this.options.label2D === false && this.labels2D.length > 0) {
-        this.labels2D.forEach(element => this.gui2D.advancedTexture.removeControl(element));
-        this.labels2D = [];
+            this.labels2D.forEach(element => this.gui2D.advancedTexture.removeControl(element));
+            this.labels2D = [];
         }
+
         if (this.options.label2D === true && this.labels2D.length === 0){
 
             this.objects.forEach((element,index) => {
                 this.gui2D.create2DLabel(element, index, element.userData.myOptions);
 
             })
-            // this.gui2D.create2DLabel.bind(this);
-
-
         }
 
     }
@@ -206,9 +217,9 @@ class Chart {   // Base Chart Class
         let light = new BABYLON.PointLight("light1", new BABYLON.Vector3(100, 80, -50), scene);
             light.intensity = .95;
             
-        let ground = BABYLON.MeshBuilder.CreateGround("myGround", {width: 500, height: 500, subdivisions: 40}, scene);
+        let ground = BABYLON.MeshBuilder.CreateGround("myGround", {width: 50, height: 50, subdivisions: 50}, scene);
             ground.receiveShadows = true;
-        
+            // ground.rotation.x = -Math.PI/8;
 
         // apply scene options here
 
@@ -222,12 +233,15 @@ class Chart {   // Base Chart Class
             var logoMaterial = new BABYLON.StandardMaterial("logoMaterial", scene);
                 logoMaterial.diffuseTexture = new BABYLON.Texture("/logo.png", scene);
                 logoMaterial.diffuseTexture.hasAlpha = true;
-                logoMaterial.diffuseTexture.uScale = 100.0;
-                logoMaterial.diffuseTexture.vScale = 100.0;
+                logoMaterial.diffuseTexture.uScale = 10.0;
+                logoMaterial.diffuseTexture.vScale = 10.0;
 
-            let logoOverlay = BABYLON.MeshBuilder.CreateGround("logoOverlay", {width: 500, height: 500, subdivisions: 40}, scene);
+            let logoOverlay = BABYLON.MeshBuilder.CreateGround("logoOverlay", {width: 50, height: 50, subdivisions: 50}, scene);
+                logoOverlay.position.y = .005
                 logoOverlay.receiveShadows = true; 
                 logoOverlay.material = logoMaterial;
+                // logoOverlay.rotation.x = -Math.PI/8;
+
         }
 
         // this.materials = this.buildMaterials(this.options.data.length, scene);
@@ -454,20 +468,18 @@ class PieChart extends Chart {
             /////// Add Actions
             slice.actionManager = new BABYLON.ActionManager(options.graph);
         
+            var basePosition = slice.position; 
 
-        slice.actionManager.registerAction(
+        slice.actionManager
+        .registerAction(
             new BABYLON.InterpolateValueAction(
-                BABYLON.ActionManager.OnPointerOverTrigger,
+                BABYLON.ActionManager.OnPickTrigger,
                 slice,
                 'position',
                 new BABYLON.Vector3(offsetX, 0, offsetZ),
                 100
             )
-        );
-    
-        var basePosition = slice.position; 
-
-        slice.actionManager.registerAction(
+        ).then(
             new BABYLON.InterpolateValueAction(
                 BABYLON.ActionManager.OnPointerOutTrigger,
                 slice,
@@ -540,7 +552,7 @@ class BarChart extends Chart {
         let settings = {
             width: 1,
             height: options.value/2,
-            depth: this.options.depth ? this.options.depth : .25,
+            depth: this.options.depth ? this.options.depth : .5,
             sideOrientation: BABYLON.Mesh.DOUBLESIDE
         };
         
@@ -553,7 +565,7 @@ class BarChart extends Chart {
             bar = BABYLON.MeshBuilder.CreateBox(options.name, settings, options.graph);
         }
         
-        bar.position.x = options.startPosition - 10.5;
+        bar.position.x = options.startPosition - 6;
         bar.position.y = options.value/4;
         bar.material = options.mat;
         bar.userData = {};
@@ -617,12 +629,28 @@ class LineChart extends Chart {
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
+let months = {
+    1: {long: 'January', short: 'Jan'},
+    2: {long: 'February', short: 'Feb'},
+    3: {long: 'March', short: 'Mar'},
+    4: {long: 'April', short: 'Apr'},
+    5: {long: 'May', short: 'May'},
+    6: {long: 'June', short: 'Jun'},
+    7: {long: 'Jul', short: 'Jul'},
+    8: {long: 'August', short: 'Aug'},
+    9: {long: 'September', short: 'Sep'},
+    10: {long: 'October', short: 'Oct'},
+    11: {long: 'November', short: 'Nov'},
+    12 : {long: 'December', short: 'Dec'}
+}
+
 let dataSet = [];
-for (let index = 1; index <= 10; index++) { dataSet.push({label: 'label '+index, value: Math.abs(5-index) + 1, details : { detail1: index, detail2: index*index, detail3: 1/index}})}
-for (let index = 11; index <= 20; index++) { dataSet.push({label: 'label '+index, value: 15-index+6, details : { detail1: index, detail2: index*index, detail3: 1/index}})}
+for (let index = 1; index <= 12; index++) { dataSet.push({label: months[index].long, value: Math.abs(5-index) * 2 + 1, details : { detail1: index, detail2: index*index, detail3: 1/index}})}
+// for (let index = 11; index <= 20; index++) { dataSet.push({label: 'label '+index, value: 15-index+6, details : { detail1: index, detail2: index*index, detail3: 1/index}})}
 
 
 let barChart = new BarChart({
+    type:'bar',
     id: 'bar1',     // required - id of canvas element to use
     data: dataSet // required - array of data objects     { label: "July", value: 100 }
     
@@ -631,12 +659,13 @@ let barChart = new BarChart({
     ///////////////////////
 
     ,width: 800     // <default 300>
-    ,height: 300    // <default 200>
+    ,height: 500    // <default 200>
     // ,shadows: false   // <default false>
     ,round: false    // <default false>
-    ,depth: .25       // <default .25 >
+    ,depth: .6       // <default .25 >
     // ,logo: 'logo.png'
-    ,label2D: true
+    ,label2D: false
+    ,coloredLabels: true
 
     // ground color
     // camera distance
@@ -657,8 +686,9 @@ let barChart2 = new BarChart({
     shadows: true,   // <default false>
     round: true,     // <default false>
     depth: 1,        // <default .25 >
-    logo: 'logo.png',
-    label2D: false
+    // logo: 'logo.png',
+    label2D: false,
+    coloredLabels: false
 
     // ground color
     // camera distance
@@ -667,42 +697,42 @@ let barChart2 = new BarChart({
 } );
 
 
-let pieChart = new PieChart({
-    id: 'pie',     // required - id of canvas element to use
-    data: dataSet, // required - array of data objects     { label: "July", value: 100 }
+// let pieChart = new PieChart({
+//     id: 'pie',     // required - id of canvas element to use
+//     data: dataSet, // required - array of data objects     { label: "July", value: 100 }
 
-    ///////////////////////
-    // optional settings //
-    ///////////////////////
+//     ///////////////////////
+//     // optional settings //
+//     ///////////////////////
 
-    width: 400,     // <default 300>
-    height: 400,    // <default 200>
-    shadows: true,  // <default false>
-    label2D: true
-    // ground color
-    // camera distance
-    // intro animation
+//     width: 400,     // <default 300>
+//     height: 400,    // <default 200>
+//     shadows: true,  // <default false>
+//     label2D: true
+//     // ground color
+//     // camera distance
+//     // intro animation
 
-} );
+// } );
 
-let lineChart = new LineChart({
-    id: 'line',     // required - id of canvas element to use
-    data: dataSet   // required - array of data objects     { label: "July", value: 100 }
+// let lineChart = new LineChart({
+//     id: 'line',     // required - id of canvas element to use
+//     data: dataSet   // required - array of data objects     { label: "July", value: 100 }
 
-    ///////////////////////
-    // optional settings //
-    ///////////////////////
+//     ///////////////////////
+//     // optional settings //
+//     ///////////////////////
 
-    ,width: 400     // <default 300>
-    ,height: 400    // <default 200>
-    ,shadows: true   // <default false>
-    ,round: true     // <default false>
-    ,depth: 1        // <default .25 >
-    // ,logo: 'logo.png'
+//     ,width: 400     // <default 300>
+//     ,height: 400    // <default 200>
+//     ,shadows: true   // <default false>
+//     ,round: true     // <default false>
+//     ,depth: 1        // <default .25 >
+//     // ,logo: 'logo.png'
 
-    // ground color
-    // camera distance
-    // intro animation
+//     // ground color
+//     // camera distance
+//     // intro animation
     
-} );
+// } );
         
