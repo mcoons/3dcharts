@@ -4,9 +4,12 @@ class Gui3DManager {
         console.log('In gui3D constructor');
 
         this.create3dGroundLabels(scene, elements, options); 
-        this.create3dScale(scene, elements, options, 0, 10, "5", 5); 
-        this.create3dScale(scene, elements, options, 0, 10, "10", 10); 
-        this.create3dScale(scene, elements, options, 0, 10, "15", 15); 
+
+        if (options.showScale){
+            this.create3dScale(scene, elements, options, 0, 10, "5", 5); 
+            this.create3dScale(scene, elements, options, 0, 10, "10", 10); 
+            this.create3dScale(scene, elements, options, 0, 10, "15", 15); 
+        }
     }
 
 
@@ -115,15 +118,17 @@ class Gui3DManager {
             var planeWidth = 20;
             var planeHeight = 1.1;
 
+            //Set width and height for dynamic texture using same multiplier
+            var DTWidth = planeWidth * 60;
+            var DTHeight = planeHeight * 60;
+           
+           
+           
             //Create plane
             var planeScales = BABYLON.MeshBuilder.CreatePlane("plane", {width:planeWidth, height:planeHeight}, scene);
             // planeScales.position.x = -6;
             planeScales.position.y = location;
             planeScales.position.z = -.01;
-
-            //Set width and height for dynamic texture using same multiplier
-            var DTWidth = planeWidth * 60;
-            var DTHeight = planeHeight * 60;
 
             //Set text
             var text = text + '  --------------------------------------------------------------------';// + '      ' + element.userData.myOptions.value;

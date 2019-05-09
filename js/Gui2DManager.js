@@ -7,8 +7,10 @@ class Gui2DManager {
 
         this.initializeGUI();
     
+        console.log(this.parentThis.scene.meshes[0])
+
         // this.showDetails();
-        // this.addColorPanel();
+        this.addColorPanel(this.parentThis.objects[1]);
     }
 
     initializeGUI(){
@@ -78,8 +80,7 @@ class Gui2DManager {
         formatMenuPanel(panelCameraOptions);
         this.advancedTexture.addControl(panelCameraOptions);  
 
-
-
+        //// camera speed ////
 
         var header = new BABYLON.GUI.TextBlock();
         header.text = "Camera Speed: 2";
@@ -94,7 +95,6 @@ class Gui2DManager {
         slider.maximum = 5;
         slider.value = 2;
         slider.step = .5;
-        // slider.padding = '5px';
 
         slider.thumbWidth = '15px';        
         slider.thumbHeight = '15px';
@@ -146,6 +146,40 @@ class Gui2DManager {
         formatMenuPanel(panelLightOptions);
         this.advancedTexture.addControl(panelLightOptions);  
 
+        //// brightness////
+
+        var header = new BABYLON.GUI.TextBlock();
+        header.text = "Brightness: 1x";
+        header.height = "18px";
+        header.color = "white";
+        header.color    =  "black";
+        header.fontSize =  10;
+        panelLightOptions.addControl(header); 
+    
+        var slider = new BABYLON.GUI.Slider();
+        slider.minimum = 0;
+        slider.maximum = 2;
+        slider.value = 1;
+        slider.step = .1;
+
+        slider.thumbWidth = '15px';        
+        slider.thumbHeight = '15px';
+
+        slider.height = "12px";
+        slider.width = "100px";
+
+        slider.onValueChangedObservable.add((value) => {
+            header.text = "Brightness: " + value +'x';
+            this.parentThis.scene.lights.forEach(light => light.intensity = value )
+        });
+        panelLightOptions.addControl(slider);   
+
+
+
+
+
+
+
 
         let buttonGeneric = BABYLON.GUI.Button.CreateSimpleButton('cgeneric button', 'Generic Temp');
         formatButton(buttonGeneric);
@@ -161,11 +195,6 @@ class Gui2DManager {
         formatButton(buttonGeneric3);
         // buttonGeneric3.onPointerUpObservable.add(()=>{this.advancedTexture.removeControl(panelLightOptions)});
         panelLightOptions.addControl(buttonGeneric3); 
-
-        let buttonGeneric4 = BABYLON.GUI.Button.CreateSimpleButton('cgeneric button', 'Generic Temp');
-        formatButton(buttonGeneric4);
-        // buttonGeneric4.onPointerUpObservable.add(()=>{this.advancedTexture.removeControl(panelLightOptions)});
-        panelLightOptions.addControl(buttonGeneric4); 
 
         let buttonBack = BABYLON.GUI.Button.CreateSimpleButton('light options back button', 'Back');
         formatButton(buttonBack);
@@ -484,12 +513,12 @@ class Gui2DManager {
         advancedTexture.addControl(displayGrid);  
     }
 
-    addColorPanel(options){
+    addColorPanel(object, options){
         var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
         advancedTexture.layer.layerMask = 2;
     
         var panel3 = new BABYLON.GUI.StackPanel();
-            panel3.width = "160px";
+            panel3.width = "120px";
             panel3.fontSize = "14px";
             panel3.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
             panel3.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
@@ -502,14 +531,24 @@ class Gui2DManager {
     
         var picker = new BABYLON.GUI.ColorPicker();
             picker.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-            // picker.value = sphereMaterial.diffuseColor;
-            picker.height = "150px";
-            picker.width = "150px";
+            picker.value = object.material.diffuseColor;
+            picker.height = "100px";
+            picker.width = "100px";
             picker.onValueChangedObservable.add(function(value) { // value is a color3
-                // sphereMaterial.diffuseColor = value;
-                console.log(value);
+                object.material.diffuseColor = value;
+                // console.log(value);
             });    
         panel3.addControl(picker);  
+
+        let buttonGeneric = BABYLON.GUI.Button.CreateSimpleButton('cgeneric button', 'Apply Color');
+        formatButton(buttonGeneric);
+        // buttonGeneric.onPointerUpObservable.add(()=>{this.advancedTexture.removeControl(panelLabelOptions)});
+        panel3.addControl(buttonGeneric); 
+
+        let buttonGeneric2 = BABYLON.GUI.Button.CreateSimpleButton('cgeneric button', 'Cancel');
+        formatButton(buttonGeneric2);
+        // buttonGeneric2.onPointerUpObservable.add(()=>{this.advancedTexture.removeControl(panelLabelOptions)});
+        panel3.addControl(buttonGeneric2); 
     }
 
     create2DLabel(mesh, index, options) {

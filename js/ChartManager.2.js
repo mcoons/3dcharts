@@ -4,24 +4,25 @@
 //      Implement state
 //      Implement defaults
 //      Implement storage class - save/load state - local browser/server database?
-//      Implement GUI as classes Gui2d and Gui3D - WORKING ON IT
+//      Implement GUI as classes Gui2d and Gui3D - DONE!!
 //      Implement help system - include feedback/question/request option per panel
 //      Implement data input/fetch
 //  
-//      Implement Options menu
+//      Implement Options menu - WORKING ON IT
 //      Implement Object/Label menu
 //      Implement Drill Down Data Detail system
 //      Implement series
-//      Implement palette options
+//      Implement palette options - WORKING ON IT
 //      Implement custom colors
-//      Implement file download
+//      Implement file download - DONE!!!
 //      Implement saveable frames perhaps animated for a moving presentation
 //      Implement camera dolly system
 //      Implement Scene Save/Load/Add to presentation
+//      Implement glowing materials
 //
 //      Add 2D details panel
 //      Add bar value normalization/remap to default width/height
-//      Add Scales/Axis options
+//      Add Scales/Axis options - WORKING ON IT
 //      Add horitontal and vertical bars option
 //      Add background - image/color
 //      Add logo placement
@@ -31,7 +32,7 @@
 //
 //////////////// GUI //////////////////
 //
-//      GUIs should be their own class Gui2d/Gui3d
+//      GUIs should be their own class Gui2d/Gui3d - DONE!!
 //
 //      Object alignment arrows in base gui object
 //      Object sizing in base gui object
@@ -193,13 +194,13 @@ class Chart {   // Base Chart Class
         this.buildCustomMaterials.bind(this);
         this.customMaterials = this.buildCustomMaterials();
 
-        this.gui2D = new Gui2DManager(this);
         
         // this.lastFrameTime = Date.now();
         // this.frameTimes = [];
         
         this.build();
         
+        this.gui2D = new Gui2DManager(this);
         this.gui3D = new Gui3DManager(this.scene, this.objects, this.options);
 
         this.engine.runRenderLoop(()=>{
@@ -730,6 +731,8 @@ let barChart = new BarChart({
     ,horizontalLabels:true
     ,verticalLabels: false
     ,transparent: false
+    ,showScale: true
+
 
     // ground color
     // camera distance
@@ -758,7 +761,9 @@ let barChart2 = new BarChart({
     backplane: false,
     horizontalLabels:false,
     verticalLabels: true,
-    transparent: true
+    transparent: true,
+    showScale: true
+
 
     // ground color
     // camera distance
@@ -788,7 +793,9 @@ let barChart3 = new BarChart({
     backPlane: true,
     horizontalLabels:true,
     verticalLabels: false,
-    transparent: true
+    transparent: true,
+    showScale: false
+
 
     // ground color
     // camera distance
@@ -818,7 +825,9 @@ let barChart4 = new BarChart({
     backplane: false,
     horizontalLabels:false,
     verticalLabels: true,
-    transparent: true
+    transparent: true,
+    showScale: false
+
 
     // ground color
     // camera distance
@@ -839,7 +848,9 @@ let pieChart = new PieChart({
     height: 400,    // <default 200>
     shadows: true,  // <default false>
     label2D: false,
-    rtansparent: false
+    tansparent: false,
+    showScale: false
+
     // ground color
     // camera distance
     // intro animation
