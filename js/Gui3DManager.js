@@ -4,9 +4,9 @@ class Gui3DManager {
         console.log('In gui3D constructor');
 
         this.create3dGroundLabels(scene, elements, options); 
-        this.create3dScale(scene, elements, options, 0, 10, "5", 3); 
-        this.create3dScale(scene, elements, options, 0, 10, "10", 6); 
-        this.create3dScale(scene, elements, options, 0, 10, "15", 9); 
+        this.create3dScale(scene, elements, options, 0, 10, "5", 5); 
+        this.create3dScale(scene, elements, options, 0, 10, "10", 10); 
+        this.create3dScale(scene, elements, options, 0, 10, "15", 15); 
     }
 
 
@@ -23,34 +23,10 @@ class Gui3DManager {
             var planeWidth = 4;
             var planeHeight = 1.1;
 
-            //Create plane
-            var plane0 = BABYLON.MeshBuilder.CreatePlane("plane", {width:20, height:20}, scene);
-
-            //Create plane
-            var plane1 = BABYLON.MeshBuilder.CreatePlane("plane", {width:planeWidth, height:planeHeight}, scene);
-            plane1.position.x = element.position.x;
-            plane1.position.y = .01;
-            plane1.position.z = -planeWidth/2 - .5;
-
-            plane1.rotation.x = Math.PI/2;
-            plane1.rotation.y = Math.PI/2;
-            plane1.rotation.z = 0;
-
-            var plane2 = BABYLON.MeshBuilder.CreatePlane("plane", {width:planeWidth, height:planeHeight}, scene);
-            plane2.position.x = element.position.x;
-            plane2.position.y = -2.2;
-            plane2.position.z = -.01;
-
-            // plane2.rotation.x = Math.PI/2;
-            // plane2.rotation.y = Math.PI/2;
-            plane2.rotation.z = -Math.PI/2;;
-
-            // plane.rotation.z = -Math.PI/8;
-
-
             //Set width and height for dynamic texture using same multiplier
             var DTWidth = planeWidth * 60;
             var DTHeight = planeHeight * 60;
+
 
             //Set text
             var text = element.userData.myOptions.name;// + '      ' + element.userData.myOptions.value;
@@ -78,14 +54,54 @@ class Gui3DManager {
             //create material
             var mat = new BABYLON.StandardMaterial("mat", scene);
             mat.diffuseTexture = dynamicTexture;
+            
+            if (options.transparent){
+                mat.alpha = 0.5;
+            }
+           
             if (options.coloredLabels)
-            mat.diffuseColor = element.material.diffuseColor;
-            // mat.wireframe = true;
+                mat.diffuseColor = element.material.diffuseColor;
+
+
+            if (options.horizontalLabels){
+
+                //Create horizontal labels
+                var plane1 = BABYLON.MeshBuilder.CreatePlane("plane", {width:planeWidth, height:planeHeight}, scene);
+                plane1.position.x = element.position.x;
+                plane1.position.y = .01;
+                plane1.position.z = -planeWidth/2 - .5;
+
+                plane1.rotation.x = Math.PI/2;
+                plane1.rotation.y = Math.PI/2;
+                plane1.rotation.z = 0;
+
+                plane1.material = mat;
+
+            }
+
+            if (options.verticalLabels){
+
+                //Create vertical labels
+
+                var plane2 = BABYLON.MeshBuilder.CreatePlane("plane", {width:planeWidth, height:planeHeight}, scene);
+                plane2.position.x = element.position.x;
+                plane2.position.y = -2.2;
+                plane2.position.z = -.01;
+
+                // plane2.rotation.x = Math.PI/2;
+                // plane2.rotation.y = Math.PI/2;
+                plane2.rotation.z = -Math.PI/2;;
+
+                // plane.rotation.z = -Math.PI/8;
+
+                plane2.material = mat;
+
+            }
+
+
 
 
             //apply material
-            plane1.material = mat;
-            plane2.material = mat;
 
         });
     }
