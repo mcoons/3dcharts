@@ -10,7 +10,8 @@ class Gui2DManager {
         console.log(this.parentThis.scene.meshes[0])
 
         // this.showDetails();
-        this.addColorPanel(this.parentThis.objects[1]);
+        this.panelPickColor.bind(this);
+        this.panelPickColor(this.parentThis.objects[3]);
     }
 
     initializeGUI(){
@@ -465,44 +466,6 @@ class Gui2DManager {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    thirdLevel(){
-        let thirdGraphOptions = new BABYLON.GUI.StackPanel();
-        formatMenuPanel(thirdGraphOptions);
-        this.advancedTexture.addControl(thirdGraphOptions);  
-
-
-        let buttonGraphOption1 = BABYLON.GUI.Button.CreateSimpleButton('2D labels', '2D Labels');
-        formatButton(buttonGraphOption1);
-        buttonGraphOption1.onPointerUpObservable.add(()=>{ this.parentThis.options.label2D = !this.parentThis.options.label2D });
-        thirdGraphOptions.addControl(buttonGraphOption1);  
-
-        let buttonGraphOption2 = BABYLON.GUI.Button.CreateSimpleButton('brightness', 'Brightness');
-        formatButton(buttonGraphOption2);
-        buttonGraphOption2.onPointerUpObservable.add(() => { this.parentThis.scene.lights[1].intensity = (this.parentThis.scene.lights[1].intensity > .2 ? .2 : .65)});
-        thirdGraphOptions.addControl(buttonGraphOption2);  
-
-        let buttonBack = BABYLON.GUI.Button.CreateSimpleButton('options back button', 'Back');
-        formatButton(buttonBack);
-        buttonBack.onPointerUpObservable.add(()=>{this.advancedTexture.removeControl(thirdGraphOptions)});
-        thirdGraphOptions.addControl(buttonBack); 
-    }
-
-
-
     addGrid(){
         var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
 
@@ -513,42 +476,133 @@ class Gui2DManager {
         advancedTexture.addControl(displayGrid);  
     }
 
-    addColorPanel(object, options){
-        var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
-        advancedTexture.layer.layerMask = 2;
-    
-        var panel3 = new BABYLON.GUI.StackPanel();
-            panel3.width = "120px";
-            panel3.fontSize = "14px";
-            panel3.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
-            panel3.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
-            panel3.cornerRadius = 10;
-            panel3.thickness = 1;
-            panel3.color = 'black';
-            panel3.cornerRadius =  5;
-            panel3.background =  "white";
-        advancedTexture.addControl(panel3);   
-    
+
+    panelPickColor(object, options){
+
+        let original = object.material.diffuseColor;
+
+        var colorPickerContainer = new BABYLON.GUI.Rectangle();
+            colorPickerContainer.width = '170px';
+            colorPickerContainer.height= '240px';
+            colorPickerContainer.cornerRadius = 5;
+            colorPickerContainer.thickness = 1;
+            colorPickerContainer.color = 'black';
+            colorPickerContainer.background =  "white";
+            colorPickerContainer.paddingRight = '10px'
+            colorPickerContainer.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+            colorPickerContainer.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
+
+        var colorPickerPanel = new BABYLON.GUI.StackPanel();
+            colorPickerPanel.fontSize = "14px";
+            colorPickerPanel.width = "150px";
+            colorPickerPanel.color = 'black';
+            colorPickerPanel.background =  "white";
+
+
+        //////  Add title
+        var title = new BABYLON.GUI.TextBlock();
+            title.text = "Color Picker";
+            title.color = "black";
+            title.fontSize = 20;
+            title.height = '20px';
+
+        colorPickerPanel.addControl(title);
+
+
+        ////// Add original/new color selections
+
+        let colorGrid = new BABYLON.GUI.Grid();
+            colorGrid.addRowDefinition(25,true);
+            colorGrid.addRowDefinition(25,true);
+            colorGrid.addColumnDefinition(.5);
+            colorGrid.addColumnDefinition(.5);
+            colorGrid.height = '50px';
+        colorPickerPanel.addControl(colorGrid);
+
+        var originalTitle = new BABYLON.GUI.TextBlock();
+            originalTitle.text = "Original";
+            originalTitle.color = "black";
+            originalTitle.fontSize = 10;
+            originalTitle.height = '15px';
+
+        colorGrid.addControl(originalTitle,0,0);
+
+        var newTitle = new BABYLON.GUI.TextBlock();
+            newTitle.text = "New";
+            newTitle.color = "black";
+            newTitle.fontSize = 10;
+            newTitle.height = '15px';
+
+        colorGrid.addControl(newTitle,0,1);
+
+        let originalColor = new BABYLON.GUI.Rectangle();
+            originalColor.background = original.toHexString();
+            originalColor.thickness = 1;
+            originalColor.cornerRadius = 5;
+            originalColor.color = "black";
+            originalColor.width = '60px';
+            originalColor.height = '25px';
+
+        colorGrid.addControl(originalColor, 1,0);
+
+        var newColor = new BABYLON.GUI.Rectangle();
+            newColor.background = original.toHexString();
+            newColor.thickness = 1;
+            newColor.cornerRadius = 5;
+            newColor.color = "black";
+            newColor.width = '60px';
+            newColor.height = '25px';
+
+        colorGrid.addControl(newColor, 1,1);
+
+
+        //////  Add picker
+
+        var pickerContainer = new BABYLON.GUI.Rectangle();
+            pickerContainer.width = '110px';
+            pickerContainer.height= '120px';
+
         var picker = new BABYLON.GUI.ColorPicker();
-            picker.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-            picker.value = object.material.diffuseColor;
+            picker.value = original;
             picker.height = "100px";
             picker.width = "100px";
             picker.onValueChangedObservable.add(function(value) { // value is a color3
                 object.material.diffuseColor = value;
-                // console.log(value);
+                newColor.background = value.toHexString();
+                // newColor.background = '#FFFF00';
+                console.log(value.toHexString());
             });    
-        panel3.addControl(picker);  
+        
+        pickerContainer.addControl(picker);
+        colorPickerPanel.addControl(pickerContainer);  
 
-        let buttonGeneric = BABYLON.GUI.Button.CreateSimpleButton('cgeneric button', 'Apply Color');
-        formatButton(buttonGeneric);
-        // buttonGeneric.onPointerUpObservable.add(()=>{this.advancedTexture.removeControl(panelLabelOptions)});
-        panel3.addControl(buttonGeneric); 
+        //////  Add buttons
 
-        let buttonGeneric2 = BABYLON.GUI.Button.CreateSimpleButton('cgeneric button', 'Cancel');
-        formatButton(buttonGeneric2);
-        // buttonGeneric2.onPointerUpObservable.add(()=>{this.advancedTexture.removeControl(panelLabelOptions)});
-        panel3.addControl(buttonGeneric2); 
+        let buttonGrid = new BABYLON.GUI.Grid();
+            buttonGrid.addColumnDefinition(.5);
+            buttonGrid.addColumnDefinition(.5);
+            buttonGrid.height = '30px';
+        colorPickerPanel.addControl(buttonGrid);
+
+        let buttonApply = BABYLON.GUI.Button.CreateSimpleButton('cgeneric button', 'Apply Color');
+            formatButton(buttonApply);
+            buttonApply.width = '60px';
+            buttonApply.onPointerUpObservable.add(()=>{
+                this.advancedTexture.removeControl(colorPickerContainer);
+            });
+        buttonGrid.addControl(buttonApply,0,0); 
+    
+        let buttonCancel = BABYLON.GUI.Button.CreateSimpleButton('cgeneric button', 'Cancel');
+            formatButton(buttonCancel);
+            buttonCancel.width = '60px';
+            buttonCancel.onPointerUpObservable.add(()=>{
+                object.material.diffuseColor = original;
+                this.advancedTexture.removeControl(colorPickerContainer)
+            });
+        buttonGrid.addControl(buttonCancel,0,1); 
+        
+        colorPickerContainer.addControl(colorPickerPanel);
+        this.advancedTexture.addControl(colorPickerContainer);   
     }
 
     create2DLabel(mesh, index, options) {

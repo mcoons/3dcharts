@@ -20,12 +20,13 @@
 //      Implement Scene Save/Load/Add to presentation
 //      Implement glowing materials
 //
-//      Add 2D details panel
-//      Add bar value normalization/remap to default width/height
-//      Add Scales/Axis options - WORKING ON IT
-//      Add horitontal and vertical bars option
-//      Add background - image/color
-//      Add logo placement
+//      Implement Glow/Selection on hover
+//      Implement 2D data details panel
+//      Implement bar value normalization/remap to default width/height
+//      Implement Scales/Axis options - WORKING ON IT
+//      Implement horitontal and vertical bars option
+//      Implement background - image/color
+//      Implement logo placement
 //
 //      Server side with database?
 //      User accounts?
@@ -49,7 +50,6 @@
 //                  lowerAlphaLimit
 //                  lowerBetaLimit
 //                  lowerRadiusLimit
-
 //                  Lock/Unlock Camera
 //
 //              Lighting and effects
@@ -114,26 +114,6 @@ class Chart {   // Base Chart Class
         this.labels2D = [];
         this.objects = [];
 
-        // let sampleOptions = {
-        //     id: 'bar1',          // required - id of canvas element to use
-        //     data: dataSet        // required - array of data objects     { label: "July", value: 100 }
-            
-        //     ///////////////////////
-        //     // optional settings //
-        //     ///////////////////////
-        
-        //     ,width: 500          // <default 300>
-        //     ,height: 300         // <default 200>
-        //     ,shadows: false      // <default false>
-        //     ,round: false        // <default false>
-        //     ,depth: .25          // <default .25 >
-        //     ,logo: 'logo.png'
-        
-        //     // ,groundColor
-        //     // ,cameraDistance
-        //     // ,introAnimation
-        // }
-
         let sampleOptions = {
             type:'bar',
             id: 'bar1',     // required - id of canvas element to use
@@ -177,9 +157,9 @@ class Chart {   // Base Chart Class
             }
         }
 
-       this.canvas = document.getElementById(this.options.id);
-       this.canvas.width = this.options.width ? this.options.width : 300;
-       this.canvas.height = this.options.height ? this.options.height : 200;
+        this.canvas = document.getElementById(this.options.id);
+        this.canvas.width = this.options.width ? this.options.width : 300;
+        this.canvas.height = this.options.height ? this.options.height : 200;
 
         this.engine = new BABYLON.Engine(this.canvas, true, { 
             preserveDrawingBuffer: true, stencil: true 
@@ -267,9 +247,14 @@ class Chart {   // Base Chart Class
         // if (this.options.){
         // }
 
-        let plane0;
 
-            //Create back plane
+
+        if (this.options.cameraSpeed){
+            camera.speed = this.options.cameraSpeed;
+        }
+
+        //Create back plane
+        let plane0;
         if (this.options.backPlane){
             plane0 = BABYLON.MeshBuilder.CreatePlane("plane", {width:20, height:20}, scene);
             plane0.position.y = 10;
@@ -630,7 +615,6 @@ class BarChart extends Chart {
         bar.userData = {};
         bar.userData.myOptions = options;
 
-
         if (this.options.shadows){
             this.shadowGenerator.getShadowMap().renderList.push(bar);
         }
@@ -732,6 +716,7 @@ let barChart = new BarChart({
     ,verticalLabels: false
     ,transparent: false
     ,showScale: true
+    ,cameraSpeed: .25
 
 
     // ground color
@@ -794,7 +779,8 @@ let barChart3 = new BarChart({
     horizontalLabels:true,
     verticalLabels: false,
     transparent: true,
-    showScale: false
+    showScale: false,
+    cameraSpeed: 1
 
 
     // ground color
@@ -826,7 +812,8 @@ let barChart4 = new BarChart({
     horizontalLabels:false,
     verticalLabels: true,
     transparent: true,
-    showScale: false
+    showScale: false,
+    cameraSpeed: 10
 
 
     // ground color
@@ -844,8 +831,8 @@ let pieChart = new PieChart({
     // optional settings //
     ///////////////////////
 
-    width: 400,     // <default 300>
-    height: 400,    // <default 200>
+    width: 150,     // <default 300>
+    height: 150,    // <default 200>
     shadows: true,  // <default false>
     label2D: false,
     tansparent: false,
