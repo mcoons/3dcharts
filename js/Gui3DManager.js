@@ -1,7 +1,7 @@
 class Gui3DManager {
 
     constructor(scene, elements, options){
-        console.log('In gui3D constructor');
+        // console.log('In gui3D constructor');
 
         this.create3dGroundLabels(scene, elements, options); 
 
@@ -14,7 +14,7 @@ class Gui3DManager {
 
 
     create3dGroundLabels (scene, elements, options){
-        console.log(elements);
+        // console.log(elements);
 
         if (elements.length > 0)
         elements.forEach(element => {
@@ -58,9 +58,9 @@ class Gui3DManager {
             var mat = new BABYLON.StandardMaterial("mat", scene);
             mat.diffuseTexture = dynamicTexture;
             
-            if (options.transparent){
-                mat.alpha = 0.5;
-            }
+            // if (options.transparent){
+            //     mat.alpha = 0.5;
+            // }
            
             if (options.coloredLabels)
                 mat.diffuseColor = element.material.diffuseColor;

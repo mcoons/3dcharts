@@ -1,29 +1,31 @@
 // This is a canvas based class to support charts
 //
 // TODO: 
+//      Implement GUI as classes Gui2d and Gui3D - DONE!!
+//      Implement file download - DONE!!!
+//
+//      Implement Scales/Axis options - WORKING ON IT
+//      Implement bar value normalization/remap to default width/height
+//      Implement Options menu - WORKING ON IT
+//      Implement palette options - WORKING ON IT
+//      Implement custom colors
+//
 //      Implement state
 //      Implement defaults
 //      Implement storage class - save/load state - local browser/server database?
-//      Implement GUI as classes Gui2d and Gui3D - DONE!!
 //      Implement help system - include feedback/question/request option per panel
 //      Implement data input/fetch
 //  
-//      Implement Options menu - WORKING ON IT
 //      Implement Object/Label menu
 //      Implement Drill Down Data Detail system
 //      Implement series
-//      Implement palette options - WORKING ON IT
-//      Implement custom colors
-//      Implement file download - DONE!!!
 //      Implement saveable frames perhaps animated for a moving presentation
 //      Implement camera dolly system
 //      Implement Scene Save/Load/Add to presentation
-//      Implement glowing materials
 //
+//      Implement glowing materials
 //      Implement Glow/Selection on hover
 //      Implement 2D data details panel
-//      Implement bar value normalization/remap to default width/height
-//      Implement Scales/Axis options - WORKING ON IT
 //      Implement horitontal and vertical bars option
 //      Implement background - image/color
 //      Implement logo placement
@@ -174,6 +176,8 @@ class Chart {   // Base Chart Class
         this.buildCustomMaterials.bind(this);
         this.customMaterials = this.buildCustomMaterials();
 
+        this.panelDisplayed = false;
+
         
         // this.lastFrameTime = Date.now();
         // this.frameTimes = [];
@@ -208,6 +212,7 @@ class Chart {   // Base Chart Class
     createScene(canvas) {
 
         let scene = new BABYLON.Scene(this.engine);
+            // scene.debugLayer.show();
             scene.clearColor = new BABYLON.Color3(1, 1, 1); 
 
         let light0 = new BABYLON.HemisphericLight("hemi", new BABYLON.Vector3(100, 100, 20), scene);
@@ -223,8 +228,20 @@ class Chart {   // Base Chart Class
             
         if (this.options.cameraFirstPerson){
             camera = new BABYLON.UniversalCamera("UniversalCamera", new BABYLON.Vector3(0, 0, -18), scene);
+
+            if (this.options.ucCameraSpeed) camera.speed = this.options.ucCameraSpeed;
+
+            if (this.options.ucCameraRotX) camera.rotation.x = this.options.ucCameraRotX;
+            if (this.options.ucCameraRotY) camera.rotation.y = this.options.ucCameraRotY;
+            if (this.options.ucCameraRotZ) camera.rotation.z = this.options.ucCameraRotZ;
+
+            if (this.options.ucCameraPosX) camera.position.x = this.options.ucCameraPosX;
+            if (this.options.ucCameraPosY) camera.position.y = this.options.ucCameraPosY;
+            if (this.options.ucCameraPosZ) camera.position.z = this.options.ucCameraPosZ;
+
         } else {
             camera = new BABYLON.ArcRotateCamera("Camera", 3*Math.PI/2, .8, 18, new BABYLON.Vector3(0, 0, 0), scene);
+
             camera.lowerRadiusLimit = 5;
             camera.upperRadiusLimit = 40;
             camera.lowerAlphaLimit = Math.PI;
@@ -235,6 +252,14 @@ class Chart {   // Base Chart Class
         
         scene.activeCamera.attachControl(canvas);
 
+        var pipeline = new BABYLON.DefaultRenderingPipeline(
+            "default", // The name of the pipeline
+            false, // Do you want HDR textures ?
+            scene, // The scene instance
+            [camera] // The list of cameras to be attached to
+        );
+
+        pipeline.samples = 8;
 
         // apply scene options here
 
@@ -499,21 +524,21 @@ class PieChart extends Chart {
             slice.material = options.mat;
             slice.rotation.y = options.startRotation; // rotation location in pie
             // slice.visibility = .75;
-            slice.userData = {};
-            slice.userData.test1 = 'testing123';
-            slice.userData.test2 = 'testing321';
-            slice.userData.test3 = 'testingxyz';
-            slice.userData.test4 = 100;
-            slice.userData.test5 = slice.material;
-            slice.userData.test6 = 100.000001;
+            // slice.userData = {};
+            // slice.userData.test1 = 'testing123';
+            // slice.userData.test2 = 'testing321';
+            // slice.userData.test3 = 'testingxyz';
+            // slice.userData.test4 = 100;
+            // slice.userData.test5 = slice.material;
+            // slice.userData.test6 = 100.000001;
             slice.userData = {};
             slice.userData.myOptions = options;
             
             /////// Add Actions
-            slice.actionManager = new BABYLON.ActionManager(options.graph);
-        
+            
             var basePosition = slice.position; 
-
+            
+            slice.actionManager = new BABYLON.ActionManager(options.graph);
         slice.actionManager
         .registerAction(
             new BABYLON.InterpolateValueAction(
@@ -525,7 +550,7 @@ class PieChart extends Chart {
             )
         ).then(
             new BABYLON.InterpolateValueAction(
-                BABYLON.ActionManager.OnPointerOutTrigger,
+                BABYLON.ActionManager.NothingTrigger,
                 slice,
                 'position',
                 basePosition,
@@ -615,6 +640,42 @@ class BarChart extends Chart {
         bar.userData = {};
         bar.userData.myOptions = options;
 
+        // BABYLON.ExecuteCodeAction(trigger, func, condition): Executes code.
+
+        // OnLeftPickTrigger, OnRightPickTrigger, OnPointerOverTrigger, OnPointerOutTrigger
+
+        bar.actionManager = new BABYLON.ActionManager(options.graph);
+        bar.actionManager
+        .registerAction(
+            new BABYLON.ExecuteCodeAction(
+                BABYLON.ActionManager.OnLeftPickTrigger,
+                ()=>{console.log('left clicked ' + bar.name)})
+            );
+
+        bar.actionManager
+        .registerAction(
+            new BABYLON.ExecuteCodeAction(
+                BABYLON.ActionManager.OnRightPickTrigger,
+                // ()=>{console.log(' right clicked ' + bar.name + ' at ' + this.scene.pointerX + ',' +this.scene.pointerY); this.gui2D.panelPickObjectColor(bar) })
+                ()=>{this.gui2D.menuObjectOptions(bar, this.scene.pointerX,this.scene.pointerY)})
+            );
+
+        bar.actionManager
+        .registerAction(
+            new BABYLON.ExecuteCodeAction(
+                BABYLON.ActionManager.OnPointerOverTrigger,
+                ()=>{console.log('hovering over ' + bar.name)})
+            );
+                        
+        bar.actionManager
+        .registerAction(
+            new BABYLON.ExecuteCodeAction(
+                BABYLON.ActionManager.OnPointerOutTrigger,
+                ()=>{console.log('stopped hovering over ' + bar.name)})
+            );
+                            
+            
+
         if (this.options.shadows){
             this.shadowGenerator.getShadowMap().renderList.push(bar);
         }
@@ -695,14 +756,15 @@ for (let index = 1; index <= 12; index++) { dataSet.push({label: months[index].l
 let barChart = new BarChart({
     type:'bar',
     id: 'bar1',     // required - id of canvas element to use
-    data: dataSet   // required - array of data objects     { label: "July", value: 100 }
-    
+    data: dataSet,   // required - array of data objects     { label: "July", value: 100 }
+    yLabel: 'Month',
+    xLabel: 'Income'
     ///////////////////////
     // optional settings //
     ///////////////////////
 
-    ,width: 800     // <default 300>
-    ,height: 500    // <default 200>
+    ,width: 600     // <default 300>
+    ,height: 400    // <default 200>
     // ,shadows: false   // <default false>
     ,round: false    // <default false>
     ,depth: .6       // <default .25 >
@@ -714,9 +776,17 @@ let barChart = new BarChart({
     ,backPlane: true
     ,horizontalLabels:true
     ,verticalLabels: false
-    ,transparent: false
+    ,transparent: true
     ,showScale: true
-    ,cameraSpeed: .25
+
+    ,ucCameraSpeed: .25
+    ,ucCameraRotX: .1
+    ,ucCameraRotY: .9
+    ,ucCameraRotZ: 0
+    ,ucCameraPosX: -13
+    ,ucCameraPosY: 4
+    ,ucCameraPosZ: -10
+    
 
 
     // ground color
@@ -733,8 +803,8 @@ let barChart2 = new BarChart({
     // optional settings //
     ///////////////////////
 
-    width: 800,     // <default 300>
-    height: 500,    // <default 200>
+    width: 300,     // <default 300>
+    height: 200,    // <default 200>
     shadows: true,   // <default false>
     round: true,     // <default false>
     depth: 1,        // <default .25 >
@@ -757,92 +827,92 @@ let barChart2 = new BarChart({
 } );
 
 
-let barChart3 = new BarChart({
-    id: 'bar3',     // required - id of canvas element to use
-    data: dataSet, // required - array of data objects     { label: "July", value: 100 }
+// let barChart3 = new BarChart({
+//     id: 'bar3',     // required - id of canvas element to use
+//     data: dataSet, // required - array of data objects     { label: "July", value: 100 }
 
-    ///////////////////////
-    // optional settings //
-    ///////////////////////
+//     ///////////////////////
+//     // optional settings //
+//     ///////////////////////
 
-    width: 600,     // <default 300>
-    height: 250,    // <default 200>
-    shadows: true,   // <default false>
-    round: false,     // <default false>
-    depth: 1.35,        // <default .25 >
-    // logo: 'logo.png',
-    label2D: false,
-    coloredLabels: true,
-    ground: true,
-    cameraFirstPerson: false,
-    backPlane: true,
-    horizontalLabels:true,
-    verticalLabels: false,
-    transparent: true,
-    showScale: false,
-    cameraSpeed: 1
-
-
-    // ground color
-    // camera distance
-    // intro animation
-
-} );
+//     width: 600,     // <default 300>
+//     height: 250,    // <default 200>
+//     shadows: true,   // <default false>
+//     round: false,     // <default false>
+//     depth: 1.35,        // <default .25 >
+//     // logo: 'logo.png',
+//     label2D: false,
+//     coloredLabels: true,
+//     ground: true,
+//     cameraFirstPerson: false,
+//     backPlane: true,
+//     horizontalLabels:true,
+//     verticalLabels: false,
+//     transparent: true,
+//     showScale: false,
+//     cameraSpeed: 1
 
 
-let barChart4 = new BarChart({
-    id: 'bar4',     // required - id of canvas element to use
-    data: dataSet, // required - array of data objects     { label: "July", value: 100 }
+//     // ground color
+//     // camera distance
+//     // intro animation
 
-    ///////////////////////
-    // optional settings //
-    ///////////////////////
-
-    width: 600,     // <default 300>
-    height: 250,    // <default 200>
-    shadows: true,   // <default false>
-    round: true,     // <default false>
-    depth: 1,        // <default .25 >
-    // logo: 'logo.png',
-    label2D: false,
-    coloredLabels: true,
-    ground: false,
-    cameraFirstPerson: false,
-    backplane: false,
-    horizontalLabels:false,
-    verticalLabels: true,
-    transparent: true,
-    showScale: false,
-    cameraSpeed: 10
+// } );
 
 
-    // ground color
-    // camera distance
-    // intro animation
+// let barChart4 = new BarChart({
+//     id: 'bar4',     // required - id of canvas element to use
+//     data: dataSet, // required - array of data objects     { label: "July", value: 100 }
 
-} );
+//     ///////////////////////
+//     // optional settings //
+//     ///////////////////////
+
+//     width: 600,     // <default 300>
+//     height: 250,    // <default 200>
+//     shadows: true,   // <default false>
+//     round: true,     // <default false>
+//     depth: 1,        // <default .25 >
+//     // logo: 'logo.png',
+//     label2D: false,
+//     coloredLabels: true,
+//     ground: false,
+//     cameraFirstPerson: false,
+//     backplane: false,
+//     horizontalLabels:false,
+//     verticalLabels: true,
+//     transparent: true,
+//     showScale: false,
+//     cameraSpeed: 10
 
 
-let pieChart = new PieChart({
-    id: 'pie',     // required - id of canvas element to use
-    data: dataSet, // required - array of data objects     { label: "July", value: 100 }
+//     // ground color
+//     // camera distance
+//     // intro animation
 
-    ///////////////////////
-    // optional settings //
-    ///////////////////////
+// } );
 
-    width: 150,     // <default 300>
-    height: 150,    // <default 200>
-    shadows: true,  // <default false>
-    label2D: false,
-    tansparent: false,
-    showScale: false
 
-    // ground color
-    // camera distance
-    // intro animation
+// let pieChart = new PieChart({
+//     id: 'pie',     // required - id of canvas element to use
+//     data: dataSet, // required - array of data objects     { label: "July", value: 100 }
 
-} );
+//     ///////////////////////
+//     // optional settings //
+//     ///////////////////////
+
+//     width: 450,     // <default 300>
+//     height: 450,    // <default 200>
+//     shadows: true,  // <default false>
+//     label2D: false,
+//     tansparent: false,
+//     showScale: false
+
+//     // ground color
+//     // camera distance
+//     // intro animation
+
+// } );
 
 // let lineChart = new LineChart({
 //     id: 'line',     // required - id of canvas element to use
