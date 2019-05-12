@@ -57,11 +57,13 @@ class Gui3DManager {
             //create material
             var mat = new BABYLON.StandardMaterial("mat", scene);
             mat.diffuseTexture = dynamicTexture;
+            mat.opacityTexture = dynamicTexture;
             
             // if (options.transparent){
             //     mat.alpha = 0.5;
             // }
            
+
             if (options.coloredLabels)
                 mat.diffuseColor = element.material.diffuseColor;
 

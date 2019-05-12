@@ -5,13 +5,11 @@ class Gui2DManager {
 
         this.mouseCanvasX = 0;
         this.mouseCanvasY = 0;
-        
 
         this.parentThis.canvas.addEventListener('mousemove', (evt) => {
             var mousePos = getMousePos(this.parentThis.canvas, evt);
             this.mouseCanvasX = mousePos.x;
             this.mouseCanvasY = mousePos.y;
-            // console.log('Mouse position: ' + mousePos.x + ',' + mousePos.y);
           }, false);
 
         this.advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
@@ -25,16 +23,15 @@ class Gui2DManager {
         this.panelPickObjectColor.bind(this);
         // this.panelPickObjectColor(this.parentThis.objects[3]);
 
-    }
+    };
 
     initializeGUIMenu(){
 
         this.panelOptionsContainer = new BABYLON.GUI.Rectangle();
         this.panelOptionsContainer.name = 'Options Menu';
         // formatMenuPanel(this.panelOptionsContainer);
-        this.panelOptionsContainer.width = "120px";
-        this.panelOptionsContainer.height = "150px";
-        this.panelOptionsContainer.cornerRadius = 10;
+        // this.panelOptionsContainer.height = "150px";
+        this.panelOptionsContainer.cornerRadius = 5;
         this.panelOptionsContainer.thickness = 1;
         this.panelOptionsContainer.color = 'black';
         this.panelOptionsContainer.background = "lightgray";
@@ -42,12 +39,12 @@ class Gui2DManager {
         this.panelOptionsContainer.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
 
         this.panelOptionsContainer.height= '5px';
-        this.panelOptionsContainer.width= '120px';
+        this.panelOptionsContainer.width= '80px';
         // this.panelOptionsContainer.paddingLeft = '10px';
         // this.panelOptionsContainer.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
         // this.panelOptionsContainer.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
         this.panelOptionsContainer.isPointerBlock = true;
-        this.panelOptionsContainer.onPointerEnterObservable.add(()=>{this.panelOptionsContainer.height= '95px'})
+        this.panelOptionsContainer.onPointerEnterObservable.add(()=>{this.panelOptionsContainer.height= '75px'})
         this.panelOptionsContainer.onPointerOutObservable.add(()=>{this.panelOptionsContainer.height= '5px'})
 
         this.advancedTexture.addControl(this.panelOptionsContainer);   
@@ -58,12 +55,12 @@ class Gui2DManager {
             panelOptions.isPointerBlock = true;
         this.panelOptionsContainer.addControl(panelOptions)
 
-        let buttonSceneOptions = BABYLON.GUI.Button.CreateSimpleButton("scene options button", "Scene Options");
+        let buttonSceneOptions = BABYLON.GUI.Button.CreateSimpleButton("scene options button", "Scene");
         formatButton(buttonSceneOptions);
         buttonSceneOptions.onPointerUpObservable.add(this.menuSceneOptions.bind(this));
         panelOptions.addControl(buttonSceneOptions);  
 
-        let buttonGraphOptions = BABYLON.GUI.Button.CreateSimpleButton("graph options button", "Graph Options");
+        let buttonGraphOptions = BABYLON.GUI.Button.CreateSimpleButton("graph options button", "Graph");
         formatButton(buttonGraphOptions);
         buttonGraphOptions.onPointerUpObservable.add(this.menuGraphOptions.bind(this));
         panelOptions.addControl(buttonGraphOptions);  
@@ -77,40 +74,6 @@ class Gui2DManager {
      }  //  end initializeGUIMenu method
 
 /////////////////////////////////
-
-
-
-    buildMenu(){
-        let menuOptions = [
-        
-        ]
-
-        let panelContainer = new BABYLON.GUI.StackPanel();
-        panelContainer.adaptWidthToChildren = true;
-        panelContainer.adaptHeightToChildren = true;
-        
-        panelContainer = new BABYLON.GUI.Rectangle();
-        // panelContainer.name = 'Options Menu';
-        // formatMenuPanel(panelContainer);
-        // panelContainer.width = "120px";
-        // panelContainer.height = "150px";
-        panelContainer.cornerRadius = 10;
-        panelContainer.thickness = 1;
-        panelContainer.color = 'black';
-        panelContainer.background = "lightgray";
-
-        panelContainer.adaptWidthToChildren = true;
-        panelContainer.adaptHeightToChildren = true;
-
-        this.advancedTexture.addControl(panelContainer);   
-
-
-        let buttonCameraOptions = BABYLON.GUI.Button.CreateSimpleButton('camera options button', 'Camera');
-        formatButton(buttonCameraOptions);
-        buttonCameraOptions.onPointerUpObservable.add(this.menuCameraOptions.bind(this));
-        panelContainer.addControl(buttonCameraOptions);  
-
-    }
 
     menuSceneOptions(){
 
@@ -155,11 +118,11 @@ class Gui2DManager {
 
         let speed = this.parentThis.scene.cameras[0].speed;
         var header = new BABYLON.GUI.TextBlock();
-        header.text = "Camera Speed: " + speed;
-        header.height = "18px";
+        header.text = "Speed: " + speed;
+        header.height = "20px";
         header.color = "white";
         header.color    =  "black";
-        header.fontSize =  10;
+        header.fontSize =  8;
         panelCameraOptions.addControl(header); 
     
         var slider = new BABYLON.GUI.Slider();
@@ -170,12 +133,13 @@ class Gui2DManager {
 
         slider.thumbWidth = '15px';        
         slider.thumbHeight = '15px';
+        slider.isThumbCircle = true;
 
         slider.height = "12px";
-        slider.width = "100px";
+        slider.width = "60px";
 
         slider.onValueChangedObservable.add((value) => {
-            header.text = "Camera Speed: " + value;
+            header.text = "Speed: " + value;
             this.parentThis.scene.cameras[0].speed = value
         });
         panelCameraOptions.addControl(slider);    
@@ -185,22 +149,17 @@ class Gui2DManager {
 
 
 
-        let positioning = BABYLON.GUI.Button.CreateSimpleButton('positioning options button', 'Position Camera');
+        let positioning = BABYLON.GUI.Button.CreateSimpleButton('positioning options button', 'Position');
         formatButton(positioning);
         // positioning.onPointerUpObservable.add(()=>{this.advancedTexture.removeControl(panelCameraOptions)});
         panelCameraOptions.addControl(positioning); 
 
-        let cameraType = BABYLON.GUI.Button.CreateSimpleButton('camera type  button', 'Camera Target');
+        let cameraType = BABYLON.GUI.Button.CreateSimpleButton('camera type  button', 'Target');
         formatButton(cameraType);
         // cameraType.onPointerUpObservable.add(()=>{this.advancedTexture.removeControl(panelCameraOptions)});
         panelCameraOptions.addControl(cameraType); 
 
-        // let buttonGeneric = BABYLON.GUI.Button.CreateSimpleButton('generic button', 'Field of View');
-        // formatButton(buttonGeneric);
-        // // buttonGeneric.onPointerUpObservable.add(()=>{this.advancedTexture.removeControl(panelCameraOptions)});
-        // panelCameraOptions.addControl(buttonGeneric); 
-
-        let buttonGeneric2 = BABYLON.GUI.Button.CreateSimpleButton('generic button', 'Lock Camera');
+        let buttonGeneric2 = BABYLON.GUI.Button.CreateSimpleButton('generic button', 'Lock');
         formatButton(buttonGeneric2);
         // buttonGeneric2.onPointerUpObservable.add(()=>{this.advancedTexture.removeControl(panelCameraOptions)});
         panelCameraOptions.addControl(buttonGeneric2); 
@@ -230,15 +189,16 @@ class Gui2DManager {
     
         var slider = new BABYLON.GUI.Slider();
         slider.minimum = 0;
-        slider.maximum = 2;
-        slider.value = 1;
+        slider.maximum = 1;
+        slider.value = .5;
         slider.step = .1;
 
         slider.thumbWidth = '15px';        
         slider.thumbHeight = '15px';
+        slider.isThumbCircle = true;
 
         slider.height = "12px";
-        slider.width = "100px";
+        slider.width = "60px";
 
         slider.onValueChangedObservable.add((value) => {
             header.text = "Brightness: " + value +'x';
@@ -253,17 +213,17 @@ class Gui2DManager {
 
 
 
-        let buttonGeneric = BABYLON.GUI.Button.CreateSimpleButton('generic button', 'Generic Temp');
+        let buttonGeneric = BABYLON.GUI.Button.CreateSimpleButton('generic button', '***');
         formatButton(buttonGeneric);
         // buttonGeneric.onPointerUpObservable.add(()=>{this.advancedTexture.removeControl(panelLightOptions)});
         panelLightOptions.addControl(buttonGeneric); 
 
-        let buttonGeneric2 = BABYLON.GUI.Button.CreateSimpleButton('generic button', 'Generic Temp');
+        let buttonGeneric2 = BABYLON.GUI.Button.CreateSimpleButton('generic button', '***');
         formatButton(buttonGeneric2);
         // buttonGeneric2.onPointerUpObservable.add(()=>{this.advancedTexture.removeControl(panelLightOptions)});
         panelLightOptions.addControl(buttonGeneric2); 
 
-        let buttonGeneric3 = BABYLON.GUI.Button.CreateSimpleButton('generic button', 'Generic Temp');
+        let buttonGeneric3 = BABYLON.GUI.Button.CreateSimpleButton('generic button', '***');
         formatButton(buttonGeneric3);
         // buttonGeneric3.onPointerUpObservable.add(()=>{this.advancedTexture.removeControl(panelLightOptions)});
         panelLightOptions.addControl(buttonGeneric3); 
@@ -281,22 +241,22 @@ class Gui2DManager {
         formatMenuPanel(panelGroundOptions);
         this.advancedTexture.addControl(panelGroundOptions);  
 
-        let buttonGeneric = BABYLON.GUI.Button.CreateSimpleButton('generic button', 'Generic Temp');
+        let buttonGeneric = BABYLON.GUI.Button.CreateSimpleButton('generic button', '***');
         formatButton(buttonGeneric);
         // buttonGeneric.onPointerUpObservable.add(()=>{this.advancedTexture.removeControl(panelGroundOptions)});
         panelGroundOptions.addControl(buttonGeneric); 
 
-        let buttonGeneric2 = BABYLON.GUI.Button.CreateSimpleButton('generic button', 'Generic Temp');
+        let buttonGeneric2 = BABYLON.GUI.Button.CreateSimpleButton('generic button', '***');
         formatButton(buttonGeneric2);
         // buttonGeneric2.onPointerUpObservable.add(()=>{this.advancedTexture.removeControl(panelGroundOptions)});
         panelGroundOptions.addControl(buttonGeneric2); 
 
-        let buttonGeneric3 = BABYLON.GUI.Button.CreateSimpleButton('generic button', 'Generic Temp');
+        let buttonGeneric3 = BABYLON.GUI.Button.CreateSimpleButton('generic button', '***');
         formatButton(buttonGeneric3);
         // buttonGeneric3.onPointerUpObservable.add(()=>{this.advancedTexture.removeControl(panelGroundOptions)});
         panelGroundOptions.addControl(buttonGeneric3); 
 
-        let buttonGeneric4 = BABYLON.GUI.Button.CreateSimpleButton('generic button', 'Generic Temp');
+        let buttonGeneric4 = BABYLON.GUI.Button.CreateSimpleButton('generic button', '***');
         formatButton(buttonGeneric4);
         // buttonGeneric4.onPointerUpObservable.add(()=>{this.advancedTexture.removeControl(panelGroundOptions)});
         panelGroundOptions.addControl(buttonGeneric4); 
@@ -314,22 +274,22 @@ class Gui2DManager {
         formatMenuPanel(panelBackgroundOptions);
         this.advancedTexture.addControl(panelBackgroundOptions);  
 
-        let buttonGeneric = BABYLON.GUI.Button.CreateSimpleButton('generic button', 'Generic Temp');
+        let buttonGeneric = BABYLON.GUI.Button.CreateSimpleButton('generic button', '***');
         formatButton(buttonGeneric);
         // buttonGeneric.onPointerUpObservable.add(()=>{this.advancedTexture.removeControl(panelBackgroundOptions)});
         panelBackgroundOptions.addControl(buttonGeneric); 
 
-        let buttonGeneric2 = BABYLON.GUI.Button.CreateSimpleButton('generic button', 'Generic Temp');
+        let buttonGeneric2 = BABYLON.GUI.Button.CreateSimpleButton('generic button', '***');
         formatButton(buttonGeneric2);
         // buttonGeneric2.onPointerUpObservable.add(()=>{this.advancedTexture.removeControl(panelBackgroundOptions)});
         panelBackgroundOptions.addControl(buttonGeneric2); 
 
-        let buttonGeneric3 = BABYLON.GUI.Button.CreateSimpleButton('generic button', 'Generic Temp');
+        let buttonGeneric3 = BABYLON.GUI.Button.CreateSimpleButton('generic button', '***');
         formatButton(buttonGeneric3);
         // buttonGeneric3.onPointerUpObservable.add(()=>{this.advancedTexture.removeControl(panelBackgroundOptions)});
         panelBackgroundOptions.addControl(buttonGeneric3); 
 
-        let buttonGeneric4 = BABYLON.GUI.Button.CreateSimpleButton('generic button', 'Generic Temp');
+        let buttonGeneric4 = BABYLON.GUI.Button.CreateSimpleButton('generic button', '***');
         formatButton(buttonGeneric4);
         // buttonGeneric4.onPointerUpObservable.add(()=>{this.advancedTexture.removeControl(panelBackgroundOptions)});
         panelBackgroundOptions.addControl(buttonGeneric4); 
@@ -382,22 +342,22 @@ class Gui2DManager {
         formatMenuPanel(panelTitleOptions);
         this.advancedTexture.addControl(panelTitleOptions);  
 
-        let buttonGeneric = BABYLON.GUI.Button.CreateSimpleButton('generic button', 'Generic Temp');
+        let buttonGeneric = BABYLON.GUI.Button.CreateSimpleButton('generic button', '***');
         formatButton(buttonGeneric);
         // buttonGeneric.onPointerUpObservable.add(()=>{this.advancedTexture.removeControl(panelTitleOptions)});
         panelTitleOptions.addControl(buttonGeneric); 
 
-        let buttonGeneric2 = BABYLON.GUI.Button.CreateSimpleButton('generic button', 'Generic Temp');
+        let buttonGeneric2 = BABYLON.GUI.Button.CreateSimpleButton('generic button', '***');
         formatButton(buttonGeneric2);
         // buttonGeneric2.onPointerUpObservable.add(()=>{this.advancedTexture.removeControl(panelTitleOptions)});
         panelTitleOptions.addControl(buttonGeneric2); 
 
-        let buttonGeneric3 = BABYLON.GUI.Button.CreateSimpleButton('generic button', 'Generic Temp');
+        let buttonGeneric3 = BABYLON.GUI.Button.CreateSimpleButton('generic button', '***');
         formatButton(buttonGeneric3);
         // buttonGeneric3.onPointerUpObservable.add(()=>{this.advancedTexture.removeControl(panelTitleOptions)});
         panelTitleOptions.addControl(buttonGeneric3); 
 
-        let buttonGeneric4 = BABYLON.GUI.Button.CreateSimpleButton('generic button', 'Generic Temp');
+        let buttonGeneric4 = BABYLON.GUI.Button.CreateSimpleButton('generic button', '***');
         formatButton(buttonGeneric4);
         // buttonGeneric4.onPointerUpObservable.add(()=>{this.advancedTexture.removeControl(panelTitleOptions)});
         panelTitleOptions.addControl(buttonGeneric4); 
@@ -415,22 +375,22 @@ class Gui2DManager {
         formatMenuPanel(panelGraphType);
         this.advancedTexture.addControl(panelGraphType);  
 
-        let buttonGeneric = BABYLON.GUI.Button.CreateSimpleButton('generic button', 'Generic Temp');
+        let buttonGeneric = BABYLON.GUI.Button.CreateSimpleButton('generic button', '***');
         formatButton(buttonGeneric);
         // buttonGeneric.onPointerUpObservable.add(()=>{this.advancedTexture.removeControl(panelGraphType)});
         panelGraphType.addControl(buttonGeneric); 
 
-        let buttonGeneric2 = BABYLON.GUI.Button.CreateSimpleButton('generic button', 'Generic Temp');
+        let buttonGeneric2 = BABYLON.GUI.Button.CreateSimpleButton('generic button', '***');
         formatButton(buttonGeneric2);
         // buttonGeneric2.onPointerUpObservable.add(()=>{this.advancedTexture.removeControl(panelGraphType)});
         panelGraphType.addControl(buttonGeneric2); 
 
-        let buttonGeneric3 = BABYLON.GUI.Button.CreateSimpleButton('generic button', 'Generic Temp');
+        let buttonGeneric3 = BABYLON.GUI.Button.CreateSimpleButton('generic button', '***');
         formatButton(buttonGeneric3);
         // buttonGeneric3.onPointerUpObservable.add(()=>{this.advancedTexture.removeControl(panelGraphType)});
         panelGraphType.addControl(buttonGeneric3); 
 
-        let buttonGeneric4 = BABYLON.GUI.Button.CreateSimpleButton('generic button', 'Generic Temp');
+        let buttonGeneric4 = BABYLON.GUI.Button.CreateSimpleButton('generic button', '***');
         formatButton(buttonGeneric4);
         // buttonGeneric4.onPointerUpObservable.add(()=>{this.advancedTexture.removeControl(panelGraphType)});
         panelGraphType.addControl(buttonGeneric4); 
@@ -448,22 +408,22 @@ class Gui2DManager {
         formatMenuPanel(panelLabelOptions);
         this.advancedTexture.addControl(panelLabelOptions);  
 
-        let buttonGeneric = BABYLON.GUI.Button.CreateSimpleButton('generic button', 'Generic Temp');
+        let buttonGeneric = BABYLON.GUI.Button.CreateSimpleButton('generic button', '***');
         formatButton(buttonGeneric);
         // buttonGeneric.onPointerUpObservable.add(()=>{this.advancedTexture.removeControl(panelLabelOptions)});
         panelLabelOptions.addControl(buttonGeneric); 
 
-        let buttonGeneric2 = BABYLON.GUI.Button.CreateSimpleButton('generic button', 'Generic Temp');
+        let buttonGeneric2 = BABYLON.GUI.Button.CreateSimpleButton('generic button', '***');
         formatButton(buttonGeneric2);
         // buttonGeneric2.onPointerUpObservable.add(()=>{this.advancedTexture.removeControl(panelLabelOptions)});
         panelLabelOptions.addControl(buttonGeneric2); 
 
-        let buttonGeneric3 = BABYLON.GUI.Button.CreateSimpleButton('generic button', 'Generic Temp');
+        let buttonGeneric3 = BABYLON.GUI.Button.CreateSimpleButton('generic button', '***');
         formatButton(buttonGeneric3);
         // buttonGeneric3.onPointerUpObservable.add(()=>{this.advancedTexture.removeControl(panelLabelOptions)});
         panelLabelOptions.addControl(buttonGeneric3); 
 
-        let buttonGeneric4 = BABYLON.GUI.Button.CreateSimpleButton('generic button', 'Generic Temp');
+        let buttonGeneric4 = BABYLON.GUI.Button.CreateSimpleButton('generic button', '***');
         formatButton(buttonGeneric4);
         // buttonGeneric4.onPointerUpObservable.add(()=>{this.advancedTexture.removeControl(panelLabelOptions)});
         panelLabelOptions.addControl(buttonGeneric4); 
@@ -487,17 +447,17 @@ class Gui2DManager {
         buttonDownload.onPointerUpObservable.add(() =>{BABYLON.Tools.CreateScreenshotUsingRenderTarget(this.parentThis.engine, this.parentThis.scene.cameras[0],  { width: this.parentThis.options.width*2, height: this.parentThis.options.height*2 })});
         panelDLOptions.addControl(buttonDownload);  
 
-        let buttonGeneric2 = BABYLON.GUI.Button.CreateSimpleButton('generic button', 'Generic Temp');
+        let buttonGeneric2 = BABYLON.GUI.Button.CreateSimpleButton('generic button', '***');
         formatButton(buttonGeneric2);
         // buttonGeneric2.onPointerUpObservable.add(()=>{this.advancedTexture.removeControl(panelDLOptions)});
         panelDLOptions.addControl(buttonGeneric2); 
 
-        let buttonGeneric3 = BABYLON.GUI.Button.CreateSimpleButton('generic button', 'Generic Temp');
+        let buttonGeneric3 = BABYLON.GUI.Button.CreateSimpleButton('generic button', '***');
         formatButton(buttonGeneric3);
         // buttonGeneric3.onPointerUpObservable.add(()=>{this.advancedTexture.removeControl(panelDLOptions)});
         panelDLOptions.addControl(buttonGeneric3); 
 
-        let buttonGeneric4 = BABYLON.GUI.Button.CreateSimpleButton('generic button', 'Generic Temp');
+        let buttonGeneric4 = BABYLON.GUI.Button.CreateSimpleButton('generic button', '***');
         formatButton(buttonGeneric4);
         // buttonGeneric4.onPointerUpObservable.add(()=>{this.advancedTexture.removeControl(panelDLOptions)});
         panelDLOptions.addControl(buttonGeneric4); 
@@ -659,21 +619,21 @@ class Gui2DManager {
 
         // var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
 
-        var panel3 = new BABYLON.GUI.StackPanel();
-        panel3.name = 'Object Details Panel';
-            panel3.width = "200px";
-            // panel3.height = "300px";
-            //     panel3.fontSize = "24px";
-            // panel3.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
-            // panel3.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
-            panel3.thickness = 1;
-            panel3.background = "lightgray";
-        //     panel3.color = 'black';
-        //     panel3.cornerRadius =  5;
-        //     panel3.background =  "white";
+        var panel = new BABYLON.GUI.StackPanel();
+        panel.name = 'Object Details Panel';
+            panel.width = "200px";
+            // panel.height = "300px";
+            //     panel.fontSize = "24px";
+            // panel.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+            // panel.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
+            panel.thickness = 1;
+            panel.background = "lightgray";
+        //     panel.color = 'black';
+        //     panel.cornerRadius =  5;
+        //     panel.background =  "white";
 
 
-        this.advancedTexture.addControl(panel3);  
+        this.advancedTexture.addControl(panel);  
 
         var myScrollViewer = new BABYLON.GUI.ScrollViewer();
         myScrollViewer.height = '150px';
@@ -703,25 +663,25 @@ class Gui2DManager {
 
 
         for (let index = 0; index < 5; index++) {
-            let            text2 = new BABYLON.GUI.TextBlock();
-            text2.text = "egfsrf f g sf fsf rg";
-            text2.color = "black";
-            text2.fontSize = 10;
-            // text2.textWrapping = true;
-            // text2.outlineWidth = 1;
-            text2.height = '12px';
-            text2.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
-            // text2.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_LEFT;       
-            text2.outlineColor = "black";
-            console.log('text2: ',text2);
+            let text = new BABYLON.GUI.TextBlock();
+            text.text = "egfsrf f g sf fsf rg";
+            text.color = "black";
+            text.fontSize = 10;
+            // text.textWrapping = true;
+            // text.outlineWidth = 1;
+            text.height = '12px';
+            text.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+            // text.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_LEFT;       
+            text.outlineColor = "black";
+            console.log('text: ',text);
         
-            textPanel.addControl(text2);
+            textPanel.addControl(text);
         }
 
 
         myScrollViewer.addControl(textPanel); 
 
-        panel3.addControl(myScrollViewer); 
+        panel.addControl(myScrollViewer); 
         // console.log('height: ',text2.lines);
         // console.log('length: ',text2);
 
@@ -730,12 +690,12 @@ class Gui2DManager {
         buttonCancel.width = '60px';
         // buttonCancel.height = '30px';
         buttonCancel.onPointerUpObservable.add(()=>{
-            this.advancedTexture.removeControl(panel3);
+            this.advancedTexture.removeControl(panel);
         });
         // buttonCancel.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
         // buttonCancel.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
 
-        panel3.addControl(buttonCancel,0,1); 
+        panel.addControl(buttonCancel,0,1); 
 
         // this.advancedTexture.addControl(text2);  
 
@@ -751,35 +711,18 @@ class Gui2DManager {
         let panelContainer = new BABYLON.GUI.Rectangle();
         panelContainer.adaptWidthToChildren = true;
         panelContainer.adaptHeightToChildren = true;
-        // panelContainer.cornerRadius = 10;
-        // panelContainer.thickness = 1;
         panelContainer.color = 'black';
         panelContainer.background = "lightgray";
-
-        // console.log('mouseCanvasX', this.mouseCanvasX-300)
-        // console.log('mouseCanvasY', this.mouseCanvasY)
-
-        // panelContainer.left = this.mouseCanvasX-300;
-        // panelContainer.top = this.mouseCanvasY-200;
 
         panelContainer.left = this.mouseCanvasX-this.parentThis.options.width/2;
         panelContainer.top = this.mouseCanvasY-this.parentThis.options.height/2;
 
         panelContainer.onPointerOutObservable.add(()=>{this.advancedTexture.removeControl(panelContainer)});
 
-
-        // panelContainer.left = -300 + 50;
-        // panelContainer.top = -200;
-
         this.advancedTexture.addControl(panelContainer);   
         
-        // panelContainer.
         
         let panel = new BABYLON.GUI.StackPanel();;
-        // panel.name = 'Options Menu';
-        // formatMenuPanel(panel);
-        // panel.width = "120px";
-        // panel.height = "150px";
         
         panel.adaptWidthToChildren = true;
         // panel.adaptHeightToChildren = true;
@@ -788,34 +731,49 @@ class Gui2DManager {
         
         panelContainer.addControl(panel);
         
-        // let spacer = 
         
         let button = BABYLON.GUI.Button.CreateSimpleButton('camera options button', 'Details');
         button.width  =  "50px"
         button.height =  "15px";
-        // button.color    =  "black";
         button.fontSize =  10;
-        // button.cornerRadius =  5;
-        // button.background =  "white";
         button.background = '#eeeeee';
-        button.onPointerUpObservable.add(()=>{});
+        button.onPointerUpObservable.add(()=>{
+
+
+            this.advancedTexture.removeControl(panelContainer);  
+        });
 
         let button2 = BABYLON.GUI.Button.CreateSimpleButton('camera options button', 'Target');
         button2.width  =  "50px"
         button2.height =  "15px";
-        // button2.color    =  "black";
         button2.fontSize =  10;
-        // button2.cornerRadius =  5;
-        // button2.background =  "white";
         button2.background = '#eeeeee';
         button2.onPointerUpObservable.add(() =>{
             // this.parentThis.scene.cameras[0].setTarget(mesh);  // works for arc camera
-            this.parentThis.scene.cameras[0].lockedTarget = mesh;  // changes camera?
+            // this.parentThis.scene.cameras[0].lockedTarget = mesh;  // changes camera to partial arc?
+            // this.parentThis.scene.cameras[0].
+
+
             this.advancedTexture.removeControl(panelContainer);  
          });
 
+         let button3 = BABYLON.GUI.Button.CreateSimpleButton('camera options button', 'Color');
+         button3.width  =  "50px"
+         button3.height =  "15px";
+         button3.fontSize =  10;
+         button3.background = '#eeeeee';
+         button3.onPointerUpObservable.add(() =>{
+             // this.parentThis.scene.cameras[0].setTarget(mesh);  // works for arc camera
+             // this.parentThis.scene.cameras[0].lockedTarget = mesh;  // changes camera to partial arc?
+             // this.parentThis.scene.cameras[0].
+            this.panelPickObjectColor(mesh);
+ 
+             this.advancedTexture.removeControl(panelContainer);  
+          });
+ 
         panel.addControl(button);  
         panel.addControl(button2);  
+        panel.addControl(button3);  
     }
 
 
@@ -897,12 +855,12 @@ class Gui2DManager {
 }
 
 function formatButton(button){
-    button.width  =  "100px"
-    button.height =  "30px";
+    button.width  =  "60px"
+    button.height =  "22px";
     button.color    =  "black";
     button.fontSize =  10;
     button.paddingTop    =  5;
-    button.paddingBottom =  5;
+    // button.paddingBottom =  5;
     button.cornerRadius =  5;
     button.background =  "white";
     button.background = '#eeeeee';
@@ -913,9 +871,9 @@ function formatButton(button){
 }
 
 function formatMenuPanel(panel){
-    panel.width = "120px";
+    panel.width = "80px";
     panel.height = "150px";
-    panel.cornerRadius = 10;
+    panel.cornerRadius = 5;
     panel.thickness = 1;
     panel.color = 'black';
     panel.background = "lightgray";

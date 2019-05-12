@@ -1,4 +1,6 @@
 #pie, .bar, #line {
-    border: 1px solid black;
-    border-radius: 10px;
+    /* border: 1px solid black;
+    border-radius: 10px; */
+    width: 800;
+    height: 400;
 }
