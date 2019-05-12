@@ -217,6 +217,10 @@ class Chart { // Base Chart Class
                 this.gui2D.create2DLabel(element, index, element.userData.myOptions);
             })
         }
+
+
+        this.logoParent.rotation.y += .01;
+
     }
 
     createScene(canvas) {
@@ -344,25 +348,85 @@ class Chart { // Base Chart Class
         }
 
 
-        var scale   = 0.1, MeshWriter, text1, text2, text3, text4;
+        var scale   = 0.1, MeshWriter, text1, text2, C1, C2;
 
         let Writer = BABYLON.MeshWriter(scene, {scale:scale});
-         text1  = new Writer( 
-                        "Coons Consulting",
-                        {
-                            "anchor": "center",
-                            "letter-height": 20,
-                            "letter-thickness": 7,
-                            "color": "#1C3890",
-                            "position": {
-                                "y":8/scale,
-                                "z": -.5/scale
-                            }
-                        }
-                    );
+        text1  = new Writer( 
+            "Coons Consulting",
+            {
+                "anchor": "center",
+                "letter-height": 20,
+                "letter-thickness": 7,
+                "color": "#0C2880",
+                "position": {
+                    "y":8/scale,
+                    "z": -.5/scale
+                }
+            }
+        );
+        text1.getMesh().rotation.x = -Math.PI/2;
 
-                    // text1.position.y = 10;
-                    text1.getMesh().rotation.x = -Math.PI/2;
+        text2  = new Writer( 
+            "Series 1 - Monthly Trends",
+            {
+                "anchor": "center",
+                "letter-height": 6,
+                "letter-thickness": .5,
+                "color": "#000000",
+                "position": {
+                    "y":6/scale,
+                    "z": -.1/scale
+                }
+            }
+        );
+        text2.getMesh().rotation.x = -Math.PI/2;
+        text2.getMesh().material.diffuseColor = new BABYLON.Color3(0, 0, 0);
+
+
+        C1  = new Writer( 
+            "C",
+            {
+                "anchor": "center",
+                "letter-height": 20,
+                "letter-thickness": 1,
+                "color": "#000088",
+                "position": {
+                    "x":-.25/scale,
+                    "y":.25/scale,
+                    "z": 0
+                }
+            }
+        );
+        C1.getMesh().rotation.x = -Math.PI/2;
+
+
+        C2  = new Writer( 
+            "C",
+            {
+                "anchor": "center",
+                "letter-height": 20,
+                "letter-thickness": 1,
+                "color": "#0000ff",
+                "position": {
+                    "x":.25/scale,
+                    "y":-.35/scale,
+                    "z": 0
+                }
+            }
+        );
+        C2.getMesh().rotation.x = -Math.PI/2;
+
+        this.logoParent = new BABYLON.Mesh("dummy", scene);
+        
+        C1.getMesh().parent = this.logoParent;
+        C2.getMesh().parent = this.logoParent;
+        
+        this.logoParent.position.y = 8.25;
+        this.logoParent.position.x = -9;
+        this.logoParent.position.z = -.5;
+        
+        this.logoParent.scaling = new BABYLON.Vector3(.5,.5,.5);
+        
 
         return scene;
 
@@ -884,7 +948,7 @@ for (let index = 1; index <= 12; index++) {
     
     let data = {
         label: months[index].long,
-        value: Math.abs(6 - index) + 1,
+        value: Math.abs(6 - index) + 2,
         details: {
             detail1: index,
             detail2: index * index,

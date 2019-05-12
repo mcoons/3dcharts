@@ -566,8 +566,9 @@ class Gui2DManager {
             picker.value = original;
             picker.height = "130px";
             picker.width = "130px";
-            picker.onValueChangedObservable.add(function(value) { // value is a color3
+            picker.onValueChangedObservable.add((value) => { // value is a color3
                 object.material.diffuseColor = value;
+                if (this.parentThis.options.coloredLabels) object.userData.myLabel.material.diffuseColor = value;
                 newColor.background = value.toHexString();
             });    
         
@@ -598,6 +599,7 @@ class Gui2DManager {
             buttonCancel.background = '#eeeeee';
             buttonCancel.onPointerUpObservable.add(()=>{
                 object.material.diffuseColor = original;
+                if (this.parentThis.options.coloredLabels) object.userData.myLabel.material.diffuseColor = original;
                 this.advancedTexture.removeControl(colorPickerContainer)
             });
         buttonGrid.addControl(buttonCancel,0,1); 

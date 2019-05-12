@@ -71,7 +71,7 @@ class Gui3DManager {
             if (options.horizontalLabels){
 
                 //Create horizontal labels
-                var plane1 = BABYLON.MeshBuilder.CreatePlane("plane", {width:planeWidth, height:planeHeight}, scene);
+                var plane1 = BABYLON.MeshBuilder.CreatePlane("label for "+element.userData.name, {width:planeWidth, height:planeHeight}, scene);
                 plane1.position.x = element.position.x;
                 plane1.position.y = .01;
                 plane1.position.z = -planeWidth/2 - .5;
@@ -82,13 +82,17 @@ class Gui3DManager {
 
                 plane1.material = mat;
 
+                element.userData.myLabel = plane1;
+                plane1.userData = {};
+                plane1.userData.myElement = element;
+
             }
 
             if (options.verticalLabels){
 
                 //Create vertical labels
 
-                var plane2 = BABYLON.MeshBuilder.CreatePlane("plane", {width:planeWidth, height:planeHeight}, scene);
+                var plane2 = BABYLON.MeshBuilder.CreatePlane("label for "+element.userData.name, {width:planeWidth, height:planeHeight}, scene);
                 plane2.position.x = element.position.x;
                 plane2.position.y = -2.2;
                 plane2.position.z = -.01;
@@ -100,6 +104,11 @@ class Gui3DManager {
                 // plane.rotation.z = -Math.PI/8;
 
                 plane2.material = mat;
+
+                element.userData.myLabel = plane1;
+                plane2.userData = {};
+                plane2.userData.myElement = element;
+
 
             }
 
