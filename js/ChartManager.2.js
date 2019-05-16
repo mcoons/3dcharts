@@ -108,6 +108,19 @@
 //      Add a label manager?
 
 
+
+
+
+
+/*
+
+Base Class
+
+Define Globals
+
+
+*/
+
 class Chart { // Base Chart Class
 
     constructor(options) {
@@ -118,55 +131,6 @@ class Chart { // Base Chart Class
         this.labels2D = [];
         this.objects = [];
 
-        let sampleOptions = {
-            type: 'bar',
-            id: 'bar1', // required - id of canvas element to use
-            data: dataSeries // required - array of data objects     { label: "July", value: 100 }
-
-                ///////////////////////
-                // optional settings //
-                ///////////////////////
-
-                ,
-            width: 800 // <default 300>
-                ,
-            height: 500 // <default 200>
-                ,
-            shadows: false // <default false>
-                ,
-            round: false // <default false>
-                ,
-            depth: .6 // <default .25 >
-                // ,logo: 'logo.png'
-                ,
-            label2D: false,
-            coloredLabels: true,
-            ground: false,
-            cameraFirstPerson: true,
-            backPlane: true,
-            horizontalLabels: true,
-            verticalLabels: false
-
-            // ground color
-            // camera distance
-            // intro animation
-
-        };
-
-        this.state = {
-            root: this,
-            options: options
-        };
-
-        this.defaults = {
-            camera: {
-                cameraTargetPosition: new BABYLON.Vector3(0, 0, 0)
-            },
-            button: {
-
-            }
-        };
-
         this.canvas = document.getElementById(this.options.id);
         this.canvas.width = this.options.width ? this.options.width : 300;
         this.canvas.height = this.options.height ? this.options.height : 200;
@@ -176,26 +140,23 @@ class Chart { // Base Chart Class
             stencil: true
         });
 
-        this.createScene.bind(this);
+        // this should be base scene items only
         this.scene = this.createScene(this.canvas);
 
-        this.buildMaterials.bind(this);
-        this.materials = this.buildMaterials(this.options.data.Series1.length);
 
-        this.buildCustomMaterials.bind(this);
-        this.customMaterials = this.buildCustomMaterials();
+        this.glowLayer = new BABYLON.GlowLayer("glow", this.scene);
+        this.glowLayer.intensity = .75;
 
-        this.panelDisplayed = false;
-
-
-        // this.lastFrameTime = Date.now();
-        // this.frameTimes = [];
+        this.materialManager = new MaterialManager(this);
+        this.materials = this.materialManager.buildMaterials(this.options.data.Series1.length);
+        this.customMaterials = this.materialManager.buildCustomMaterials();
 
         // run build() in child classes
         this.build();
-
+        
         this.gui2D = new Gui2DManager(this);
         this.gui3D = new Gui3DManager(this.scene, this.objects, this.options);
+        
 
         this.engine.runRenderLoop(() => {
             this.updateScene.bind(this);
@@ -219,7 +180,7 @@ class Chart { // Base Chart Class
         }
 
 
-        this.logoParent.rotation.y += .01;
+        // this.logoParent.rotation.y += .01;
 
     }
 
@@ -227,7 +188,6 @@ class Chart { // Base Chart Class
 
         let scene = new BABYLON.Scene(this.engine);
         // scene.debugLayer.show();
-        // scene.clearColor = new BABYLON.Color3(0, 0, 0);
 
         let light0 = new BABYLON.HemisphericLight("hemi", new BABYLON.Vector3(100, 100, 20), scene);
         light0.intensity = .315;
@@ -266,15 +226,6 @@ class Chart { // Base Chart Class
 
         scene.activeCamera.attachControl(canvas);
 
-        // var pipeline = new BABYLON.DefaultRenderingPipeline(
-        //     "default", // The name of the pipeline
-        //     false, // Do you want HDR textures ?
-        //     scene, // The scene instance
-        //     [camera] // The list of cameras to be attached to
-        // );
-
-        // pipeline.samples = 8;
-
         // apply scene options here
 
         // if (this.options.){
@@ -294,8 +245,6 @@ class Chart { // Base Chart Class
                 this.options.backgroundColor.g,
                 this.options.backgroundColor.b
             );
-
-
         }
 
         if (this.options.cameraSpeed) {
@@ -344,7 +293,6 @@ class Chart { // Base Chart Class
             logoOverlay.receiveShadows = true;
             logoOverlay.material = logoMaterial;
             // logoOverlay.rotation.x = -Math.PI/8;
-
         }
 
 
@@ -365,6 +313,9 @@ class Chart { // Base Chart Class
             }
         );
         text1.getMesh().rotation.x = -Math.PI/2;
+        text1.getMesh().material.emissiveColor = new BABYLON.Color3(0, 0, 0);
+        text1.getMesh().material.diffuseColor = new BABYLON.Color3(.8, .8, 1);
+
 
         text2  = new Writer( 
             "Series 1 - Monthly Trends",
@@ -383,49 +334,49 @@ class Chart { // Base Chart Class
         text2.getMesh().material.diffuseColor = new BABYLON.Color3(0, 0, 0);
 
 
-        C1  = new Writer( 
-            "C",
-            {
-                "anchor": "center",
-                "letter-height": 20,
-                "letter-thickness": 1,
-                "color": "#000088",
-                "position": {
-                    "x":-.25/scale,
-                    "y":.25/scale,
-                    "z": 0
-                }
-            }
-        );
-        C1.getMesh().rotation.x = -Math.PI/2;
+        // C1  = new Writer( 
+        //     "C",
+        //     {
+        //         "anchor": "center",
+        //         "letter-height": 20,
+        //         "letter-thickness": 1,
+        //         "color": "#000088",
+        //         "position": {
+        //             "x":-.25/scale,
+        //             "y":.25/scale,
+        //             "z": 0
+        //         }
+        //     }
+        // );
+        // C1.getMesh().rotation.x = -Math.PI/2;
 
 
-        C2  = new Writer( 
-            "C",
-            {
-                "anchor": "center",
-                "letter-height": 20,
-                "letter-thickness": 1,
-                "color": "#0000ff",
-                "position": {
-                    "x":.25/scale,
-                    "y":-.35/scale,
-                    "z": 0
-                }
-            }
-        );
-        C2.getMesh().rotation.x = -Math.PI/2;
+        // C2  = new Writer( 
+        //     "C",
+        //     {
+        //         "anchor": "center",
+        //         "letter-height": 20,
+        //         "letter-thickness": 1,
+        //         "color": "#0000ff",
+        //         "position": {
+        //             "x":.25/scale,
+        //             "y":-.35/scale,
+        //             "z": 0
+        //         }
+        //     }
+        // );
+        // C2.getMesh().rotation.x = -Math.PI/2;
 
-        this.logoParent = new BABYLON.Mesh("dummy", scene);
+        // this.logoParent = new BABYLON.Mesh("dummy", scene);
         
-        C1.getMesh().parent = this.logoParent;
-        C2.getMesh().parent = this.logoParent;
+        // C1.getMesh().parent = this.logoParent;
+        // C2.getMesh().parent = this.logoParent;
         
-        this.logoParent.position.y = 8.25;
-        this.logoParent.position.x = -9;
-        this.logoParent.position.z = -.5;
+        // this.logoParent.position.y = 8.25;
+        // this.logoParent.position.x = -9;
+        // this.logoParent.position.z = -.5;
         
-        this.logoParent.scaling = new BABYLON.Vector3(.5,.5,.5);
+        // this.logoParent.scaling = new BABYLON.Vector3(.5,.5,.5);
         
 
         return scene;
@@ -436,184 +387,6 @@ class Chart { // Base Chart Class
         console.log(' ---- default build: please override with a custom build method ----');
     } //  end build method
 
-    /////////////////////////
-    //   Palette Methods   //
-    /////////////////////////
-
-    // Build an array of materials[count]
-
-    buildMaterials(count) {
-
-        let palette = this.buildPalette();
-        let materials = [];
-
-        for (let index = 0; index < count; index++) {
-            let paletteIndex = this.remap(index, 0, count, 0, palette.length - 1);
-
-            let mat = new BABYLON.StandardMaterial("mat" + index, this.scene);
-            mat.diffuseColor = palette[Math.round(paletteIndex)];
-            // mat.sideOrientation = BABYLON.Mesh.DOUBLESIDE;
-            if (this.options.normal){
-
-                mat.bumpTexture = new BABYLON.Texture("textures/"+this.options.normal, this.scene);
-            }
-            if (index%2){
-                mat.invertNormalMapX = true;
-                mat.invertNormalMapY = true;
-            }
-
-            if (this.options.alpha) {
-                mat.alpha = this.options.alpha;
-            }
-
-            materials.push(mat);
-        }
-
-        return materials;
-    } //  end buildMaterials method
-
-    buildCustomMaterials() {
-        let customMaterials = [];
-
-        for (let index = 0; index < 10; index++) {
-            let mat = new BABYLON.StandardMaterial("Custom " + index, this.scene);
-            mat.sideOrientation = BABYLON.Mesh.DOUBLESIDE;
-
-            customMaterials.push(mat);
-        }
-
-        return customMaterials;
-    }
-
-    // Build a palette array[1530] of colors
-
-    buildPalette() {
-
-        let palette = [];
-        let r = 255,
-            g = 0,
-            b = 0,
-            gray = 0;
-        let shade = 1;
-
-        for (let b = 30; b <= 210; b += 30) {
-            for (g = 0; g <= 255; g++) {
-                addToPalette(r, g, b)
-            }
-        }
-        b = 0;
-        g--;
-
-        for (let b = 30; b <= 210; b += 30) {
-            for (r = 254; r >= 0; r--) {
-                addToPalette(r, g, b)
-            }
-        }
-        b = 0;
-        r++;
-
-        for (let r = 30; r <= 210; r += 30) {
-            for (b = 1; b <= 255; b++) {
-                addToPalette(r, g, b)
-            }
-        }
-        r = 0;
-        b--;
-
-        for (let r = 30; r <= 210; r += 30) {
-            for (g = 254; g >= 0; g--) {
-                addToPalette(r, g, b)
-            }
-        }
-        r = 0;
-        g++;
-
-        for (let g = 30; g <= 210; g += 30) {
-            for (r = 1; r <= 255; r++) {
-                addToPalette(r, g, b)
-            }
-        }
-        g = 0;
-        r--;
-
-        for (let g = 30; g <= 210; g += 30) {
-            for (b = 254; b > 0; b--) {
-                addToPalette(r, g, b)
-            }
-        }
-        g = 0;
-        b++;
-
-        for (gray = 254; gray > 0; gray--) {
-            addToPalette(gray, gray, gray)
-        }
-        gray++;
-
-        function addToPalette(r, g, b) {
-            palette.push(new BABYLON.Color3((r / 255) * shade, (g / 255) * shade, (b / 255) * shade));
-        }
-
-        // console.log('Palette: ');
-        // console.log(palette);
-        return palette;
-    } //  end buildPalette method
-
-    /////////////////////////
-    //    Helper Methods   //
-    /////////////////////////
-
-    // Function to remap one range to another
-    remap(x, oMin, oMax, nMin, nMax) {
-        //     #range check
-
-        if (oMin === oMax) {
-            console.log("Warning: Zero input range");
-            return null;
-        }
-
-        if (nMin === nMax) {
-            console.log("Warning: Zero output range");
-            return null;
-        }
-
-        //     #check reversed input range
-        let reverseInput = false;
-        let oldMin = Math.min(oMin, oMax);
-        let oldMax = Math.max(oMin, oMax);
-
-        if (oldMin != oMin) reverseInput = true;
-
-        //     #check reversed output range
-        let reverseOutput = false;
-        let newMin = Math.min(nMin, nMax);
-        let newMax = Math.max(nMin, nMax);
-
-        if (newMin != nMin) reverseOutput = true;
-
-        let portion = (x - oldMin) * (newMax - newMin) / (oldMax - oldMin);
-
-        if (reverseInput) portion = (oldMax - x) * (newMax - newMin) / (oldMax - oldMin);
-
-        let result = portion + newMin;
-
-        if (reverseOutput) result = newMax - portion;
-
-        return result;
-    } //  end remap method
-
-    lerp(start, end, amt) {
-        return (1 - amt) * start + amt * end;
-    } //  end lerp method
-
-    calculateFPS() {
-        let now = Date.now();
-        let difference = now - this.lastFrameTime;
-        this.frameTimes.push(difference);
-        if (this.frameTimes.length > 100) this.frameTimes.shift();
-        let total = this.frameTimes.reduce((a, e) => a + e, 0);
-        console.log(`${Math.round(this.frameTimes.length/total*1000)}FPS`);
-        this.lastFrameTime = now;
-    } //  end calculateFPS method
 
 } //  end Chart class
 
@@ -762,7 +535,8 @@ class BarChart extends Chart {
         // basic settings for a bar
         let settings = {
             width: 1,
-            height: options.value,
+            // height: options.value,
+            height: 0,
             depth: this.options.depth ? this.options.depth : .5,
             sideOrientation: BABYLON.Mesh.DOUBLESIDE
         };
@@ -777,7 +551,7 @@ class BarChart extends Chart {
         }
 
         bar.position.x = options.startPosition - 6;
-        bar.position.y = options.value / 2;
+        // bar.position.y = options.value / 2;
         bar.material = options.mat;
         bar.userData = {};
         bar.userData.myOptions = options;
@@ -812,6 +586,8 @@ class BarChart extends Chart {
                     BABYLON.ActionManager.OnPointerOverTrigger,
                     () => {
                         console.log('hovering over ' + bar.name)
+                        bar.material.emissiveColor = new BABYLON.Color3(.1,.1,.1);
+                        bar.userData.myLabel.material.emissiveColor = new BABYLON.Color3(.1,.1,.1);
                     })
             );
 
@@ -821,6 +597,9 @@ class BarChart extends Chart {
                     BABYLON.ActionManager.OnPointerOutTrigger,
                     () => {
                         console.log('stopped hovering over ' + bar.name)
+                        bar.material.emissiveColor = new BABYLON.Color3(0,0,0);
+                        bar.userData.myLabel.material.emissiveColor = new BABYLON.Color3(0,0,0);
+
                     })
             );
 
@@ -882,6 +661,14 @@ class BarChart extends Chart {
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
 class LineChart extends Chart {
+
+    addPoint(options){
+
+    }
+
+    build() {
+
+    }
 
 } //  end LineChart class
 
@@ -948,7 +735,8 @@ for (let index = 1; index <= 12; index++) {
     
     let data = {
         label: months[index].long,
-        value: Math.abs(6 - index) + 2,
+        // value: Math.abs(6 - index) + 2,
+        value: 6 - index + 2,
         details: {
             detail1: index,
             detail2: index * index,
@@ -1036,9 +824,9 @@ let barChart2 = new BarChart({
     alpha: .6,
     showScale: true,
     backgroundColor: {
-        r: .3,
-        g: .8,
-        b: 1
+        r: 0,
+        g: 0,
+        b: 0
     },
     normal: 'normal5.jpg'
 
@@ -1157,3 +945,4 @@ let barChart2 = new BarChart({
 //     // intro animation
 
 // } );
+

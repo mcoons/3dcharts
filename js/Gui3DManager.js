@@ -105,7 +105,7 @@ class Gui3DManager {
 
                 plane2.material = mat;
 
-                element.userData.myLabel = plane1;
+                element.userData.myLabel = plane2;
                 plane2.userData = {};
                 plane2.userData.myElement = element;
 
@@ -122,58 +122,81 @@ class Gui3DManager {
 
     create3dScale (scene, elements, options, min, max, text, location){
 
-            //Set font type
-            var font_type = "Arial";
-                
-            //Set width an height for plane
-            var planeWidth = 20;
-            var planeHeight = 1.1;
+        //Set font type
+        var font_type = "Arial";
+            
+        //Set width an height for plane
+        var planeWidth = 20;
+        var planeHeight = 1.1;
 
-            //Set width and height for dynamic texture using same multiplier
-            var DTWidth = planeWidth * 60;
-            var DTHeight = planeHeight * 60;
-           
-           
-           
-            //Create plane
-            var planeScales = BABYLON.MeshBuilder.CreatePlane("plane", {width:planeWidth, height:planeHeight}, scene);
-            // planeScales.position.x = -6;
-            planeScales.position.y = location;
-            planeScales.position.z = -.01;
+        //Set width and height for dynamic texture using same multiplier
+        var DTWidth = planeWidth * 60;
+        var DTHeight = planeHeight * 60;
+        
+        
+        
+        //Create plane
+        var planeScales = BABYLON.MeshBuilder.CreatePlane("plane", {width:planeWidth, height:planeHeight}, scene);
+        // planeScales.position.x = -6;
+        planeScales.position.y = location;
+        planeScales.position.z = -.01;
 
-            //Set text
-            var text = text + '  --------------------------------------------------------------------';// + '      ' + element.userData.myOptions.value;
+        //Set text
+        var text = text + '  --------------------------------------------------------------------';// + '      ' + element.userData.myOptions.value;
 
-            //Create dynamic texture
-            var dynamicTexture = new BABYLON.DynamicTexture("DynamicTexture", {width:DTWidth, height:DTHeight}, scene);
+        //Create dynamic texture
+        var dynamicTexture = new BABYLON.DynamicTexture("DynamicTexture", {width:DTWidth, height:DTHeight}, scene);
 
-            //Check width of text for given font type at any size of font
-            var ctx = dynamicTexture.getContext();
-            var size = 45; //any value will work
-            ctx.font = size + "px " + font_type;
-            var textWidth = ctx.measureText(text).width;
+        //Check width of text for given font type at any size of font
+        var ctx = dynamicTexture.getContext();
+        var size = 45; //any value will work
+        ctx.font = size + "px " + font_type;
+        var textWidth = ctx.measureText(text).width;
 
-            //Calculate ratio of text width to size of font used
-            var ratio = textWidth/size;
+        //Calculate ratio of text width to size of font used
+        var ratio = textWidth/size;
 
-            //set font to be actually used to write text on dynamic texture
-            var font_size = Math.floor(DTWidth / (ratio * 1)); //size of multiplier (1) can be adjusted, increase for smaller text
-            // var font = font_size + "px " + font_type;
-            var font = ctx.font;
+        //set font to be actually used to write text on dynamic texture
+        var font_size = Math.floor(DTWidth / (ratio * 1)); //size of multiplier (1) can be adjusted, increase for smaller text
+        // var font = font_size + "px " + font_type;
+        var font = ctx.font;
 
-            //Draw text
-            dynamicTexture.drawText(text, null, null, font, "#000000", "#ffffff", true);
+        //Draw text
+        dynamicTexture.drawText(text, null, null, font, "#000000", "#ffffff", true);
 
-            //create material
-            var mat = new BABYLON.StandardMaterial("mat", scene);
-            mat.diffuseTexture = dynamicTexture;
-            // if (options.coloredLabels)
-            // mat.diffuseColor = elements[0].material.diffuseColor;
-            // mat.wireframe = true;
+        //create material
+        var mat = new BABYLON.StandardMaterial("mat", scene);
+        mat.diffuseTexture = dynamicTexture;
+        // if (options.coloredLabels)
+        // mat.diffuseColor = elements[0].material.diffuseColor;
+        // mat.wireframe = true;
 
 
-            //apply material
-            planeScales.material = mat;
+        //apply material
+        planeScales.material = mat;
 
+    }
+
+    create3DText(){
+        var scale   = 0.1, MeshWriter, text1, text2, C1, C2;
+
+        let Writer = BABYLON.MeshWriter(scene, {scale:scale});
+        text1  = new Writer( 
+            "Coons Consulting",
+            {
+                "anchor": "center",
+                "letter-height": 20,
+                "letter-thickness": 7,
+                "color": "#0C2880",
+                "position": {
+                    "y":8/scale,
+                    "z": -.5/scale
+                }
+            }
+        );
+
+        text1.getMesh().rotation.x = -Math.PI/2;
+        text1.getMesh().material.emissiveColor = new BABYLON.Color3(0, 0, 0);
+        text1.getMesh().material.diffuseColor = new BABYLON.Color3(.8, .8, 1);
     }
 }
