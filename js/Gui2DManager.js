@@ -201,7 +201,6 @@ class Gui2DManager {
         slider.width = "60px";
 
         slider.onValueChangedObservable.add((value) => {
-            header.text = "Brightness: " + value +'x';
             this.parentThis.scene.lights.forEach(light => light.intensity = value )
         });
         panelLightOptions.addControl(slider);   

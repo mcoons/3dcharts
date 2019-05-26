@@ -145,14 +145,14 @@ class Chart { // Base Chart Class
 
 
         this.glowLayer = new BABYLON.GlowLayer("glow", this.scene);
-        this.glowLayer.intensity = .75;
+        this.glowLayer.intensity = .25;
 
         this.materialManager = new MaterialManager(this);
         this.materials = this.materialManager.buildMaterials(this.options.data.Series1.length);
         this.customMaterials = this.materialManager.buildCustomMaterials();
 
         // run build() in child classes
-        this.build();
+        // this.build();
         
         this.gui2D = new Gui2DManager(this);
         this.gui3D = new Gui3DManager(this.scene, this.objects, this.options);
@@ -189,14 +189,14 @@ class Chart { // Base Chart Class
         let scene = new BABYLON.Scene(this.engine);
         // scene.debugLayer.show();
 
-        let light0 = new BABYLON.HemisphericLight("hemi", new BABYLON.Vector3(100, 100, 20), scene);
-        light0.intensity = .315;
+        // let light0 = new BABYLON.HemisphericLight("hemi", new BABYLON.Vector3(-1, 1, 0), scene);
+        // light0.intensity = .915;
 
-        let light1 = new BABYLON.PointLight("light1", new BABYLON.Vector3(-100, 80, -50), scene);
-        light1.intensity = .55;
+        let light1 = new BABYLON.PointLight("light1", new BABYLON.Vector3(-50, -80, -50), scene);
+        light1.intensity = 1.5;
 
-        let light = new BABYLON.PointLight("light1", new BABYLON.Vector3(150, 80, -150), scene);
-        light.intensity = .75;
+        let light = new BABYLON.PointLight("light1", new BABYLON.Vector3(50, 80, 50), scene);
+        light.intensity = 1.5;
 
         let camera;
 
@@ -214,14 +214,15 @@ class Chart { // Base Chart Class
             if (this.options.ucCameraPosZ) camera.position.z = this.options.ucCameraPosZ;
 
         } else {
-            camera = new BABYLON.ArcRotateCamera("Camera", 3 * Math.PI / 2, Math.PI/2+.2, 18, new BABYLON.Vector3(0, 3, 0), scene);
+            // camera = new BABYLON.ArcRotateCamera("Camera", 3 * Math.PI / 2, Math.PI/2+.2, 18, new BABYLON.Vector3(5, 6, -5), scene);
+            camera = new BABYLON.ArcRotateCamera("Camera", 0, Math.PI/2, 18, new BABYLON.Vector3(0,0,0), scene);
 
-            camera.lowerRadiusLimit = 5;
-            camera.upperRadiusLimit = 40;
-            camera.lowerAlphaLimit = Math.PI;
-            camera.upperAlphaLimit = Math.PI * 2;
-            camera.lowerBetaLimit = 0;
-            camera.upperBetaLimit = Math.PI;
+            // camera.lowerRadiusLimit = 5;
+            // camera.upperRadiusLimit = 40;
+            // camera.lowerAlphaLimit = Math.PI;
+            // camera.upperAlphaLimit = Math.PI * 2;
+            // camera.lowerBetaLimit = 0;
+            // camera.upperBetaLimit = Math.PI;
         }
 
         scene.activeCamera.attachControl(canvas);
@@ -236,6 +237,47 @@ class Chart { // Base Chart Class
 
         // if (this.options.){
         // }
+
+
+
+
+
+        
+
+
+
+
+
+        let scale2 = .1;
+        for (let zb = 0; zb <= 1; zb+=.1) 
+        for (let yg = 0; yg <= 1; yg+=.1) 
+        for (let xr = 0; xr <= 1; xr+=.1) {
+
+            let mat = new BABYLON.StandardMaterial("mat(" + xr + "," + yg + "," + zb +")", scene);
+                mat.diffuseColor = new BABYLON.Color3(xr, yg, zb);
+                mat.specularColor = new BABYLON.Color3(0, 0, 0);
+                mat.alpha = .75;
+                mat.emissiveColor = new BABYLON.Color3(xr/5, yg/5, zb/5);;
+
+            var sphere = BABYLON.MeshBuilder.CreateBox("sphere", {size: .5}, scene);
+                sphere.position = new BABYLON.Vector3(xr/scale2, yg/scale2, zb/scale2 - 10);
+                sphere.material = mat;
+  
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
         if (this.options.backgroundColor){
@@ -261,11 +303,11 @@ class Chart { // Base Chart Class
             plane0.position.y = 10;
         }
 
-        if (this.options.shadows) {
-            this.shadowGenerator = new BABYLON.ShadowGenerator(1024, light);
-            this.shadowGenerator.setDarkness(0.5);
-            this.shadowGenerator.usePoissonSampling = true;
-        }
+        // if (this.options.shadows) {
+        //     this.shadowGenerator = new BABYLON.ShadowGenerator(1024, light);
+        //     this.shadowGenerator.setDarkness(0.5);
+        //     this.shadowGenerator.usePoissonSampling = true;
+        // }
 
         if (this.options.ground) {
             let ground = BABYLON.MeshBuilder.CreateGround("myGround", {
@@ -296,42 +338,42 @@ class Chart { // Base Chart Class
         }
 
 
-        var scale   = 0.1, MeshWriter, text1, text2, C1, C2;
+        // var scale   = 0.1, MeshWriter, text1, text2, C1, C2;
 
-        let Writer = BABYLON.MeshWriter(scene, {scale:scale});
-        text1  = new Writer( 
-            "Coons Consulting",
-            {
-                "anchor": "center",
-                "letter-height": 20,
-                "letter-thickness": 7,
-                "color": "#0C2880",
-                "position": {
-                    "y":8/scale,
-                    "z": -.5/scale
-                }
-            }
-        );
-        text1.getMesh().rotation.x = -Math.PI/2;
-        text1.getMesh().material.emissiveColor = new BABYLON.Color3(0, 0, 0);
-        text1.getMesh().material.diffuseColor = new BABYLON.Color3(.8, .8, 1);
+        // let Writer = BABYLON.MeshWriter(scene, {scale:scale});
+        // text1  = new Writer( 
+        //     "Coons Consulting",
+        //     {
+        //         "anchor": "center",
+        //         "letter-height": 20,
+        //         "letter-thickness": 7,
+        //         "color": "#0C2880",
+        //         "position": {
+        //             "y":8/scale,
+        //             "z": -.5/scale
+        //         }
+        //     }
+        // );
+        // text1.getMesh().rotation.x = -Math.PI/2;
+        // text1.getMesh().material.emissiveColor = new BABYLON.Color3(0, 0, 0);
+        // text1.getMesh().material.diffuseColor = new BABYLON.Color3(.8, .8, 1);
 
 
-        text2  = new Writer( 
-            "Series 1 - Monthly Trends",
-            {
-                "anchor": "center",
-                "letter-height": 6,
-                "letter-thickness": .5,
-                "color": "#000000",
-                "position": {
-                    "y":6/scale,
-                    "z": -.1/scale
-                }
-            }
-        );
-        text2.getMesh().rotation.x = -Math.PI/2;
-        text2.getMesh().material.diffuseColor = new BABYLON.Color3(0, 0, 0);
+        // text2  = new Writer( 
+        //     "Series 1 - Monthly Trends",
+        //     {
+        //         "anchor": "center",
+        //         "letter-height": 6,
+        //         "letter-thickness": .5,
+        //         "color": "#000000",
+        //         "position": {
+        //             "y":6/scale,
+        //             "z": -.1/scale
+        //         }
+        //     }
+        // );
+        // text2.getMesh().rotation.x = -Math.PI/2;
+        // text2.getMesh().material.diffuseColor = new BABYLON.Color3(0, 0, 0);
 
 
         // C1  = new Writer( 
@@ -753,52 +795,52 @@ for (let index = 1; index <= 12; index++) {
 // for (let index = 11; index <= 20; index++) { dataSeries.push({label: 'label '+index, value: 15-index+6, details : { detail1: index, detail2: index*index, detail3: 1/index}})}
 
 
-let barChart = new BarChart({
-    type: 'bar',
-    id: 'bar1', // required - id of canvas element to use
-    data: dataSeries, // required - array of data objects     { label: "July", value: 100 }
-    yLabel: 'Month',
-    xLabel: 'Income',
-        ///////////////////////
-        // optional settings //
-        ///////////////////////
-    width: 800, // <default 300>
-    height: 600, // <default 200>
-        // ,shadows: false   // <default false>
-    round: false, // <default false>
-    depth: .6, // <default .25 >
-        // ,logo: 'logo.png'
-    label2D: false,
-    coloredLabels: true,
-    ground: false,
-    cameraFirstPerson: true,
-    backPlane: true,
-    horizontalLabels: true,
-    verticalLabels: false,
-    alpha: 1,
-    showScale: true,
-    backgroundColor: {
-        r: .7,
-        g: .7,
-        b: .75
-    },
-    normal: 'normal4.jpg',
+// let barChart = new BarChart({
+//     type: 'bar',
+//     id: 'bar1', // required - id of canvas element to use
+//     data: dataSeries, // required - array of data objects     { label: "July", value: 100 }
+//     yLabel: 'Month',
+//     xLabel: 'Income',
+//         ///////////////////////
+//         // optional settings //
+//         ///////////////////////
+//     width: 600, // <default 300>
+//     height: 600, // <default 200>
+//         // ,shadows: false   // <default false>
+//     round: false, // <default false>
+//     depth: .6, // <default .25 >
+//         // ,logo: 'logo.png'
+//     label2D: false,
+//     coloredLabels: true,
+//     ground: false,
+//     cameraFirstPerson: true,
+//     backPlane: true,
+//     horizontalLabels: true,
+//     verticalLabels: false,
+//     alpha: 1,
+//     showScale: true,
+//     backgroundColor: {
+//         r: .7,
+//         g: .7,
+//         b: .75
+//     },
+//     normal: 'normal4.jpg',
 
-    ucCameraSpeed: .25,
-    ucCameraRotX: .05,
-    ucCameraRotY: .9,
-    ucCameraRotZ: 0,
-    ucCameraPosX: -15,
-    ucCameraPosY: 5,
-    ucCameraPosZ: -10
+//     ucCameraSpeed: .25,
+//     ucCameraRotX: .05,
+//     ucCameraRotY: .9,
+//     ucCameraRotZ: 0,
+//     ucCameraPosX: -15,
+//     ucCameraPosY: 5,
+//     ucCameraPosZ: -10
 
 
 
-    // ground color
-    // camera distance
-    // intro animation
+//     // ground color
+//     // camera distance
+//     // intro animation
 
-});
+// });
 
 let barChart2 = new BarChart({
     id: 'bar2', // required - id of canvas element to use
@@ -808,7 +850,7 @@ let barChart2 = new BarChart({
     // optional settings //
     ///////////////////////
 
-    width: 800, // <default 300>
+    width: 600, // <default 300>
     height: 600, // <default 200>
     shadows: true, // <default false>
     round: true, // <default false>

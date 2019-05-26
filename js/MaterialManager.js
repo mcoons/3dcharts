@@ -1,3 +1,27 @@
+// rewrite as getMaterial(position, total, texture, alpha) ????
+// rewrite so palette selection uses a binary type spread, maybe from an rgb cude
+// no need to store materials or palette
+
+
+// let scale = 1;
+// for (let xr = 0; xr <= 255; xr++) {
+// for (let yg = 0; yg <= 255; yg++) {
+// for (let zb = 0; zb <= 255; zb++) {
+
+//     let mat = new BABYLON.StandardMaterial("mat(" + xr + "," + yg + "," + zb +")", scene);
+//     mat.diffuseColor = new BABYLON.Color3(xr/255, yg/255, zb/255);
+
+//     var sphere = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: 1/scale}, scene);
+
+
+
+
+// }    
+// }    
+// }
+
+
+
 class MaterialManager {
     constructor(parentChart){
         this.parentChart = parentChart;

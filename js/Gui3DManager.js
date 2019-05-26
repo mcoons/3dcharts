@@ -3,13 +3,13 @@ class Gui3DManager {
     constructor(scene, elements, options){
         // console.log('In gui3D constructor');
 
-        this.create3dGroundLabels(scene, elements, options); 
+        // this.create3dGroundLabels(scene, elements, options); 
 
-        if (options.showScale){
-            this.create3dScale(scene, elements, options, 0, 10, "5", 5); 
-            this.create3dScale(scene, elements, options, 0, 10, "10", 10); 
-            this.create3dScale(scene, elements, options, 0, 10, "15", 15); 
-        }
+        // if (options.showScale){
+        //     this.create3dScale(scene, elements, options, 0, 10, "5", 5); 
+        //     this.create3dScale(scene, elements, options, 0, 10, "10", 10); 
+        //     this.create3dScale(scene, elements, options, 0, 10, "15", 15); 
+        // }
     }
 
 
