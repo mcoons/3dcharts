@@ -7,22 +7,25 @@
 class BaseChart { // Base Chart Class
 
     constructor(options) {
-        var options = options;
+        this.options = options;
 
         this.materials = [];
         
-        var canvas = document.getElementById(options.id);
-        canvas.width = options.width ? options.width : 300;
-        canvas.height = options.height ? options.height : 200;
+        this.canvas = document.getElementById(options.id);
+        this.canvas.width = options.width ? options.width : 300;
+        this.canvas.height = options.height ? options.height : 200;
+
+        this.height = this.canvas.height;
+        this.width = this.canvas.width;
         
-        var engine = new BABYLON.Engine(canvas, true, {
+        var engine = new BABYLON.Engine(this.canvas, true, {
             preserveDrawingBuffer: true,
             stencil: true
         });
         
-        // this should be base scene items only
         this.scene = this.initializeScene(engine);
-        this.scene.activeCamera.attachControl(canvas);
+        this.scene.activeCamera.attachControl(this.canvas);
+        console.log('scene: ',this.scene);
         
         this.createMaterials(this.materials);
         // var glowLayer = new BABYLON.GlowLayer("glowLayer", this.scene);
@@ -30,11 +33,38 @@ class BaseChart { // Base Chart Class
 
         // console.log(this.materials);
 
+        this.gui3D = new Gui3DManager(this.scene, this.objects, this.options);
+        this.gui2D = new Gui2DManager(this);
+
+
         this.lineMat = new BABYLON.StandardMaterial("lineMat", this.scene);
-        this.lineMat.diffuseColor = new BABYLON.Color3(.3, .3, .3);
+        this.lineMat.diffuseColor = new BABYLON.Color3(.2, .2, .2);
         this.lineMat.specularColor = new BABYLON.Color3(0, 0, 0);
         this.lineMat.alpha = 1;
         this.lineMat.emissiveColor = new BABYLON.Color3(.5, .5, .5);
+
+        this.seriesNames = Object.keys(options.data);    
+        console.log('seriesNames:',this.seriesNames);
+
+        this.seriesCount = this.seriesNames.length;
+        console.log('seriesCount:', this.seriesCount);
+
+        this.seriesLength = options.data[this.seriesNames[0]].length;
+        console.log('this.seriesLength:', this.seriesLength);
+
+        this.highVal = Number.MIN_SAFE_INTEGER;
+        this.lowVal = Number.MAX_SAFE_INTEGER;
+        for (let elementIndex = 0; elementIndex < this.seriesLength; elementIndex++) {
+            for (let seriesIndex = 0; seriesIndex < this.seriesCount; seriesIndex++){
+                const element = this.options.data[this.seriesNames[seriesIndex]][elementIndex];
+    
+                if (element.value > this.highVal) this.highVal = element.value;
+                if (element.value < this.lowVal) this.lowVal = element.value;
+            }
+        }
+
+
+        console.log('high/low:',this.highVal,this.lowVal);
 
         engine.runRenderLoop(() => {
             this.updateScene.bind(this);
@@ -68,20 +98,30 @@ class BaseChart { // Base Chart Class
     }
 
     createMaterials(materials){
-        for (let xr = 0; xr <= 1; xr += .333) 
-        for (let yg = 0; yg <= 1; yg += .333) 
-        for (let zb = 0; zb <= 1; zb += .333)
-        {
-            let mat = new BABYLON.StandardMaterial("mat", this.scene);
-                mat.diffuseColor = new BABYLON.Color3(xr, yg, zb);
-                mat.specularColor = new BABYLON.Color3(0, 0, 0);
-                mat.alpha = 1;
-                mat.emissiveColor = new BABYLON.Color3(xr/5, yg/5, zb/5);
+        // for (let xr = 0; xr <= 1; xr += .333) 
+        // for (let yg = 0; yg <= 1; yg += .333) 
+        // for (let zb = 0; zb <= 1; zb += .333)
+        // {
+        //     let mat = new BABYLON.StandardMaterial("mat", this.scene);
+        //         mat.diffuseColor = new BABYLON.Color3(xr, yg, zb);
+        //         mat.specularColor = new BABYLON.Color3(0, 0, 0);
+        //         mat.alpha = 1;
+        //         mat.emissiveColor = new BABYLON.Color3(xr/5, yg/5, zb/5);
 
-            materials.push(mat);
-        }
+        //     materials.push(mat);
+        // }
+
+
+
+    for(let i = 0; i < colorList.length; i++){
+        let mat = new BABYLON.StandardMaterial("mat", this.scene);
+        mat.diffuseColor = BABYLON.Color3.FromHexString(colorList[i]);
+        mat.specularColor = new BABYLON.Color3(0, 0, 0);
+        mat.alpha = 1;
+
+        materials.push(mat);
     }
-
+    }
 }
 
 //////////////////////////////////////////////////
@@ -91,76 +131,173 @@ class BarChart extends BaseChart {
 
     constructor(options) {
         super(options);
+        this.padding = 10;
 
         console.log('data:', options.data);
 
-        var seriesNames = Object.keys(options.data);    
-        console.log('seriesNames:',seriesNames);
-        // console.log('Series 0 Data:')
-        // options.data[seriesNames[0]].forEach(element => {
-        //     console.log(element);
-        // });
+        this.elementWidth = Math.trunc(500/this.seriesLength)-this.padding;
+        // console.log('elementWidth:', this.elementWidth);
 
-var padding = 10;
+        this.barWidth = (this.elementWidth)/this.seriesCount;
+        // console.log('barWidth:', this.barWidth);
 
-        var seriesCount = seriesNames.length;
-        console.log('seriesCount:',seriesCount);
 
-        var seriesLength = options.data[seriesNames[0]].length;
-        console.log('seriesLength:', seriesLength);
+        this.planeWidth = (this.elementWidth+this.padding)*this.seriesLength+this.padding;
+        this.planeHeight = 300;
 
-        var elementWidth = Math.trunc(500/seriesLength)-padding;
-        console.log('elementWidth:', elementWidth);
+        var chartPlane = BABYLON.MeshBuilder.CreatePlane("chartPlane", {width: this.planeWidth, height: this.planeHeight}, this.scene);
+        chartPlane.position.x = (this.elementWidth+this.padding)*this.seriesLength/2 + this.padding/2;
+        chartPlane.position.y = this.planeHeight/2;
 
-        var barWidth = (elementWidth)/seriesCount;
+        this.scene.activeCamera.position.x = (this.elementWidth+this.padding)*this.seriesLength/2+this.padding/2
+        this.options.planeWidth = this.planeWidth;
+        this.options.planeHeight = this.planeHeight;
 
-        var myPlane = BABYLON.MeshBuilder.CreatePlane("myPlane", {width: (elementWidth+padding)*seriesLength+padding, height: 300}, this.scene);
-        myPlane.position.x = (elementWidth+padding)*seriesLength/2 + padding/2;
-        myPlane.position.y = 150;
 
-        this.scene.activeCamera.position.x = (elementWidth+padding)*seriesLength/2+padding/2
-        
+        var chartMarginPlane = BABYLON.MeshBuilder.CreatePlane("chartMarginPlane", {width: this.planeWidth+200, height: this.planeHeight+100}, this.scene);
+        chartMarginPlane.position.x = (this.elementWidth+this.padding)*this.seriesLength/2 + this.padding/2;
+        chartMarginPlane.position.y = this.planeHeight/2;
 
-        let colorIndex = 1;
-
-        for (let seriesIndex = 0; seriesIndex < seriesCount; seriesIndex++)
-        for (let elementIndex = 0; elementIndex < options.data[seriesNames[0]].length; elementIndex++) {
-            const element = options.data[seriesNames[seriesIndex]][elementIndex];
-            // console.log(element);
-            let myBox = BABYLON.MeshBuilder.CreateBox("myBox", {height: element.value*20, width: barWidth, depth: 10}, this.scene);
-            myBox.material = this.materials[colorIndex];
-            myBox.position.x = elementIndex*(elementWidth+padding) + seriesIndex*elementWidth/seriesCount + barWidth/2 + padding;
-            myBox.position.y = 20*element.value/2;
-
-            colorIndex++;
-            if (colorIndex === 64) colorIndex = 1;
-
-        }
-        
+        this.scene.activeCamera.position.x = (this.elementWidth+this.padding)*this.seriesLength/2+this.padding/2
+        this.options.planeWidth = this.planeWidth;
+        this.options.planeHeight = this.planeHeight;
 
         
-
+        this.build(options);
 
         
         // draw vertical lines separating elements
-        for (let index = 0; index < options.data[seriesNames[0]].length+1; index++) {
-            const element = options.data[seriesNames[0]][index];
+        for (let index = 0; index < this.seriesLength+1; index++) {
 
-            let myBox = BABYLON.MeshBuilder.CreateBox("myBox", {height: 300, width: 1, depth: 1}, this.scene);
+            // let myBox = BABYLON.MeshBuilder.CreateBox("myBox", {height: 300, width: 1, depth: .1}, this.scene);
+            let myBox = BABYLON.MeshBuilder.CreateBox("myBox", {height: 305, width: 1, depth: .1}, this.scene);
             myBox.material = this.lineMat;
-            myBox.position.x = index*(elementWidth+padding) + padding/2;
-            myBox.position.y = 150;
+            myBox.position.x = index*(this.elementWidth+this.padding) + this.padding/2;
+            myBox.position.y = 146;
+
         }        
         
+        this.addScale(0,'0',5);
+        this.addScale(this.planeHeight,this.highVal.toString(),5);
 
+        this.addScale(10*(this.planeHeight)/(this.highVal),'10',5);
+        this.addScale(8*(this.planeHeight)/(this.highVal),'8',5);
+        this.addScale(6*(this.planeHeight)/(this.highVal),'6',5);
+        this.addScale(4*(this.planeHeight)/(this.highVal),'4',5);
+        this.addScale(2*(this.planeHeight)/(this.highVal),'2',5);
+                                                                                                                      
+
+        let textScale = 3;
+        options.data[this.seriesNames[0]].forEach((element,index) => {
+            console.log(element);
+            this.gui3D.create3DText(this.scene, textScale, element.label, 'this.planeWidth', 'this.planeHeight', 
+                                    index*this.planeWidth/this.seriesLength/textScale +  this.planeWidth/this.seriesLength/textScale/2, 
+                                    -7 - (index%2)*textScale , 
+                                    -.01);
+            // this.gui3D.create3DText(this.scene, textScale, element.label, 'this.planeWidth', 'this.planeHeight', (index*(this.planeWidth/this.seriesLength)/textScale + this.padding ) , -5 , -.01);
+            // this.gui3D.create3DText(this.scene, textScale, element.label, 'this.planeWidth', 'this.planeHeight',  index *((this.elementWidth+this.padding)/textScale) + (this.elementWidth+this.padding)/textScale/1.6, -7 - (index%2)*5 , -.01);
+
+        });
     }
 
     addBar(barOptions) {
 
     }
 
-    build(barChartOptions) {
+    addScale(yPosition,label, textScale){
+        let myBox = BABYLON.MeshBuilder.CreateBox("myBox", {height: 1, width: this.options.planeWidth, depth: .1}, this.scene);
 
+        myBox.material = this.lineMat;
+        myBox.position.x = this.planeWidth/2;
+        myBox.position.y = yPosition;
+
+        this.gui3D.create3DText(this.scene, textScale, label, 'this.planeWidth', 'this.planeHeight', -3, yPosition/textScale -textScale/3, -.01);
+        this.gui3D.create3DText(this.scene, textScale, label, 'this.planeWidth', 'this.planeHeight', this.planeWidth/textScale+3, yPosition/textScale -textScale/3, -.01);
+    }
+
+    build(barChartOptions) {
+        console.log('barChartOptions: ',barChartOptions);
+
+        this.gui3D.create3DText(this.scene, 6, 'Monthly Metrics', 'this.planeWidth', 'this.planeHeight', this.planeWidth/2/6, this.planeHeight/6+6/2, -.2);
+
+
+        // let colorIndex = 1;
+        for (let elementIndex = 0; elementIndex < this.seriesLength; elementIndex++) {
+            for (let seriesIndex = 0; seriesIndex < this.seriesCount; seriesIndex++){
+                const element = barChartOptions.data[this.seriesNames[seriesIndex]][elementIndex];
+
+                console.log('element:',element)
+                let bar;
+
+                let barHeight = barChartOptions.planeHeight*(element.value/this.highVal);
+
+                // // create the bar
+                if (this.options.round) {
+                    bar = BABYLON.MeshBuilder.CreateCylinder(this.seriesNames[seriesIndex]+'-'+element.label, {height: barHeight, diameter: this.barWidth}, this.options.graph);
+                } else {
+                    bar = BABYLON.MeshBuilder.CreateBox(this.seriesNames[seriesIndex]+'-'+element.label,{height: barHeight, width: this.barWidth, depth: this.options.depth ? this.options.depth : 10}, this.scene);
+                }
+
+                // bar = BABYLON.MeshBuilder.CreateBox("bar", {height: element.value*20, width: this.barWidth, depth: 10}, this.scene);
+                if (this.seriesCount > 1) {
+                    bar.material = (this.materials[seriesIndex+1]).clone();
+                }
+                else {
+                    bar.material = (this.materials[elementIndex+1]).clone();
+                }
+
+                bar.position.x = elementIndex*(this.elementWidth+this.padding) + seriesIndex*this.elementWidth/this.seriesCount + this.barWidth/2 + this.padding;
+                bar.position.y = barHeight/2;
+
+                bar.userData = element;
+                bar.userData.seriesName = this.seriesNames[seriesIndex];
+            
+                bar.actionManager = new BABYLON.ActionManager(this.scene);
+                bar.actionManager
+                    .registerAction(
+                        new BABYLON.ExecuteCodeAction(
+                            BABYLON.ActionManager.OnLeftPickTrigger,
+                            () => {
+                                console.log('left clicked ' + bar.name)
+                            })
+                    );
+        
+                bar.actionManager
+                    .registerAction(
+                        new BABYLON.ExecuteCodeAction(
+                            BABYLON.ActionManager.OnRightPickTrigger,
+                            // ()=>{console.log(' right clicked ' + bar.name + ' at ' + this.scene.pointerX + ',' +this.scene.pointerY); this.gui2D.panelPickObjectColor(bar) })
+                            () => {
+                                this.gui2D.menuObjectOptions(bar, this.scene.pointerX, this.scene.pointerY)
+                            })
+                    );
+        
+                bar.actionManager
+                    .registerAction(
+                        new BABYLON.ExecuteCodeAction(
+                            BABYLON.ActionManager.OnPointerOverTrigger,
+                            () => {
+                                console.log('hovering over ' + bar.name)
+                                bar.material.emissiveColor = new BABYLON.Color3(.5,.5,.5);
+                                // bar.userData.myLabel.material.emissiveColor = new BABYLON.Color3(.1,.1,.1);
+                            })
+                    );
+        
+                bar.actionManager
+                    .registerAction(
+                        new BABYLON.ExecuteCodeAction(
+                            BABYLON.ActionManager.OnPointerOutTrigger,
+                            () => {
+                                console.log('stopped hovering over ' + bar.name)
+                                bar.material.emissiveColor = new BABYLON.Color3(0,0,0);
+                                // bar.userData.myLabel.material.emissiveColor = new BABYLON.Color3(0,0,0);
+        
+                            })
+                    );
+        
+            }
+            // colorIndex = 1;
+        }
     }
 
 }
@@ -263,13 +400,13 @@ let months = {
 
 let dataSeries = {};
 
-for (let seriesCount = 0; seriesCount < 3; seriesCount++){
+for (let seriesCount = 0; seriesCount < 1; seriesCount++){
     dataSeries['Series'+seriesCount] = [];
-    for (let dataPoints = 1; dataPoints <= 10; dataPoints++) {
+    for (let dataPoints = 1; dataPoints <= 12; dataPoints++) {
         
         let data = {
             label: months[dataPoints].long,
-            value: Math.abs(6 - dataPoints) + 2 +seriesCount,
+            value: 1* (Math.abs(6 - dataPoints) + 2 +seriesCount),
             // value: 6 - dataPoints + 2,
             details: {
                 detail1: dataPoints,
@@ -291,11 +428,11 @@ let barChart2 = new BarChart({
     // optional settings //
     ///////////////////////
 
-    width: 600, // <default 300>
+    width: 800, // <default 300>
     height: 600, // <default 200>
     shadows: true, // <default false>
-    round: true, // <default false>
-    depth: 1, // <default .25 >
+    round: false, // <default false>        // Added
+    depth: 10, // <default .25 >            // Added
     // logo: 'logo.png',
     label2D: false,
     coloredLabels: false,
@@ -312,10 +449,5 @@ let barChart2 = new BarChart({
         b: 0
     },
     normal: 'normal5.jpg'
-
-
-    // ground color
-    // camera distance
-    // intro animation
 
 });

@@ -177,26 +177,39 @@ class Gui3DManager {
 
     }
 
-    create3DText(){
-        var scale   = 0.1, MeshWriter, text1, text2, C1, C2;
+    create3DText(scene, scale, displayText, planeWidth, planeHeight, xPos, yPos, zPos){
+        var  MeshWriter, text1, text2, C1, C2;
 
         let Writer = BABYLON.MeshWriter(scene, {scale:scale});
         text1  = new Writer( 
-            "Coons Consulting",
+            displayText,
+            // {
+            //     "anchor": "center",
+            //     "letter-height": 20,
+            //     "letter-thickness": 7,
+            //     "color": "#000000",
+            //     "position": {"x": planeWidth/2/scale,
+            //         "y":planeHeight/scale+1,
+            //         "z": -1
+            //     }
+            // }
             {
                 "anchor": "center",
-                "letter-height": 20,
-                "letter-thickness": 7,
-                "color": "#0C2880",
-                "position": {
-                    "y":8/scale,
-                    "z": -.5/scale
+                "letter-height": scale,
+                "letter-thickness": 2,
+                "color": "#000000",
+                "position": {"x": xPos,
+                    "y":yPos,
+                    "z": zPos
                 }
             }
         );
 
         text1.getMesh().rotation.x = -Math.PI/2;
         text1.getMesh().material.emissiveColor = new BABYLON.Color3(0, 0, 0);
-        text1.getMesh().material.diffuseColor = new BABYLON.Color3(.8, .8, 1);
+        text1.getMesh().material.specularColor = new BABYLON.Color3(0, 0, 0);
+        text1.getMesh().material.ambientColor = new BABYLON.Color3(0, 0, 0);
+        
+        text1.getMesh().material.diffuseColor = new BABYLON.Color3(.2, .2, .2);
     }
 }
