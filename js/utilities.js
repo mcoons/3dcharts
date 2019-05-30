@@ -104,6 +104,36 @@ function calculateLabels(min, max){
 
 }
 
+
+
+function calculateScale(max) {
+    let interval;
+    let unit = max / 10;
+    let grade = Math.floor(Math.log10(unit));
+    let sunit = unit / (10 ** grade);
+
+    if (sunit < Math.sqrt(2)) {
+        interval = 10 ** grade * 1;
+    } else if (sunit < Math.sqrt(10)) {
+        interval = 10 ** grade * 2;
+    } else if (sunit < Math.sqrt(50)) {
+        interval = 10 ** grade * 5;
+    } else {
+        interval = 10 ** grade * 10;
+    }
+
+    let maxscale = Math.ceil(max / interval) * interval;
+
+    // console.log(maxscale, interval);
+
+    return {
+        'interval': interval,
+        'maxScale': maxscale
+    }
+}
+
+
+
 var colorList = [
 
 

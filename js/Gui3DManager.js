@@ -1,6 +1,8 @@
 class Gui3DManager {
 
-    constructor(scene, elements, options){
+    constructor(scene, elements, options, parent){
+
+        this.parent = parent;
         // console.log('In gui3D constructor');
 
         // this.create3dGroundLabels(scene, elements, options); 
@@ -196,8 +198,8 @@ class Gui3DManager {
             {
                 "anchor": "center",
                 "letter-height": scale,
-                "letter-thickness": 2,
-                "color": "#000000",
+                "letter-thickness": .5,
+                "color": "#ff0000",
                 "position": {"x": xPos,
                     "y":yPos,
                     "z": zPos
@@ -206,10 +208,15 @@ class Gui3DManager {
         );
 
         text1.getMesh().rotation.x = -Math.PI/2;
-        text1.getMesh().material.emissiveColor = new BABYLON.Color3(0, 0, 0);
-        text1.getMesh().material.specularColor = new BABYLON.Color3(0, 0, 0);
-        text1.getMesh().material.ambientColor = new BABYLON.Color3(0, 0, 0);
-        
-        text1.getMesh().material.diffuseColor = new BABYLON.Color3(.2, .2, .2);
+        // text1.getMesh().material.emissiveColor = new BABYLON.Color3(0, 0, 0);
+        // text1.getMesh().material.specularColor = new BABYLON.Color3(0, 0, 0);
+        // text1.getMesh().material.ambientColor = new BABYLON.Color3(0, 0, 0);
+        // text1.getMesh().material.diffuseColor = new BABYLON.Color3(1, 1, 1);
+
+
+        // console.log('this.parent.lineMat:');
+        // console.log(this.parent.lineMat);
+        text1.getMesh().material = this.parent.lineMat;
+
     }
 }
