@@ -149,9 +149,13 @@ class Gui2DManager {
 
 
 
-        let positioning = BABYLON.GUI.Button.CreateSimpleButton('positioning options button', 'Position');
+        let positioning = BABYLON.GUI.Button.CreateSimpleButton('positioning options button', 'Reset');
         formatButton(positioning);
-        // positioning.onPointerUpObservable.add(()=>{this.advancedTexture.removeControl(panelCameraOptions)});
+        positioning.onPointerUpObservable.add(()=>{
+            this.parentThis.scene.activeCamera.cameraDirection = new BABYLON.Vector3(0,0,0);
+            this.parentThis.scene.activeCamera.rotation = new BABYLON.Vector3(0,0,0);
+            // this.parentThis.scene.activeCamera.cameraRotation = new BABYLON.Vector2(0,0);
+            this.parentThis.scene.activeCamera.position = new BABYLON.Vector3(254,150,-650);        });
         panelCameraOptions.addControl(positioning); 
 
         let cameraType = BABYLON.GUI.Button.CreateSimpleButton('camera type  button', 'Target');
@@ -384,14 +388,18 @@ class Gui2DManager {
         // buttonGeneric2.onPointerUpObservable.add(()=>{this.advancedTexture.removeControl(panelGraphType)});
         panelGraphType.addControl(buttonGeneric2); 
 
-        let buttonGeneric3 = BABYLON.GUI.Button.CreateSimpleButton('generic button', '***');
+        let buttonGeneric3 = BABYLON.GUI.Button.CreateSimpleButton('build button', 'BUILD');
         formatButton(buttonGeneric3);
-        // buttonGeneric3.onPointerUpObservable.add(()=>{this.advancedTexture.removeControl(panelGraphType)});
+        buttonGeneric3.onPointerUpObservable.add(()=>{
+            this.parentThis.build(this.parentThis.options);
+        });
         panelGraphType.addControl(buttonGeneric3); 
 
-        let buttonGeneric4 = BABYLON.GUI.Button.CreateSimpleButton('generic button', '***');
+        let buttonGeneric4 = BABYLON.GUI.Button.CreateSimpleButton('destroy button', 'DESTROY');
         formatButton(buttonGeneric4);
-        // buttonGeneric4.onPointerUpObservable.add(()=>{this.advancedTexture.removeControl(panelGraphType)});
+        buttonGeneric4.onPointerUpObservable.add(()=>{
+            this.parentThis.destroy();
+        });
         panelGraphType.addControl(buttonGeneric4); 
 
         let buttonBack = BABYLON.GUI.Button.CreateSimpleButton('type options back button', 'Back');

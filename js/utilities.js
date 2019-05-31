@@ -36,73 +36,75 @@
         if (reverseOutput) result = newMax - portion;
 
         return result;
-    } //  end remap method
+    } //  end remap function
 
+
+    // function for linear interpolation
     function lerp(start, end, amt) {
         return (1 - amt) * start + amt * end;
-    } //  end lerp method
+    } //  end lerp function
 
 
-function calculateLabels(min, max){
-    let ntick = 5;
+// function calculateLabels(min, max){
+//     let ntick = 5;
 
-    loose_label(min,max);
+//     loose_label(min,max);
 
-    function loose_label(min, max){
-        let nfrac, 
-        d,
-        graphmin,
-        graphmax,
-        range;
+//     function loose_label(min, max){
+//         let nfrac, 
+//         d,
+//         graphmin,
+//         graphmax,
+//         range;
 
-        range = nicenum(max-min,false);
-        d = nicenum(range/(ntick-1),true);
+//         range = nicenum(max-min,false);
+//         d = nicenum(range/(ntick-1),true);
 
-        graphmin = Math.floor(min/d)*d;
-        graphmax = Math.ceil(max/d)*d;
-        nfrac = Math.max(-Math.floor( Math.log10(d)),0);
+//         graphmin = Math.floor(min/d)*d;
+//         graphmax = Math.ceil(max/d)*d;
+//         nfrac = Math.max(-Math.floor( Math.log10(d)),0);
 
-        for (let x = graphmin; x <= graphmax+.5*d; x+=d) {
-            console.log('x',x);            
-            console.log('nfrac',nfrac);
-        }
-    }
+//         for (let x = graphmin; x <= graphmax+.5*d; x+=d) {
+//             console.log('x',x);            
+//             console.log('nfrac',nfrac);
+//         }
+//     }
 
-    function nicenum(x, round){
-        let exp, 
-        f, 
-        nf;
+//     function nicenum(x, round){
+//         let exp, 
+//         f, 
+//         nf;
 
-        exp=Math.floor(Math.log10(x));
-        f=x/Math.exp(exp);
+//         exp=Math.floor(Math.log10(x));
+//         f=x/Math.exp(exp);
 
-        if (round) {
-            if (f < 1.5) {
-                nf = 1;
-            } else if (f < 3) {
-                nf = 2;
-            } else if (f < 7) {
-                nf = 5;
-            } else {
-                nf = 10;
-            }
-        } else {
-            if (f<=1) {
-                nf = 1;
-            } else if (f <= 2) {
-                nf = 2;
-            } else if (f <= 5) {
-                nf = 5;
-            } else {
-                nf = 10;
-            }
-        }
-        console.log('nf',nf);
-        return nf*Math.exp(exp);
-    }
+//         if (round) {
+//             if (f < 1.5) {
+//                 nf = 1;
+//             } else if (f < 3) {
+//                 nf = 2;
+//             } else if (f < 7) {
+//                 nf = 5;
+//             } else {
+//                 nf = 10;
+//             }
+//         } else {
+//             if (f<=1) {
+//                 nf = 1;
+//             } else if (f <= 2) {
+//                 nf = 2;
+//             } else if (f <= 5) {
+//                 nf = 5;
+//             } else {
+//                 nf = 10;
+//             }
+//         }
+//         console.log('nf',nf);
+//         return nf*Math.exp(exp);
+//     }
 
 
-}
+// }
 
 
 
