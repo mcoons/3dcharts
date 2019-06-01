@@ -16,10 +16,7 @@ class Gui2DManager {
 
         this.initializeGUIMenu();
     
-        // console.log(this.parentThis.scene.meshes[0])
-
-        // this.buildMenu();
-        // this.showObjectDetails();
+        this.showObjectDetails();
         this.panelPickObjectColor.bind(this);
         // this.panelPickObjectColor(this.parentThis.objects[3]);
 
@@ -117,32 +114,32 @@ class Gui2DManager {
         //// camera speed ////
 
         let speed = this.parentThis.scene.cameras[0].speed;
-        var header = new BABYLON.GUI.TextBlock();
-        header.text = "Speed: " + speed;
-        header.height = "20px";
-        header.color = "white";
-        header.color    =  "black";
-        header.fontSize =  8;
-        panelCameraOptions.addControl(header); 
+
+        var cameraSpeedHeader = new BABYLON.GUI.TextBlock();
+        cameraSpeedHeader.text = "Speed: " + speed;
+        cameraSpeedHeader.height = "20px";
+        cameraSpeedHeader.color = "white";
+        cameraSpeedHeader.color    =  "black";
+        cameraSpeedHeader.fontSize =  8;
+
+        panelCameraOptions.addControl(cameraSpeedHeader); 
     
-        var slider = new BABYLON.GUI.Slider();
-        slider.minimum = .5;
-        slider.maximum = 5;
-        slider.value = speed;
-        slider.step = .5;
-
-        slider.thumbWidth = '15px';        
-        slider.thumbHeight = '15px';
-        slider.isThumbCircle = true;
-
-        slider.height = "12px";
-        slider.width = "60px";
-
-        slider.onValueChangedObservable.add((value) => {
-            header.text = "Speed: " + value;
+        var cameraSpeedSlider = new BABYLON.GUI.Slider();
+        cameraSpeedSlider.minimum = .5;
+        cameraSpeedSlider.maximum = 5;
+        cameraSpeedSlider.value = speed;
+        cameraSpeedSlider.step = .5;
+        cameraSpeedSlider.thumbWidth = '15px';        
+        cameraSpeedSlider.thumbHeight = '15px';
+        cameraSpeedSlider.isThumbCircle = true;
+        cameraSpeedSlider.height = "12px";
+        cameraSpeedSlider.width = "60px";
+        cameraSpeedSlider.onValueChangedObservable.add((value) => {
+            cameraSpeedHeader.text = "Speed: " + value;
             this.parentThis.scene.cameras[0].speed = value
         });
-        panelCameraOptions.addControl(slider);    
+
+        panelCameraOptions.addControl(cameraSpeedSlider);    
 
 
 
@@ -415,6 +412,42 @@ class Gui2DManager {
         formatMenuPanel(panelLabelOptions);
         this.advancedTexture.addControl(panelLabelOptions);  
 
+
+
+
+        let size = this.parentThis.labelScale;
+        
+        var labelSizeHeader = new BABYLON.GUI.TextBlock();
+        labelSizeHeader.text = "Size: " + size;
+        labelSizeHeader.height = "20px";
+        labelSizeHeader.color = "white";
+        labelSizeHeader.color    =  "black";
+        labelSizeHeader.fontSize =  8;
+
+        panelLabelOptions.addControl(labelSizeHeader); 
+    
+        var labelSizeSlider = new BABYLON.GUI.Slider();
+        labelSizeSlider.minimum = 2.5;
+        labelSizeSlider.maximum = 4;
+        labelSizeSlider.value = size;
+        labelSizeSlider.step = .5;
+        labelSizeSlider.thumbWidth = '15px';        
+        labelSizeSlider.thumbHeight = '15px';
+        labelSizeSlider.isThumbCircle = true;
+        labelSizeSlider.height = "12px";
+        labelSizeSlider.width = "60px";
+        labelSizeSlider.onValueChangedObservable.add((value) => {
+            labelSizeHeader.text = "Size: " + value;
+            this.parentThis.labelScale = value;
+            this.parentThis.destroy();
+            this.parentThis.build();
+        });
+
+        panelLabelOptions.addControl(labelSizeSlider);    
+
+
+
+
         let buttonGeneric = BABYLON.GUI.Button.CreateSimpleButton('generic button', '***');
         formatButton(buttonGeneric);
         // buttonGeneric.onPointerUpObservable.add(()=>{this.advancedTexture.removeControl(panelLabelOptions)});
@@ -459,13 +492,15 @@ class Gui2DManager {
         // buttonGeneric2.onPointerUpObservable.add(()=>{this.advancedTexture.removeControl(panelDLOptions)});
         panelDLOptions.addControl(buttonGeneric2); 
 
-        let buttonGeneric3 = BABYLON.GUI.Button.CreateSimpleButton('generic button', '***');
+        let buttonGeneric3 = BABYLON.GUI.Button.CreateSimpleButton('import button', 'Import');
         formatButton(buttonGeneric3);
+        // Import graph/scene option object from Export
         // buttonGeneric3.onPointerUpObservable.add(()=>{this.advancedTexture.removeControl(panelDLOptions)});
         panelDLOptions.addControl(buttonGeneric3); 
 
-        let buttonGeneric4 = BABYLON.GUI.Button.CreateSimpleButton('generic button', '***');
+        let buttonGeneric4 = BABYLON.GUI.Button.CreateSimpleButton('export button', 'Export');
         formatButton(buttonGeneric4);
+        // Export all graph/scene options as object for developer to call class
         // buttonGeneric4.onPointerUpObservable.add(()=>{this.advancedTexture.removeControl(panelDLOptions)});
         panelDLOptions.addControl(buttonGeneric4); 
 
@@ -682,7 +717,7 @@ class Gui2DManager {
             text.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
             // text.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_LEFT;       
             text.outlineColor = "black";
-            console.log('text: ',text);
+            // console.log('text: ',text);
         
             textPanel.addControl(text);
         }
@@ -715,7 +750,7 @@ class Gui2DManager {
     }
 
     menuObjectOptions(mesh, positionX, positionY){
-        console.log('right clicked on ' + mesh.name + ' at ' + positionX +','+positionY );
+        // console.log('right clicked on ' + mesh.name + ' at ' + positionX +','+positionY );
 
         let panelContainer = new BABYLON.GUI.Rectangle();
         panelContainer.adaptWidthToChildren = true;

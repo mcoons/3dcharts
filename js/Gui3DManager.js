@@ -179,7 +179,7 @@ class Gui3DManager {
 
     // }
 
-    create3DText(scene, scale, depth, displayText, planeWidth, planeHeight, xPos, yPos, zPos){
+    create3DText(scene, scale, depth, displayText, xPos, yPos, zPos){
         // var  MeshWriter, text1, text2, C1, C2;
 
         let Writer = BABYLON.MeshWriter(scene, {scale:scale});
