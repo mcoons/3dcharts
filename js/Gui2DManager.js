@@ -427,10 +427,10 @@ class Gui2DManager {
         panelLabelOptions.addControl(labelSizeHeader); 
     
         var labelSizeSlider = new BABYLON.GUI.Slider();
-        labelSizeSlider.minimum = 2.5;
-        labelSizeSlider.maximum = 4;
-        labelSizeSlider.value = size;
-        labelSizeSlider.step = .5;
+        labelSizeSlider.minimum = .5;
+        labelSizeSlider.maximum = 2;
+        labelSizeSlider.value = 1;
+        labelSizeSlider.step = .25;
         labelSizeSlider.thumbWidth = '15px';        
         labelSizeSlider.thumbHeight = '15px';
         labelSizeSlider.isThumbCircle = true;
@@ -439,8 +439,17 @@ class Gui2DManager {
         labelSizeSlider.onValueChangedObservable.add((value) => {
             labelSizeHeader.text = "Size: " + value;
             this.parentThis.labelScale = value;
-            this.parentThis.destroy();
-            this.parentThis.build();
+            // this.parentThis.destroy();
+            // this.parentThis.build();
+
+            this.parentThis.myTexts.forEach(element => {
+                // element.getMesh().setPivotMatrix(BABYLON.Matrix.Identity());
+                element.getMesh().setPivotPoint(element.getMesh().getBoundingInfo().boundingBox.centerWorld, BABYLON.Space.WORLD);
+
+
+
+                element.getMesh().scaling = new BABYLON.Vector3(value,value,value);
+            })
         });
 
         panelLabelOptions.addControl(labelSizeSlider);    
@@ -758,8 +767,8 @@ class Gui2DManager {
         panelContainer.color = 'black';
         panelContainer.background = "lightgray";
 
-        panelContainer.left = this.mouseCanvasX-this.parentThis.options.width/2;
-        panelContainer.top = this.mouseCanvasY-this.parentThis.options.height/2;
+        panelContainer.left = this.mouseCanvasX-this.parentThis.options.scene.width/2;
+        panelContainer.top = this.mouseCanvasY-this.parentThis.options.scene.height/2;
 
         panelContainer.onPointerOutObservable.add(()=>{this.advancedTexture.removeControl(panelContainer)});
 
@@ -812,14 +821,13 @@ class Gui2DManager {
              // this.parentThis.scene.cameras[0].
             this.panelPickObjectColor(mesh);
  
-             this.advancedTexture.removeControl(panelContainer);  
+            this.advancedTexture.removeControl(panelContainer);  
           });
  
         panel.addControl(button);  
         panel.addControl(button2);  
         panel.addControl(button3);  
     }
-
 
     create2DLabel(mesh, index, options) { 
 

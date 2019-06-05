@@ -198,9 +198,13 @@ class Gui3DManager {
             }
         );
 
+        text1.getMesh().setPivotPoint(text1.getMesh().getBoundingInfo().boundingBox.centerWorld, BABYLON.Space.WORLD);
+
         text1.getMesh().rotation.x = -Math.PI/2;
         text1.getMesh().material = this.parent.lineMat;
 
-        return text1.getMesh();
+console.log('text',text1)
+
+        return text1;
     }
 }

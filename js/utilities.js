@@ -1,111 +1,49 @@
 
-    // Function to remap one range to another
-    function remap(x, oMin, oMax, nMin, nMax) {
-        //     #range check
+// Function to remap one range to another
+function remap(x, oMin, oMax, nMin, nMax) {
+    // check range
 
-        if (oMin === oMax) {
-            console.log("Warning: Zero input range");
-            return null;
-        }
+    if (oMin === oMax) {
+        console.log("Warning: Zero input range");
+        return null;
+    }
 
-        if (nMin === nMax) {
-            console.log("Warning: Zero output range");
-            return null;
-        }
+    if (nMin === nMax) {
+        console.log("Warning: Zero output range");
+        return null;
+    }
 
-        //     #check reversed input range
-        let reverseInput = false;
-        let oldMin = Math.min(oMin, oMax);
-        let oldMax = Math.max(oMin, oMax);
+    // check reversed input range
+    let reverseInput = false;
+    let oldMin = Math.min(oMin, oMax);
+    let oldMax = Math.max(oMin, oMax);
 
-        if (oldMin != oMin) reverseInput = true;
+    if (oldMin != oMin) reverseInput = true;
 
-        //     #check reversed output range
-        let reverseOutput = false;
-        let newMin = Math.min(nMin, nMax);
-        let newMax = Math.max(nMin, nMax);
+    // check reversed output range
+    let reverseOutput = false;
+    let newMin = Math.min(nMin, nMax);
+    let newMax = Math.max(nMin, nMax);
 
-        if (newMin != nMin) reverseOutput = true;
+    if (newMin != nMin) reverseOutput = true;
 
-        let portion = (x - oldMin) * (newMax - newMin) / (oldMax - oldMin);
+    // calculate new range
+    let portion = (x - oldMin) * (newMax - newMin) / (oldMax - oldMin);
 
-        if (reverseInput) portion = (oldMax - x) * (newMax - newMin) / (oldMax - oldMin);
+    if (reverseInput) portion = (oldMax - x) * (newMax - newMin) / (oldMax - oldMin);
 
-        let result = portion + newMin;
+    let result = portion + newMin;
 
-        if (reverseOutput) result = newMax - portion;
+    if (reverseOutput) result = newMax - portion;
 
-        return result;
-    } //  end remap function
-
-
-    // function for linear interpolation
-    function lerp(start, end, amt) {
-        return (1 - amt) * start + amt * end;
-    } //  end lerp function
+    return result;
+} //  end remap method
 
 
-// function calculateLabels(min, max){
-//     let ntick = 5;
-
-//     loose_label(min,max);
-
-//     function loose_label(min, max){
-//         let nfrac, 
-//         d,
-//         graphmin,
-//         graphmax,
-//         range;
-
-//         range = nicenum(max-min,false);
-//         d = nicenum(range/(ntick-1),true);
-
-//         graphmin = Math.floor(min/d)*d;
-//         graphmax = Math.ceil(max/d)*d;
-//         nfrac = Math.max(-Math.floor( Math.log10(d)),0);
-
-//         for (let x = graphmin; x <= graphmax+.5*d; x+=d) {
-//             console.log('x',x);            
-//             console.log('nfrac',nfrac);
-//         }
-//     }
-
-//     function nicenum(x, round){
-//         let exp, 
-//         f, 
-//         nf;
-
-//         exp=Math.floor(Math.log10(x));
-//         f=x/Math.exp(exp);
-
-//         if (round) {
-//             if (f < 1.5) {
-//                 nf = 1;
-//             } else if (f < 3) {
-//                 nf = 2;
-//             } else if (f < 7) {
-//                 nf = 5;
-//             } else {
-//                 nf = 10;
-//             }
-//         } else {
-//             if (f<=1) {
-//                 nf = 1;
-//             } else if (f <= 2) {
-//                 nf = 2;
-//             } else if (f <= 5) {
-//                 nf = 5;
-//             } else {
-//                 nf = 10;
-//             }
-//         }
-//         console.log('nf',nf);
-//         return nf*Math.exp(exp);
-//     }
-
-
-// }
-
+// function for linear interpolation
+function lerp(start, end, amt) {
+    return (1 - amt) * start + amt * end;
+} //  end lerp function
 
 
 function calculateScale(max) {
@@ -134,11 +72,7 @@ function calculateScale(max) {
     }
 }
 
-
-
 var colorList = [
-
-
     "#000000",
     "#00FF00",
     "#0000FF",
@@ -203,5 +137,55 @@ var colorList = [
     "#FFB167",
     "#009BFF",
     "#E85EBE"
+];
 
-]
+let months = {
+    1: {
+        long: 'January',
+        short: 'Jan'
+    },
+    2: {
+        long: 'February',
+        short: 'Feb'
+    },
+    3: {
+        long: 'March',
+        short: 'Mar'
+    },
+    4: {
+        long: 'April',
+        short: 'Apr'
+    },
+    5: {
+        long: 'May',
+        short: 'May'
+    },
+    6: {
+        long: 'June',
+        short: 'Jun'
+    },
+    7: {
+        long: 'July',
+        short: 'Jul'
+    },
+    8: {
+        long: 'August',
+        short: 'Aug'
+    },
+    9: {
+        long: 'September',
+        short: 'Sep'
+    },
+    10: {
+        long: 'October',
+        short: 'Oct'
+    },
+    11: {
+        long: 'November',
+        short: 'Nov'
+    },
+    12: {
+        long: 'December',
+        short: 'Dec'
+    }
+}
