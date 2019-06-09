@@ -10,13 +10,14 @@ class Gui2DManager {
             var mousePos = getMousePos(this.parentThis.canvas, evt);
             this.mouseCanvasX = mousePos.x;
             this.mouseCanvasY = mousePos.y;
+            //  console.log(mousePos)
           }, false);
 
         this.advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
 
         this.initializeGUIMenu();
     
-        this.showObjectDetails();
+        // this.showObjectDetails();
         this.panelPickObjectColor.bind(this);
         // this.panelPickObjectColor(this.parentThis.objects[3]);
 
@@ -388,14 +389,14 @@ class Gui2DManager {
         let buttonGeneric3 = BABYLON.GUI.Button.CreateSimpleButton('build button', 'BUILD');
         formatButton(buttonGeneric3);
         buttonGeneric3.onPointerUpObservable.add(()=>{
-            this.parentThis.build(this.parentThis.options);
+            // this.parentThis.build(this.parentThis.options);
         });
         panelGraphType.addControl(buttonGeneric3); 
 
         let buttonGeneric4 = BABYLON.GUI.Button.CreateSimpleButton('destroy button', 'DESTROY');
         formatButton(buttonGeneric4);
         buttonGeneric4.onPointerUpObservable.add(()=>{
-            this.parentThis.destroy();
+            // this.parentThis.destroy();
         });
         panelGraphType.addControl(buttonGeneric4); 
 
@@ -492,8 +493,7 @@ class Gui2DManager {
 
         let buttonDownload = BABYLON.GUI.Button.CreateSimpleButton('download button', 'Save/DL');
         formatButton(buttonDownload);
-        // buttonDownload.onPointerUpObservable.add(() =>{BABYLON.Tools.CreateScreenshotUsingRenderTarget(this.parentThis.engine, this.parentThis.scene.cameras[0],  { width: this.parentThis.options.width, height: this.parentThis.options.height })});
-        buttonDownload.onPointerUpObservable.add(() =>{BABYLON.Tools.CreateScreenshotUsingRenderTarget(this.parentThis.engine, this.parentThis.scene.cameras[0],  { width: this.parentThis.options.width*2, height: this.parentThis.options.height*2 })});
+        buttonDownload.onPointerUpObservable.add(() =>{BABYLON.Tools.CreateScreenshotUsingRenderTarget(this.parentThis.engine, this.parentThis.scene.cameras[0],  { width: this.parentThis.options.width*6, height: this.parentThis.options.height*6 })});
         panelDLOptions.addControl(buttonDownload);  
 
         let buttonGeneric2 = BABYLON.GUI.Button.CreateSimpleButton('generic button', '***');
@@ -754,8 +754,84 @@ class Gui2DManager {
 
     }
 
-    showObjectValue(mesh){
+    showObjectValue(mesh, x, y){
+        let panelContainer = new BABYLON.GUI.Rectangle();
+        panelContainer.adaptWidthToChildren = true;
+        // panelContainer.padding = '5px';
+        panelContainer.height = '80px';
+        // panelContainer.color = 'black';
+        panelContainer.background = "white";
 
+
+        let offset = 60;
+        if (this.mouseCanvasY < this.parentThis.canvas.height/3) offset *= -1;
+
+
+        panelContainer.left = this.mouseCanvasX-this.parentThis.canvas.width/2;
+        panelContainer.top = this.mouseCanvasY-this.parentThis.canvas.height/2 - offset;    
+        
+        
+
+        this.advancedTexture.addControl(panelContainer);   
+        
+        
+        let panel = new BABYLON.GUI.StackPanel();
+        panelContainer.paddingTop = '10px';
+        
+        panel.adaptWidthToChildren = true;
+        panel.padding = '5px';
+
+        // panel.adaptHeightToChildren = true;
+        panel.color = 'black';
+        panel.background = "lightGray";
+        panel.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+
+        
+        
+                
+        // console.log(mesh.userData);
+
+        let largestText = 0;
+        let context = this.parentThis.canvas.getContext('2d');
+        var ctx = this.advancedTexture.getContext();
+
+        //context.measureText(text).width;
+
+        let text1;
+        for (var property in mesh.userData) {
+
+            if (property != 'details'){
+            // console.log(property, mesh.userData[property]);
+            
+            text1 = new BABYLON.GUI.TextBlock();
+            text1.text = property +': ' + mesh.userData[property];
+            text1.color = "black";
+            text1.fontSize = 10;
+            text1.name = property;
+            text1.height =  "12px";
+            // text1.width  =  "50px";
+
+            // text1.padding = '5px';
+            
+            // console.log(ctx.measureText(text1.text).width)   
+        
+            let textWidth = ctx.measureText(text1.text).width;
+            if (textWidth > largestText) largestText = textWidth;
+
+            panel.addControl(text1);    
+            }
+
+        }
+
+        // text1.width = (largestText + 20) + "px";
+        panel.width = (largestText - 25) + "px";
+        // panelContainer.width = (largestText + 10) + "px";
+
+        panelContainer.paddingTop = 30;
+
+        panelContainer.addControl(panel);
+
+        return panelContainer;
     }
 
     menuObjectOptions(mesh, positionX, positionY){
@@ -766,9 +842,11 @@ class Gui2DManager {
         panelContainer.adaptHeightToChildren = true;
         panelContainer.color = 'black';
         panelContainer.background = "lightgray";
-
-        panelContainer.left = this.mouseCanvasX-this.parentThis.options.scene.width/2;
-        panelContainer.top = this.mouseCanvasY-this.parentThis.options.scene.height/2;
+console.log(this)
+        // panelContainer.left = this.mouseCanvasX-this.parentThis.scene.width/2;
+        // panelContainer.top = this.mouseCanvasY-this.parentThis.scene.height/2;
+        panelContainer.left = this.mouseCanvasX-this.parentThis.canvas.width/2;
+        panelContainer.top = this.mouseCanvasY-this.parentThis.canvas.height/2;
 
         panelContainer.onPointerOutObservable.add(()=>{this.advancedTexture.removeControl(panelContainer)});
 

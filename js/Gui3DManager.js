@@ -179,7 +179,7 @@ class Gui3DManager {
 
     // }
 
-    create3DText(scene, scale, depth, displayText, xPos, yPos, zPos){
+    create3DText(scene, scale, depth, displayText, xPos, yPos, zPos, color){
         // var  MeshWriter, text1, text2, C1, C2;
 
         let Writer = BABYLON.MeshWriter(scene, {scale:scale});
@@ -201,9 +201,9 @@ class Gui3DManager {
         text1.getMesh().setPivotPoint(text1.getMesh().getBoundingInfo().boundingBox.centerWorld, BABYLON.Space.WORLD);
 
         text1.getMesh().rotation.x = -Math.PI/2;
-        text1.getMesh().material = this.parent.lineMat;
+        text1.getMesh().material = color;
 
-console.log('text',text1)
+// console.log('text',text1)
 
         return text1;
     }
