@@ -1,16 +1,15 @@
-var newData = {};
 
 
 let url = 'https://api.nasa.gov/mars-photos/api/v1/rovers?api_key=DEMO_KEY';
 
 function getRESTData(url) {
     var request = new XMLHttpRequest()
-
+    
     request.open('GET', url, true);
-
+    
     request.onload = function () {
         var data = JSON.parse(this.response);
-
+        
         if (request.status >= 200 && request.status < 400) {
             // console.log(data);
             parseData(data);
@@ -21,7 +20,7 @@ function getRESTData(url) {
             return null;
         }
     }
-
+    
     // Send request
     request.send();
 }
@@ -122,24 +121,25 @@ let sampleJSONData = {
     }]
 }
 
+var newData = {};
 
 function parseData(objectData) {
     console.log('started parsing')
     let seriesNames = Object.keys(objectData);
     let seriesCount = seriesNames.length;
     let seriesLength = objectData[seriesNames[0]].length;
-
+    
     for (let seriesIndex = 0; seriesIndex < seriesCount; seriesIndex++) {
         newData[seriesNames[seriesIndex]] = [];
         for (let elementIndex = 0; elementIndex < seriesLength; elementIndex++) {
-
+            
             const element = objectData[seriesNames[seriesIndex]][elementIndex];
-
+            
             let dataElement = {
                 label: element.name,
                 value: element.total_photos
             }
-
+            
             newData[seriesNames[seriesIndex]].push(dataElement);
         }
     }
@@ -211,7 +211,8 @@ function buildIt(data) {
             r: 0,
             g: 0,
             b: 0
-        }
+        },
+        transition: true
     };
 
 
@@ -228,7 +229,7 @@ function buildIt(data) {
         titleDepth: .01, //  < default .01 >
 
         round: false, //  < default false >          
-        depth: 10.5, //  < default .25 >          
+        depth: 1.5, //  < default .25 >          
         alpha: 1, //  < default 1 >
 
         textDepth: .01, //  < default .01 >
@@ -240,6 +241,8 @@ function buildIt(data) {
     };
 
     let chart1_2 = sceneManager1.addChart(chartOptions);
+    // chart1_2.updateMaterial(1,{r:0,g:.5,b:1});
+    // chart1_2.updateMaterialGradient('#FF0000','#00FF00',1,5);
 
     // setTimeout(() => {sceneManager1.removeChart(chart1_2)}, 20000);
 
@@ -252,9 +255,9 @@ function buildIt(data) {
         height: 350, //  <default 200>
         cameraFirstPerson: true, //  <default true>
         backgroundColor: { //  <default white>
-            r: 0.2,
-            g: 0.0,
-            b: 0.2
+            r: 0.95,
+            g: 0.97,
+            b: 0.95
         }
     };
 
@@ -263,12 +266,33 @@ function buildIt(data) {
 
     chartOptions.round = true;
     chartOptions.textColor = {
-        r: 1,
-        g: 1,
-        b: 1
+        r: 0,
+        g: 0,
+        b: 0
     };
 
     let chart2_1 = sceneManager2.addChart(chartOptions);
+
+
+    // chartOptions.type = 'stacked';
+    // let chart2_2 = sceneManager2.addChart(chartOptions);
+    // chart2_2.masterTransform.position.z = -1100;
+    // chart2_2.masterTransform.rotation.y = -Math.PI;
+
+
+    chartOptions.type = 'line';
+
+    let chart2_3 = sceneManager2.addChart(chartOptions);  // right
+    chart2_3.masterTransform.position.x = 275;
+    chart2_3.masterTransform.position.z = -550;
+    chart2_3.masterTransform.rotation.y = Math.PI/2;
+
+
+    let chart2_4 = sceneManager2.addChart(chartOptions);  //  left
+    chart2_4.masterTransform.position.x = -825;
+    chart2_4.masterTransform.position.z = -550;
+    chart2_4.masterTransform.rotation.y = 3*Math.PI/2;
+
 
     ////////////////////////////////////////////////////////////////////
 
@@ -276,10 +300,10 @@ function buildIt(data) {
         id: 'bar2', // required - id of canvas element to use
         width: 600, //  <default 300>
         height: 350, //  <default 200>
-        cameraFirstPerson: true, //  <default true>
+        cameraFirstPerson: false, //  <default true>
         backgroundColor: { //  <default white>
-            r: 0.2,
-            g: 0.2,
+            r: 0.0,
+            g: 0.0,
             b: 0.0
         }
     };
@@ -289,8 +313,24 @@ function buildIt(data) {
 
     chartOptions.type = 'stacked';
     chartOptions.round = false;
+    chartOptions.alpha = 1;
+    chartOptions.textColor = {
+        r: 1,
+        g: 1,
+        b: 1
+    };
+    chartOptions.showBackplanes = true;
 
     let chart3_1 = sceneManager3.addChart(chartOptions);
+
+    chartOptions.type = 'line';
+
+    let chart3_2 = sceneManager3.addChart(chartOptions);
+    chart3_2.masterTransform.position.z = 5;
+    chart3_2.masterTransform.rotation.y = Math.PI;
+    
+
+    chartOptions.showBackplanes = false;
 
     ////////////////////////////////////////////////////////////////////
 
@@ -300,9 +340,9 @@ function buildIt(data) {
         height: 350, //  <default 200>
         cameraFirstPerson: true, //  <default true>
         backgroundColor: { //  <default white>
-            r: 0.0,
-            g: 0.2,
-            b: 0.2
+            r: 0.15,
+            g: 0.0,
+            b: 0.0
         }
     };
 
@@ -311,6 +351,13 @@ function buildIt(data) {
 
     chartOptions.type = '3D';
     chartOptions.round = false;
+    chartOptions.alpha = 1;
+    chartOptions.titleDepth = 1;
+    chartOptions.textColor = {
+        r: .8,
+        g: .8,
+        b: .0
+    };
 
     let chart4_1 = sceneManager4.addChart(chartOptions);
 
@@ -325,9 +372,9 @@ function buildIt(data) {
         height: 350, //  <default 200>
         cameraFirstPerson: true, //  <default true>
         backgroundColor: { //  <default white>
-            r: 0.0,
-            g: 0.0,
-            b: 0.2
+            r: .95,
+            g: .95,
+            b: 1
         }
     };
 
@@ -336,8 +383,41 @@ function buildIt(data) {
 
     chartOptions.type = 'line';
     chartOptions.round = false;
+    chartOptions.textColor = {
+        r:0,
+        g:0,
+        b:0
+    }
+    chartOptions.titleDepth = .01;
 
     let chart5_1 = sceneManager5.addChart(chartOptions);
+
+
+    ////////////////////////////////////////////////////////////////////
+    sceneOptions = {
+        id: 'pie', // required - id of canvas element to use
+        width: 600, //  <default 300>
+        height: 350, //  <default 200>
+        cameraFirstPerson: false, //  <default true>
+        backgroundColor: { //  <default white>
+            r: 1,
+            g: .95,
+            b: .95
+        }
+    };
+
+    let sceneManager6 = new ChartSceneManager(sceneOptions);
+
+
+    chartOptions.type = 'pie';
+    chartOptions.textColor = {
+        r:0,
+        g:0,
+        b:0
+    }
+    chartOptions.transition = false;
+
+    let chart6_1 = sceneManager6.addChart(chartOptions);
 
 
     ////////////////////////////////////////////////////////////////////

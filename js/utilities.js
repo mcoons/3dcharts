@@ -1,4 +1,3 @@
-
 // Function to remap one range to another
 function remap(x, oMin, oMax, nMin, nMax) {
     // check range
@@ -46,6 +45,16 @@ function lerp(start, end, amt) {
 } //  end lerp function
 
 
+function hexToRgb(hex) {
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+    } : null;
+}
+
+
 function calculateScale(max) {
     let interval;
     let unit = max / 10;
@@ -71,6 +80,34 @@ function calculateScale(max) {
         'maxScale': maxscale
     }
 }
+
+
+function map(value, fromSource, toSource, fromTarget, toTarget) {
+    return (value - fromSource) / (toSource - fromSource) * (toTarget - fromTarget) + fromTarget;
+}
+
+
+function getColor(startColor, endColor, min, max, value) {
+    var startRGB = hexToRgb(startColor);
+    var endRGB = hexToRgb(endColor);
+    var percentFade = map(value, min, max, 0, 1);
+
+    var diffRed = endRGB.r - startRGB.r;
+    var diffGreen = endRGB.g - startRGB.g;
+    var diffBlue = endRGB.b - startRGB.b;
+
+    diffRed = (diffRed * percentFade) + startRGB.r;
+    diffGreen = (diffGreen * percentFade) + startRGB.g;
+    diffBlue = (diffBlue * percentFade) + startRGB.b;
+
+    var result = {
+        r: diffRed / 255,
+        g: diffGreen / 255,
+        b: diffBlue / 255
+    };
+    return result;
+}
+
 
 var colorList = [
     "#000000",

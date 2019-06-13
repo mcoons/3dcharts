@@ -1,96 +1,12 @@
-/*  DESCRIPTION: class ChartSceneManager 
-
-    Main management class.  
-        returns a scene object
-        usage: 
-            let sceneManager1 = new ChartSceneManager(sceneOptions);
-
-        scene options:
-            let sceneOptions = {
-                id: 'mixed',                // required - id of canvas element to use
-
-                width: 600,                 //  <default 300>
-                height: 350,                //  <default 200>
-                cameraFirstPerson: true,    //  <default true>
-                 backgroundColor: {         //  <default white>
-                     r: 0,
-                     g: 0,
-                     b: 0
-                 }   
-            };
-
-    Methods:
-        addChart(chartOptions);
-            returns a chartID or null
-            usage: 
-                let chart1_1 = sceneManager1.addChart(chartOptions);
-
-        updateChart(chartOptions);
-            usage: 
-                sceneManager1.updateChart(chartOptions);
-
-        removeChart(chartID);
-            usage: 
-                sceneManager1.removeChart(chartID);
-
-
-    chart options;
-        let chartOptions = {
-            type: 'pie',                    // required - ['line', 'bar', 'stacked', '3D', 'pie']
-            title: 'Monthly Pie Sales',     // required
-            data: dataSeries,               // required
-
-            titleDepth: .01,                //  < default .01 >
-            doughnut: false,                //  < default false > applies to pie chart only
-
-            round: false,                   //  < default false >  applies to bar chart only        
-            depth: 10.5,                    //  < default .25 >          
-            alpha: 1,                       //  < default 1 >
-
-            textDepth: .01,                 //  < default .01 >
-            textColor: {                    //  < default black >
-                r: 0,
-                g: 0,
-                b: 0
-            }
-        };
-
-
-    dataSeries object:
-
-        {
-            'series1Name':  [
-                {
-                    label: 'string',            // required
-                    value: 'number',            // required
-                    details: {                  // optional
-                        'detail1': 'detail',
-                        'detail2': 'detail',
-                        // ...
-                    } 
-                },
-                {
-                    label: 'string',
-                    value: 'number',
-                    details: {
-                        'detail1': 'detail',
-                        'detail2': 'detail',
-                        // ...
-                    } 
-                }
-            ],
-            'series2Name':  [
-                // ...
-            ]
-            // ...
-        }
-
-*/
 
 class ChartSceneManager { 
 
     constructor(options) {   // scene options object
-        this.options = options;
+        this.options = {
+            // defaults
+        }
+        
+        Object.assign(this.options, options);
 
         // Create base scene
         this.scene = this.initializeScene();
@@ -139,22 +55,26 @@ class ChartSceneManager {
         let light2 = new BABYLON.PointLight("light2", new BABYLON.Vector3(500, 800, -500), scene);
         light2.intensity = .5;
 
+        let light3 = new BABYLON.PointLight("light2", new BABYLON.Vector3(0, 150, 500), scene);
+        light3.intensity = .75;
+
         let camera;
 
         if (this.options.cameraFirstPerson) {
             camera = new BABYLON.UniversalCamera("UniversalCamera", new BABYLON.Vector3(0, 0, -18), scene);
             camera.cameraDirection = new BABYLON.Vector3(0, 0, 0);
             camera.rotation = new BABYLON.Vector3(0, 0, 0);
-            camera.position = new BABYLON.Vector3(254, 150, -650);
+//            camera.position = new BABYLON.Vector3(254, 150, -550);
+            camera.position = new BABYLON.Vector3(-0, 0, -550);
 
-            if (this.options.ucCameraSpeed) camera.speed = this.options.ucCameraSpeed;
-            if (this.options.ucCameraRotX) camera.rotation.x = this.options.ucCameraRotX;
-            if (this.options.ucCameraRotY) camera.rotation.y = this.options.ucCameraRotY;
-            if (this.options.ucCameraRotZ) camera.rotation.z = this.options.ucCameraRotZ;
+            // if (this.options.ucCameraSpeed) camera.speed = this.options.ucCameraSpeed;
+            // if (this.options.ucCameraRotX) camera.rotation.x = this.options.ucCameraRotX;
+            // if (this.options.ucCameraRotY) camera.rotation.y = this.options.ucCameraRotY;
+            // if (this.options.ucCameraRotZ) camera.rotation.z = this.options.ucCameraRotZ;
 
-            if (this.options.ucCameraPosX) camera.position.x = this.options.ucCameraPosX;
-            if (this.options.ucCameraPosY) camera.position.y = this.options.ucCameraPosY;
-            if (this.options.ucCameraPosZ) camera.position.z = this.options.ucCameraPosZ;
+            // if (this.options.ucCameraPosX) camera.position.x = this.options.ucCameraPosX;
+            // if (this.options.ucCameraPosY) camera.position.y = this.options.ucCameraPosY;
+            // if (this.options.ucCameraPosZ) camera.position.z = this.options.ucCameraPosZ;
 
         } else {
             camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI/2, Math.PI / 3, 600, new BABYLON.Vector3(0, 0, 0), scene);
@@ -263,6 +183,8 @@ class BaseChart {
         this.materials = [];
         this.createMaterials(this.materials);
 
+        console.log(this.materials);
+
         this.padding = 10;
 
         this.labelScale = 3.5;
@@ -279,6 +201,11 @@ class BaseChart {
             this.lineMat.diffuseColor = new BABYLON.Color3(0, 0, 0);
         }
 
+        if (this.options.textDepth) {
+            this.textDepth = this.options.textDepth;
+        } else {
+            this.textDepth = .01;
+        }
     }
 
     createMaterials(materials) {
@@ -295,6 +222,33 @@ class BaseChart {
 
             materials.push(mat);
         }
+    }
+
+    updateMaterial(index, color){
+        if (index >= this.materials.length || index < 0) { 
+            console.log('ERROR: Material index out of range.');
+            return;
+        } else {
+            this.materials[index].diffuseColor.r = color.r;
+            this.materials[index].diffuseColor.g = color.g;
+            this.materials[index].diffuseColor.b = color.b;
+        }
+    }
+
+
+    updateMaterialGradient(startColor, endColor, startIndex, endIndex){  // 0-63
+
+        let length = endIndex - startIndex;
+        for (let index = 0; index <= length; index++) {
+            let newColor = getColor(startColor, endColor, 0, length, index);     
+            console.log(newColor);       
+            this.materials[index+startIndex].diffuseColor.r = newColor.r;
+            this.materials[index+startIndex].diffuseColor.g = newColor.g;
+            this.materials[index+startIndex].diffuseColor.b = newColor.b;
+
+            // console.log(BABYLON.Color3.from)
+        }
+
     }
 
     parseData() {
@@ -421,11 +375,11 @@ class BarChart extends BaseChart {
 
         // this.labelScale = 3.5;
 
-        if (this.options.textDepth) {
-            this.textDepth = this.options.textDepth;
-        } else {
-            this.textDepth = .01;
-        }
+        // if (this.options.textDepth) {
+        //     this.textDepth = this.options.textDepth;
+        // } else {
+        //     this.textDepth = .01;
+        // }
 
         // parse the data for min,max,total, etc
         this.parseData();
@@ -439,7 +393,7 @@ class BarChart extends BaseChart {
         this.planeWidth = (this.elementWidth + this.padding) * this.seriesLength + this.padding;
         this.planeHeight = 300;
 
-        this.scene.activeCamera.position.x = (this.elementWidth + this.padding) * this.seriesLength / 2 + this.padding / 2
+        // this.scene.activeCamera.position.x = (this.elementWidth + this.padding) * this.seriesLength / 2 + this.padding / 2
         this.options.planeWidth = this.planeWidth;
         this.options.planeHeight = this.planeHeight;
 
@@ -449,6 +403,10 @@ class BarChart extends BaseChart {
 
         this.build(options);
 
+        console.log('masterTransform:');
+        console.log(this.masterTransform);
+        this.masterTransform.position.x = -this.planeWidth / 2;
+        this.masterTransform.position.y = -this.planeHeight / 2;
         // this.fadeIn();
     }
 
@@ -644,11 +602,11 @@ class StackedBarChart extends BaseChart {
 
         // this.labelScale = 3.5;
 
-        if (this.options.textDepth) {
-            this.textDepth = this.options.textDepth;
-        } else {
-            this.textDepth = .01;
-        }
+        // if (this.options.textDepth) {
+        //     this.textDepth = this.options.textDepth;
+        // } else {
+        //     this.textDepth = .01;
+        // }
 
         this.parseData();
 
@@ -670,6 +628,9 @@ class StackedBarChart extends BaseChart {
         this.masterTransform.setPivotMatrix(BABYLON.Matrix.Translation(-this.planeWidth / 2, -this.planeHeight / 2, 0));
 
         this.build(options);
+
+        this.masterTransform.position.x = -this.planeWidth / 2;
+        this.masterTransform.position.y = -this.planeHeight / 2;
     }
 
     addScale(yPosition, label, textScale, gui3D) {
@@ -775,23 +736,27 @@ class StackedBarChart extends BaseChart {
         // console.log('barChartOptions: ', barChartOptionsxx);
 
         if (this.options.showBackplanes){
-            var chartPlane = BABYLON.MeshBuilder.CreatePlane("chartPlane", {
-                width: this.planeWidth,
-                height: this.planeHeight
-            }, this.scene);
+            // var chartPlane = BABYLON.MeshBuilder.CreatePlane("chartPlane", {
+            //     width: this.planeWidth,
+            //     height: this.planeHeight
+            // }, this.scene);
 
-            chartPlane.position.x = (this.elementWidth + this.padding) * this.seriesLength / 2 + this.padding / 2;
-            chartPlane.position.y = this.planeHeight / 2;
-            this.myPlanes.push(chartPlane);
+            // chartPlane.position.x = (this.elementWidth + this.padding) * this.seriesLength / 2 + this.padding / 2;
+            // chartPlane.position.y = this.planeHeight / 2;
+            // this.myPlanes.push(chartPlane);
 
             var chartMarginPlane = BABYLON.MeshBuilder.CreatePlane("chartMarginPlane", {width: this.planeWidth+400, height: this.planeHeight+300}, this.scene);
             chartMarginPlane.position.x = (this.elementWidth+this.padding)*this.seriesLength/2 + this.padding/2;
             chartMarginPlane.position.y = this.planeHeight/2;
+            chartMarginPlane.material = this.materials[0];
+            chartMarginPlane.position.z = .25;
+            chartMarginPlane.parent = this.masterTransform;
+
             this.myPlanes.push(chartMarginPlane);
 
-            chartMarginPlane.position.x = (this.elementWidth+this.padding)*this.seriesLength/2 + this.padding/2;
-            chartMarginPlane.position.y = this.planeHeight/2;
-            this.myPlanes.push(chartMarginPlane);
+            // chartMarginPlane.position.x = (this.elementWidth+this.padding)*this.seriesLength/2 + this.padding/2;
+            // chartMarginPlane.position.y = this.planeHeight/2;
+            // this.myPlanes.push(chartMarginPlane);
         }
 
         // draw vertical lines separating elements
@@ -868,11 +833,11 @@ class BarChart3D extends BaseChart {
 
         // this.labelScale = 3.5;
 
-        if (this.options.textDepth) {
-            this.textDepth = this.options.textDepth;
-        } else {
-            this.textDepth = .01;
-        }
+        // if (this.options.textDepth) {
+        //     this.textDepth = this.options.textDepth;
+        // } else {
+        //     this.textDepth = .01;
+        // }
 
         this.parseData();
 
@@ -885,7 +850,7 @@ class BarChart3D extends BaseChart {
         this.planeWidth = (this.elementWidth + this.padding) * this.seriesLength + this.padding;
         this.planeHeight = 300;
 
-        this.scene.activeCamera.position.x = (this.elementWidth + this.padding) * this.seriesLength / 2 + this.padding / 2
+        // this.scene.activeCamera.position.x = (this.elementWidth + this.padding) * this.seriesLength / 2 + this.padding / 2
         this.options.planeWidth = this.planeWidth;
         this.options.planeHeight = this.planeHeight;
 
@@ -893,6 +858,9 @@ class BarChart3D extends BaseChart {
         this.masterTransform.setPivotMatrix(BABYLON.Matrix.Translation(-this.planeWidth / 2, -this.planeHeight / 2, 0));
 
         this.build(options);
+
+        this.masterTransform.position.x = -this.planeWidth / 2;
+        this.masterTransform.position.y = -this.planeHeight / 2;
     }
 
     addScale(yPosition, label, textScale, gui3D) {
@@ -1082,11 +1050,11 @@ class LineChart extends BaseChart {
 
         // this.labelScale = 3.5;
 
-        if (this.options.textDepth) {
-            this.textDepth = this.options.textDepth;
-        } else {
-            this.textDepth = .01;
-        }
+        // if (this.options.textDepth) {
+        //     this.textDepth = this.options.textDepth;
+        // } else {
+        //     this.textDepth = .01;
+        // }
 
         this.parseData();
 
@@ -1099,7 +1067,7 @@ class LineChart extends BaseChart {
         this.planeWidth = (this.elementWidth + this.padding) * this.seriesLength + this.padding;
         this.planeHeight = 300;
 
-        this.scene.activeCamera.position.x = (this.elementWidth + this.padding) * this.seriesLength / 2 + this.padding / 2
+        // this.scene.activeCamera.position.x = (this.elementWidth + this.padding) * this.seriesLength / 2 + this.padding / 2
         this.options.planeWidth = this.planeWidth;
         this.options.planeHeight = this.planeHeight;
 
@@ -1107,6 +1075,9 @@ class LineChart extends BaseChart {
         this.masterTransform.setPivotMatrix(BABYLON.Matrix.Translation(-this.planeWidth / 2, -this.planeHeight / 2, 0));
 
         this.build(options);
+
+        this.masterTransform.position.x = -this.planeWidth / 2;
+        this.masterTransform.position.y = -this.planeHeight / 2;
     }
 
     addScale(yPosition, label, textScale, gui3D) {
@@ -1148,7 +1119,7 @@ class LineChart extends BaseChart {
         // console.log('this.options.planeHeight',this.options.planeHeight);
 
         // // create the bar
-        point = BABYLON.MeshBuilder.CreateSphere("mySphere", {diameter: 10}, this.scene);
+        point = BABYLON.MeshBuilder.CreateSphere("mySphere", {diameter: 7}, this.scene);
 
         if (this.seriesCount > 1) {
             point.material = this.materials[seriesIndex + 1];
@@ -1200,14 +1171,14 @@ class LineChart extends BaseChart {
         // console.log('barChartOptions: ', barChartOptionsxx);
 
         if (this.options.showBackplanes){
-            var chartPlane = BABYLON.MeshBuilder.CreatePlane("chartPlane", {
-                width: this.planeWidth,
-                height: this.planeHeight
-            }, this.scene);
+            // var chartPlane = BABYLON.MeshBuilder.CreatePlane("chartPlane", {
+            //     width: this.planeWidth,
+            //     height: this.planeHeight
+            // }, this.scene);
 
-            chartPlane.position.x = (this.elementWidth + this.padding) * this.seriesLength / 2 + this.padding / 2;
-            chartPlane.position.y = this.planeHeight / 2;
-            this.myPlanes.push(chartPlane);
+            // chartPlane.position.x = (this.elementWidth + this.padding) * this.seriesLength / 2 + this.padding / 2;
+            // chartPlane.position.y = this.planeHeight / 2;
+            // this.myPlanes.push(chartPlane);
 
             var chartMarginPlane = BABYLON.MeshBuilder.CreatePlane("chartMarginPlane", {
                 width: this.planeWidth+400, 
@@ -1216,18 +1187,21 @@ class LineChart extends BaseChart {
 
             chartMarginPlane.position.x = (this.elementWidth+this.padding)*this.seriesLength/2 + this.padding/2;
             chartMarginPlane.position.y = this.planeHeight/2;
+            chartMarginPlane.parent = this.masterTransform;
+            chartMarginPlane.material = this.materials[0];
+            chartMarginPlane.position.z = .25;
             this.myPlanes.push(chartMarginPlane);
         }
 
         // draw vertical lines separating elements
-        for (let index = 0; index < this.seriesLength + 1; index++) {
+        for (let index = 0; index < this.seriesLength; index++) {
             let myBox = BABYLON.MeshBuilder.CreateBox("myBox", {
                 height: 305,
                 width: .5,
                 depth: .1
             }, this.scene);
             myBox.material = this.lineMat;
-            myBox.position.x = index * (this.elementWidth + this.padding) + this.padding / 2;
+            myBox.position.x = index * (this.elementWidth + this.padding) + this.barWidth / 2 + this.padding;
             myBox.position.y = 146;
             myBox.position.z = 0;
 
@@ -1256,6 +1230,8 @@ class LineChart extends BaseChart {
 
         let titleText = this.gui3D.create3DText(this.scene, 6, this.titleDepth, this.options.title, this.planeWidth / 2 / 6, this.planeHeight / 6 + 6 / 2, -1.75, this.lineMat);
         this.myTexts.push(titleText);
+        titleText.getMesh().parent = this.masterTransform;
+
         // titleText.getMesh().setPivotPoint(titleText.getMesh().getBoundingInfo().boundingBox.centerWorld, BABYLON.Space.WORLD);
         // console.log(titleText.getMesh().getBoundingInfo().boundingBox.center);
 
@@ -1285,9 +1261,9 @@ class LineChart extends BaseChart {
     }
 
     myUpdate(){
-        this.masterTransform.rotation.x +=.007;
-        this.masterTransform.rotation.y +=.007;
-        this.masterTransform.rotation.z +=.007;
+        // this.masterTransform.rotation.x +=.007;
+        // this.masterTransform.rotation.y +=.007;
+        // this.masterTransform.rotation.z +=.007;
     }
 }
 
@@ -1297,7 +1273,7 @@ class PieChart extends BaseChart {
     constructor(scene, options, gui3D, gui2D) {
         super(scene, options, gui3D, gui2D);
 
-        // console.log(options);
+        console.log(options);
 
         this.parseData();
 
@@ -1308,9 +1284,11 @@ class PieChart extends BaseChart {
         // this.masterTransform.rotation.x = -2*Math.PI;
 
         // this.fadeIn();
-        this.moveMe(new BABYLON.Vector3(-400,0,0), new BABYLON.Vector3(500,0,-150),30,2);
-        this.scaleMe(new BABYLON.Vector3(0.000001,0.000001,0.000001), new BABYLON.Vector3(.25,.25,.25),30,2);
-        this.rotateMeY( 0,6*Math.PI,30,2);
+        if (options.transition){
+            this.moveMe(new BABYLON.Vector3(-400,0,0), new BABYLON.Vector3(150,-100,-350),30,2);
+            this.scaleMe(new BABYLON.Vector3(0.00000001,0.00000001,0.00000001), new BABYLON.Vector3(.25,.25,.25),30,2);
+            this.rotateMeY( 0,6*Math.PI,30,2);
+        }
     }
 
     addPieSlice(options) {
@@ -1483,7 +1461,7 @@ class PieChart extends BaseChart {
 
     myUpdate(){
         // this.masterTransform.rotation.x +=.01;
-        this.masterTransform.rotation.y +=.01;
+        // this.masterTransform.rotation.y +=.01;
         // this.masterTransform.rotation.z +=.01;
     }
 } //  end PieChart class

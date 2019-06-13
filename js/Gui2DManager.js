@@ -153,7 +153,8 @@ class Gui2DManager {
             this.parentThis.scene.activeCamera.cameraDirection = new BABYLON.Vector3(0,0,0);
             this.parentThis.scene.activeCamera.rotation = new BABYLON.Vector3(0,0,0);
             // this.parentThis.scene.activeCamera.cameraRotation = new BABYLON.Vector2(0,0);
-            this.parentThis.scene.activeCamera.position = new BABYLON.Vector3(254,150,-650);        });
+            this.parentThis.scene.activeCamera.position = new BABYLON.Vector3(0,0,-550);        
+        });
         panelCameraOptions.addControl(positioning); 
 
         let cameraType = BABYLON.GUI.Button.CreateSimpleButton('camera type  button', 'Target');
@@ -493,7 +494,10 @@ class Gui2DManager {
 
         let buttonDownload = BABYLON.GUI.Button.CreateSimpleButton('download button', 'Save/DL');
         formatButton(buttonDownload);
-        buttonDownload.onPointerUpObservable.add(() =>{BABYLON.Tools.CreateScreenshotUsingRenderTarget(this.parentThis.engine, this.parentThis.scene.cameras[0],  { width: this.parentThis.options.width*6, height: this.parentThis.options.height*6 })});
+        buttonDownload.onPointerUpObservable.add(() =>{
+            let ratio = 1000/this.parentThis.options.width;
+            console.log(ratio);
+            BABYLON.Tools.CreateScreenshotUsingRenderTarget(this.parentThis.engine, this.parentThis.scene.cameras[0],  { width: this.parentThis.options.width*6, height: this.parentThis.options.height*6 })});
         panelDLOptions.addControl(buttonDownload);  
 
         let buttonGeneric2 = BABYLON.GUI.Button.CreateSimpleButton('generic button', '***');

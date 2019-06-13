@@ -1,0 +1,104 @@
+
+
+Developer will be able to instantiate a new scene manager and tie it to a canvas element    ** COMPLETED **
+
+
+Developer will be able to use the scene manager to 
+    Add a chart to the scene                ** COMPLETED **
+    Remove a chart                          ** COMPLETED **
+    Update a chart
+
+
+Developer will be able to customize the scene at creation
+    Camera Type                             ** COMPLETED **
+    Canvas Size                             ** COMPLETED **
+    Background Color                        ** COMPLETED **
+    First Person Camera Speed
+    Camera Position/Angle/Lookat
+    Lighting
+    Logo Placement
+
+
+Developer will be able to customize a chart at creation
+    Type                                    ** COMPLETED **
+    Data                                    ** COMPLETED **
+    Text Color                              ** COMPLETED **
+    Back Panel
+    Text Size
+    3D Aspects (text depths, chart/element thickness)
+    Legend
+    masterTransform Properties (position, rotation, scale)
+    Initial chart transition onto Scene
+    Keyframe transitions for presentation mode
+    Disable User GUI
+
+Developer will be able to submit chart animations
+    Move
+    Rotate
+    Scale
+
+Developer will be able to customize the palette
+    Modify Single palette color             ** COMPLETED **
+    Define a Custom Gradient                ** COMPLETED **
+    Material Texture
+
+
+////////////////////////////////////////////////////////////////////////////////////////
+
+User will see a legend
+
+User will be able to hover over a chart element for details             ** COMPLETED **
+
+
+User will be able to Right Click on a chart element for a custom menu   ** COMPLETED **
+User will be able to select custom menu items
+    Change element/series color
+    See details of the element (modal)
+    Make element the cameras target/focus if applicable
+
+
+
+If userGUI is enabled...
+
+User will be able to adjust the Scene Properties
+    Move the Camera around the Scene                                    ** COMPLETED **
+    Configure Camera Control Buttons/Mouse
+    Change Camera Properties (Position/Angles/LookAt)
+    Change Background Color
+
+User will be able to select a specific chart to manipulate
+
+
+User will be able to adjust a Charts Properties
+    Change the color of a series/item                                   ** COMPLETED **
+    Change Chart Type
+    Select/deselect series/items
+    View Palette 
+    Modify Palette
+    Change the label size/color
+    Change the title text/size/color
+    Change Legend Properties
+
+
+
+User will be able to
+User will be able to
+
+
+
+
+
+
+Chart Types
+    Bar Chart
+    Stacked Bar Chart
+    3D Bar Chart
+    Pie Chart
+    Point/Line Chart
+
+    Gauge
+    Area Chart
+    Scatter Plot
+    Bubble Chart
+    Funnel Chart
+    Box Plot

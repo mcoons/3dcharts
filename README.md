@@ -1,9 +1,33 @@
 # 3dcharts
 
-/*  DESCRIPTION: class ChartSceneManager 
+DESCRIPTION: 
 
-    Main management class.  
-        returns a scene object
+/////////////////////////////////////////////////////////////////////////
+
+USAGE:
+
+
+let sceneManager1 = new ChartSceneManager( {id: 'mixed',                // required - id of canvas element to use
+                                            width: 600,                 //  <default 300>
+                                            height: 350} );
+
+let dataSeries = getDataProdecure();
+
+let chart1_1 = sceneManager1.addChart( {type: 'pie',                    // required - ['line', 'bar', 'stacked', '3D', 'pie']
+                                        title: 'Monthly Pie Sales',     // required
+                                        data: dataSeries,               // required
+                                        doughnut: true} );
+
+sceneManager1.removeChart(chart1_1);
+
+
+/////////////////////////////////////////////////////////////////////////
+
+
+class ChartSceneManager
+
+    Main scene management class.  
+        returns a scene ID or null
         usage: 
             let sceneManager1 = new ChartSceneManager(sceneOptions);
 
@@ -14,7 +38,7 @@
                 width: 600,                 //  <default 300>
                 height: 350,                //  <default 200>
                 cameraFirstPerson: true,    //  <default true>
-                 backgroundColor: {         //  <default white>
+                backgroundColor: {          //  <default white>
                      r: 0,
                      g: 0,
                      b: 0
