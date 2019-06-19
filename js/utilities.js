@@ -226,3 +226,11 @@ let months = {
         short: 'Dec'
     }
 }
+
+// function Attach(object, parent) {
+//     var invParentMatrix = BABYLON.Matrix.Invert(parent.getWorldMatrix());  
+//     var newMatrix = object.getWorldMatrix().multiply(invParentMatrix);
+//     object.parent = parent;
+//     newMatrix.decompose(object.scaling, object.rotationQuaternion, object.position);
+  
+//   }

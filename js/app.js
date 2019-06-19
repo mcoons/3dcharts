@@ -21,13 +21,11 @@ function getRESTData(url) {
         }
     }
     
-    // Send request
     request.send();
 }
 
 
-// var retrievedData = 
-// getRESTData(url);
+// var retrievedData =  getRESTData(url);
 
 
 let sampleJSONData = {
@@ -146,12 +144,11 @@ function parseData(objectData) {
 }
 
 
-
 let dataSeries = {};
 
-for (let seriesCount = 0; seriesCount < 3; seriesCount++) {
+for (let seriesCount = 0; seriesCount < 5; seriesCount++) {
     dataSeries['Series' + seriesCount] = [];
-    for (let dataPoints = 1; dataPoints <= 12; dataPoints++) {
+    for (let dataPoints = 1; dataPoints <= 3; dataPoints++) {
 
         let data = {
             label: months[dataPoints].long,
@@ -167,15 +164,44 @@ for (let seriesCount = 0; seriesCount < 3; seriesCount++) {
     }
 }
 
-console.log('dataSeries:')
-console.log(dataSeries)
+// console.log('dataSeries:')
+// console.log(dataSeries)
 
-parseData(dataSeries);
-buildIt(dataSeries)
+// parseData(dataSeries);
+// buildIt(dataSeries, dataSeries2)
+
+
+
+let dataSeries2 = {};
+
+for (let seriesCount = 0; seriesCount < 3; seriesCount++) {
+    dataSeries2['Series' + seriesCount] = [];
+    for (let dataPoints = 1; dataPoints <= 12; dataPoints++) {
+
+        let data = {
+            label: months[dataPoints].long,
+            // label: 'Label'+ dataPoints,
+            value: 20 + 75 * (Math.abs(6 - dataPoints / (seriesCount + 1) + 2 + 3 * Math.sin(seriesCount * dataPoints))),
+            details: {
+                detail1: dataPoints,
+                detail2: dataPoints * dataPoints,
+                detail3: 1 / dataPoints
+            }
+        };
+        dataSeries2['Series' + seriesCount].push(data);
+    }
+}
+
+// console.log('dataSeries2:')
+// console.log(dataSeries2)
+
+// parseData(dataSeries2);
+buildIt(dataSeries, dataSeries2)
+
 
 ////////////////////////////////////////////////////////////////////
 
-function buildIt(data) {
+function buildIt(data, data2) {
     // console.log('data in buildIt' )
     // console.log(data);
 
@@ -192,6 +218,86 @@ function buildIt(data) {
     };
 
     let sceneManager1 = new ChartSceneManager(sceneOptions);
+
+
+    sceneOptions = {
+        id: 'bar1', // required - id of canvas element to use
+        width: 600, //  <default 300>
+        height: 350, //  <default 200>
+        cameraFirstPerson: true, //  <default true>
+        backgroundColor: { //  <default white>
+            r: 0.95,
+            g: 0.97,
+            b: 0.95
+        }
+    };
+
+    let sceneManager2 = new ChartSceneManager(sceneOptions);
+
+
+    sceneOptions = {
+        id: 'bar2', // required - id of canvas element to use
+        width: 600, //  <default 300>
+        height: 350, //  <default 200>
+        cameraFirstPerson: false, //  <default true>
+        backgroundColor: { //  <default white>
+            r: 0.0,
+            g: 0.0,
+            b: 0.0
+        }
+    };
+
+    let sceneManager3 = new ChartSceneManager(sceneOptions);
+
+
+    sceneOptions = {
+        id: 'bar3', // required - id of canvas element to use
+        width: 1200, //  <default 300>
+        height: 600, //  <default 200>
+        cameraFirstPerson: true, //  <default true>
+        backgroundColor: { //  <default white>
+            r: 0.15,
+            g: 0.0,
+            b: 0.0
+        }
+    };
+
+    let sceneManager4 = new ChartSceneManager(sceneOptions);
+
+
+    sceneOptions = {
+        id: 'pie', // required - id of canvas element to use
+        width: 600, //  <default 300>
+        height: 350, //  <default 200>
+        cameraFirstPerson: false, //  <default true>
+        backgroundColor: { //  <default white>
+            r: 1,
+            g: .95,
+            b: .95
+        }
+    };
+
+    let sceneManager6 = new ChartSceneManager(sceneOptions);
+
+
+
+    sceneOptions = {
+        id: 'bar4', // required - id of canvas element to use
+        width: 1200, //  <default 300>
+        height: 600, //  <default 200>
+        cameraFirstPerson: false, //  <default true>
+        backgroundColor: { //  <default white>
+            r: .95,
+            g: .95,
+            b: 1
+        }
+    };
+
+    let sceneManager5 = new ChartSceneManager(sceneOptions);
+
+
+
+
 
 
     let chartOptions = {
@@ -215,7 +321,6 @@ function buildIt(data) {
         transition: true
     };
 
-
     let chart1_1 = sceneManager1.addChart(chartOptions);
 
     // setTimeout( () => {sceneManager1.removeChart(chart1_1)}, 10000);
@@ -223,7 +328,7 @@ function buildIt(data) {
 
     chartOptions = {
         type: 'bar',
-        title: 'Monthly Metrics',
+        title: 'Quarterly Report',
         data: data,
 
         titleDepth: .01, //  < default .01 >
@@ -231,6 +336,7 @@ function buildIt(data) {
         round: false, //  < default false >          
         depth: 1.5, //  < default .25 >          
         alpha: 1, //  < default 1 >
+        showBackplanes: true,
 
         textDepth: .01, //  < default .01 >
         textColor: { //  < default black >
@@ -241,27 +347,14 @@ function buildIt(data) {
     };
 
     let chart1_2 = sceneManager1.addChart(chartOptions);
+    chart1_2.masterTransform.position.z = 500;
     // chart1_2.updateMaterial(1,{r:0,g:.5,b:1});
-    // chart1_2.updateMaterialGradient('#FF0000','#00FF00',1,5);
 
     // setTimeout(() => {sceneManager1.removeChart(chart1_2)}, 20000);
 
 
     ////////////////////////////////////////////////////////////////////
 
-    sceneOptions = {
-        id: 'bar1', // required - id of canvas element to use
-        width: 600, //  <default 300>
-        height: 350, //  <default 200>
-        cameraFirstPerson: true, //  <default true>
-        backgroundColor: { //  <default white>
-            r: 0.95,
-            g: 0.97,
-            b: 0.95
-        }
-    };
-
-    let sceneManager2 = new ChartSceneManager(sceneOptions);
 
 
     chartOptions.round = true;
@@ -270,8 +363,12 @@ function buildIt(data) {
         g: 0,
         b: 0
     };
+    chartOptions.showBackplanes = false;
+    chartOptions.data = data2;
+
 
     let chart2_1 = sceneManager2.addChart(chartOptions);
+    chart2_1.masterTransform.position.z = 500;
 
 
     // chartOptions.type = 'stacked';
@@ -281,36 +378,38 @@ function buildIt(data) {
 
 
     chartOptions.type = 'line';
+    chartOptions.title = 'Cost Analysis'
 
     let chart2_3 = sceneManager2.addChart(chartOptions);  // right
-    chart2_3.masterTransform.position.x = 275;
-    chart2_3.masterTransform.position.z = -550;
+    chart2_3.masterTransform.position.x = 500;
+    chart2_3.masterTransform.position.y = 0;
+    chart2_3.masterTransform.position.z = 0;
     chart2_3.masterTransform.rotation.y = Math.PI/2;
 
+    chartOptions.data = data;
+    chartOptions.title = 'Projected Stuff';
+    chartOptions.type = 'pie';
+    chartOptions.horizontal = true;
 
     let chart2_4 = sceneManager2.addChart(chartOptions);  //  left
-    chart2_4.masterTransform.position.x = -825;
-    chart2_4.masterTransform.position.z = -550;
-    chart2_4.masterTransform.rotation.y = 3*Math.PI/2;
+
+    chart2_4.masterTransform.position.x = -500;
+    chart2_4.masterTransform.position.y = 0;
+    chart2_4.masterTransform.position.z = 0;
+    // chart2_4.masterTransform.rotation.y = 3*Math.PI/2;
+    chart2_4.masterTransform.rotation.z = 3*Math.PI/2;
+    chart2_4.masterTransform.scaling.x = .5;
+    chart2_4.masterTransform.scaling.y = .5;
+    chart2_4.masterTransform.scaling.z = .5;
+
+    chartOptions.horizontal = false;
+
 
 
     ////////////////////////////////////////////////////////////////////
 
-    sceneOptions = {
-        id: 'bar2', // required - id of canvas element to use
-        width: 600, //  <default 300>
-        height: 350, //  <default 200>
-        cameraFirstPerson: false, //  <default true>
-        backgroundColor: { //  <default white>
-            r: 0.0,
-            g: 0.0,
-            b: 0.0
-        }
-    };
 
-    let sceneManager3 = new ChartSceneManager(sceneOptions);
-
-
+    chartOptions.title = 'Successful Repairs';
     chartOptions.type = 'stacked';
     chartOptions.round = false;
     chartOptions.alpha = 1;
@@ -322,11 +421,26 @@ function buildIt(data) {
     chartOptions.showBackplanes = true;
 
     let chart3_1 = sceneManager3.addChart(chartOptions);
+    chart3_1.updateMaterialGradient('#FF0000','#00FF00',1,5);
+
+    chart3_1.masterTransform.position.x = 0; 
+    chart3_1.masterTransform.position.y = 0; 
+    chart3_1.masterTransform.position.z = 0; 
+
+    chartOptions.title = 'Expense Report';
 
     chartOptions.type = 'line';
-
+    chartOptions.textColor = {
+        r: 1,
+        g: 1,
+        b: 1
+    };
+    chartOptions.data = data2
+    
     let chart3_2 = sceneManager3.addChart(chartOptions);
-    chart3_2.masterTransform.position.z = 5;
+    chart3_2.masterTransform.position.x = 0; 
+    chart3_2.masterTransform.position.y = 0; 
+    chart3_2.masterTransform.position.z = 5; 
     chart3_2.masterTransform.rotation.y = Math.PI;
     
 
@@ -334,25 +448,15 @@ function buildIt(data) {
 
     ////////////////////////////////////////////////////////////////////
 
-    sceneOptions = {
-        id: 'bar3', // required - id of canvas element to use
-        width: 600, //  <default 300>
-        height: 350, //  <default 200>
-        cameraFirstPerson: true, //  <default true>
-        backgroundColor: { //  <default white>
-            r: 0.15,
-            g: 0.0,
-            b: 0.0
-        }
-    };
 
-    let sceneManager4 = new ChartSceneManager(sceneOptions);
-
+    sceneManager4.scene.activeCamera.position.z = -500;
+    chartOptions.title = '3D Printer Sales';
 
     chartOptions.type = '3D';
     chartOptions.round = false;
     chartOptions.alpha = 1;
     chartOptions.titleDepth = 1;
+    chartOptions.data = data2;
     chartOptions.textColor = {
         r: .8,
         g: .8,
@@ -364,50 +468,12 @@ function buildIt(data) {
 
     ////////////////////////////////////////////////////////////////////
 
-    ////////////////////////////////////////////////////////////////////
-
-    sceneOptions = {
-        id: 'line1', // required - id of canvas element to use
-        width: 600, //  <default 300>
-        height: 350, //  <default 200>
-        cameraFirstPerson: true, //  <default true>
-        backgroundColor: { //  <default white>
-            r: .95,
-            g: .95,
-            b: 1
-        }
-    };
-
-    let sceneManager5 = new ChartSceneManager(sceneOptions);
-
-
-    chartOptions.type = 'line';
-    chartOptions.round = false;
-    chartOptions.textColor = {
-        r:0,
-        g:0,
-        b:0
-    }
-    chartOptions.titleDepth = .01;
-
-    let chart5_1 = sceneManager5.addChart(chartOptions);
-
 
     ////////////////////////////////////////////////////////////////////
-    sceneOptions = {
-        id: 'pie', // required - id of canvas element to use
-        width: 600, //  <default 300>
-        height: 350, //  <default 200>
-        cameraFirstPerson: false, //  <default true>
-        backgroundColor: { //  <default white>
-            r: 1,
-            g: .95,
-            b: .95
-        }
-    };
 
-    let sceneManager6 = new ChartSceneManager(sceneOptions);
 
+
+    chartOptions.title = 'Doughnut Sales';
 
     chartOptions.type = 'pie';
     chartOptions.textColor = {
@@ -416,8 +482,71 @@ function buildIt(data) {
         b:0
     }
     chartOptions.transition = false;
+    chartOptions.doughnut = true;
 
     let chart6_1 = sceneManager6.addChart(chartOptions);
+
+    ////////////////////////////////////////////////////////////////////
+
+    
+    chartOptions.title = 'User Count';
+
+    chartOptions.type = 'bar';
+    chartOptions.round = false;
+    chartOptions.textColor = {
+        r:0,
+        g:0,
+        b:0
+    }
+    chartOptions.titleDepth = 2;
+    chartOptions.showBackplanes = true;
+
+    
+    let chart5_1 = sceneManager5.addChart(chartOptions);
+    // chart5_1.masterTransform.position.z = 500;
+    chart5_1.masterTransform.position.z= -450;
+
+    chartOptions.title = 'Expense Report';
+
+
+    let chart5_2 = sceneManager5.addChart(chartOptions);
+    // chart5_1.masterTransform.position.z = 500;
+    chart5_2.masterTransform.position.z= 450;
+    chart5_2.masterTransform.rotation.y= Math.PI;
+    
+    
+    chartOptions.title = 'UFO Sightings';
+    chartOptions.data = data;
+
+
+    let chart5_3 = sceneManager5.addChart(chartOptions);
+    // chart5_1.masterTransform.position.z = 500;
+    chart5_3.masterTransform.position.x= -450;
+    chart5_3.masterTransform.rotation.y= Math.PI/2;
+
+    chartOptions.title = 'Books Read';
+
+    
+    let chart5_4 = sceneManager5.addChart(chartOptions);
+    // chart5_1.masterTransform.position.z = 500;
+    chart5_4.masterTransform.position.x= 450;
+    chart5_4.masterTransform.rotation.y= -Math.PI/2;
+    
+    
+    sceneManager5.scene.activeCamera.radius = 1000;
+    sceneManager5.scene.activeCamera.beta = Math.PI/2;
+    console.log(sceneManager5.scene.activeCamera.radius);
+
+    sceneManager5.scene.masterTransform =  BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: 10, diameterX: 10}, sceneManager5.scene);
+    
+    chart5_1.masterTransform.parent = sceneManager5.scene.masterTransform;
+    chart5_2.masterTransform.parent = sceneManager5.scene.masterTransform;
+    chart5_3.masterTransform.parent = sceneManager5.scene.masterTransform;
+    chart5_4.masterTransform.parent = sceneManager5.scene.masterTransform;
+
+    // sceneManager5.scene.masterTransform.position.y = 300;
+
+    // setInterval( ()=> {sceneManager5.scene.masterTransform.rotation.y += .003}, 1)
 
 
     ////////////////////////////////////////////////////////////////////

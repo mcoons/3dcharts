@@ -4,14 +4,36 @@ class ChartSceneManager {
     constructor(options) {   // scene options object
         this.options = {
             // defaults
+            id: null,
+            type: null,
+            width: 300,
+            height: 200,
+            cameraFirstPerson: true,
+            backgroundColor: { //  <default white>
+                r: 1,
+                g: 1,
+                b: 1
+            }
+
         }
         
         Object.assign(this.options, options);
+
+        if (this.options.id === null) {
+            console.log('ERROR: Scene canvas id not defined!');
+            return {error: 'ERROR: Scene canvas id not defined!'};
+        }
+
+        // if (this.options.type === null) {
+        //     console.log('ERROR: Scene type not defined!');
+        //     return {error: 'ERROR: Scene type not defined!'};
+        // }
 
         // Create base scene
         this.scene = this.initializeScene();
         this.gui3D = new Gui3DManager(this.scene, this.objects, options, this);
         this.gui2D = new Gui2DManager(this);
+
 
         this.chartsList = [];
 
@@ -46,26 +68,30 @@ class ChartSceneManager {
         let scene = new BABYLON.Scene(this.engine);
         // scene.debugLayer.show();
 
-        let light0 = new BABYLON.HemisphericLight("hemi", new BABYLON.Vector3(0, 1, -1), scene);
-        light0.intensity = .55;
+        // let light0 = new BABYLON.HemisphericLight("hemi", new BABYLON.Vector3(0, 1, -1), scene);
+        // light0.intensity = .55;
 
-        let light1 = new BABYLON.PointLight("light1", new BABYLON.Vector3(-500, -800, -500), scene);
-        light1.intensity = .5;
+        let light1 = new BABYLON.PointLight("light1", new BABYLON.Vector3(1500, 1500, 1500), scene);
+        light1.intensity = .9;
 
-        let light2 = new BABYLON.PointLight("light2", new BABYLON.Vector3(500, 800, -500), scene);
-        light2.intensity = .5;
+        let light2 = new BABYLON.PointLight("light2", new BABYLON.Vector3(-1500, -1500, -1500), scene);
+        light2.intensity = .9;
 
-        let light3 = new BABYLON.PointLight("light2", new BABYLON.Vector3(0, 150, 500), scene);
-        light3.intensity = .75;
+        let light3 = new BABYLON.PointLight("light2", new BABYLON.Vector3(1500, 1500, -1500), scene);
+        light3.intensity = .9;
+
+        let light4 = new BABYLON.PointLight("light2", new BABYLON.Vector3(-1500, -1500, 1500), scene);
+        light4.intensity = .9;
 
         let camera;
 
         if (this.options.cameraFirstPerson) {
-            camera = new BABYLON.UniversalCamera("UniversalCamera", new BABYLON.Vector3(0, 0, -18), scene);
-            camera.cameraDirection = new BABYLON.Vector3(0, 0, 0);
-            camera.rotation = new BABYLON.Vector3(0, 0, 0);
+            camera = new BABYLON.UniversalCamera("UniversalCamera", new BABYLON.Vector3(0, 0, 0), scene);
+            camera.setTarget(new BABYLON.Vector3(0,0,100));
+            //camera.cameraDirection = new BABYLON.Vector3(0, 0, 0);
+            //camera.rotation = new BABYLON.Vector3(0, 0, 0);
 //            camera.position = new BABYLON.Vector3(254, 150, -550);
-            camera.position = new BABYLON.Vector3(-0, 0, -550);
+            // camera.position = new BABYLON.Vector3(0, 0, 0);
 
             // if (this.options.ucCameraSpeed) camera.speed = this.options.ucCameraSpeed;
             // if (this.options.ucCameraRotX) camera.rotation.x = this.options.ucCameraRotX;
@@ -165,6 +191,45 @@ class ChartSceneManager {
 class BaseChart { 
 
     constructor(scene, options, gui3D, gui2D) {
+
+        this.options = {
+            type: null,
+            title: null,
+            data: null,
+    
+            titleDepth: .01, //  < default .01 >
+            doughnut: false,  // applies to pie chart only
+    
+            round: false, //  < default false >  applies to bar chart only        
+            depth: 10.5, //  < default .25 >          
+            alpha: 1, //  < default 1 >
+    
+            textDepth: .01, //  < default .01 >
+            textColor: { //  < default black >
+                r: 0,
+                g: 0,
+                b: 0
+            },
+            transition: false
+        };
+
+        Object.assign(this.options, options);
+
+        if (this.options.type === null) {
+            console.log('ERROR: Chart type not defined!');
+            return {error: 'ERROR: Chart type not defined!'};
+        }
+
+        if (this.options.title === null) {
+            console.log('ERROR: Chart title not defined!');
+            return {error: 'ERROR: Chart title not defined!'};
+        }
+
+        if (this.options.data === null) {
+            console.log('ERROR: Chart data not defined!');
+            return {error: 'ERROR: Chart data not defined!'};
+        }
+
         this.scene = scene;
         this.options = options;
         this.data = options.data;
@@ -178,12 +243,20 @@ class BaseChart {
         this.myTexts = [];
         this.myPlanes = [];
 
-        this.masterTransform = new BABYLON.TransformNode("root", this.scene); 
+        // this.masterTransform = new BABYLON.TransformNode("root", this.scene); 
+        this.masterTransform = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: 10, diameterX: 10}, this.scene);;
 
         this.materials = [];
         this.createMaterials(this.materials);
 
-        console.log(this.materials);
+
+
+        // this.sphere = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: 10, diameterX: 10}, this.scene);
+        // this.sphere.position.z = 10;
+        // this.sphere.material = this.materials[0];
+
+
+        //console.log(this.materials);
 
         this.padding = 10;
 
@@ -212,7 +285,11 @@ class BaseChart {
         for (let i = 0; i < colorList.length; i++) {
             let mat = new BABYLON.StandardMaterial("mat", this.scene);
             mat.diffuseColor = BABYLON.Color3.FromHexString(colorList[i]);
-            mat.specularColor = new BABYLON.Color3(0, 0, 0);
+            mat.specularColor =  BABYLON.Color3.FromHexString(colorList[i]);
+            // let tex = new BABYLON.Texture("textures/normal2.jpg", this.scene);	
+            // tex.coordinatesMode = 8;
+            // mat.bumpTexture = tex;
+	
             
             if (this.options.alpha){
                 mat.alpha = this.options.alpha;
@@ -241,7 +318,7 @@ class BaseChart {
         let length = endIndex - startIndex;
         for (let index = 0; index <= length; index++) {
             let newColor = getColor(startColor, endColor, 0, length, index);     
-            console.log(newColor);       
+            // console.log(newColor);       
             this.materials[index+startIndex].diffuseColor.r = newColor.r;
             this.materials[index+startIndex].diffuseColor.g = newColor.g;
             this.materials[index+startIndex].diffuseColor.b = newColor.b;
@@ -397,16 +474,26 @@ class BarChart extends BaseChart {
         this.options.planeWidth = this.planeWidth;
         this.options.planeHeight = this.planeHeight;
 
+        // this.masterTransform.setAbsolutePosition(new BABYLON.Vector3(this.planeWidth / 2, this.planeHeight / 2, 0));
+        // this.masterTransform.position.x = this.planeWidth / 2;
+        // this.masterTransform.position.y = this.planeHeight / 2;
+
+        this.masterTransform.position.x = this.planeWidth / 2;
+        this.masterTransform.position.y = this.planeHeight/2;
+
         this.titleDepth = this.options.titleDepth ? this.options.titleDepth : 1;
         // this.masterTransform.position = new BABYLON.Vector3(this.planeWidth / 2, this.planeHeight / 2, 0);
-        this.masterTransform.setPivotMatrix(BABYLON.Matrix.Translation(-this.planeWidth / 2, -this.planeHeight / 2, 0));
+        // this.masterTransform.setPivotMatrix(BABYLON.Matrix.Translation(-this.planeWidth / 2, -this.planeHeight / 2, 0));
 
         this.build(options);
 
-        console.log('masterTransform:');
-        console.log(this.masterTransform);
-        this.masterTransform.position.x = -this.planeWidth / 2;
-        this.masterTransform.position.y = -this.planeHeight / 2;
+        // console.log('masterTransform:');
+        // console.log(this.masterTransform);
+        this.masterTransform.position.x = 0;
+        this.masterTransform.position.y = 0;
+
+        
+        // this.masterTransform.setAbsolutePosition(new BABYLON.Vector3( 0 ,0 ,0 ));
         // this.fadeIn();
     }
 
@@ -432,9 +519,21 @@ class BarChart extends BaseChart {
         this.myTexts.push(rightScale);
 
         myBox.parent = this.masterTransform;
+        myBox.position.x -= this.masterTransform.position.x;
+        myBox.position.y -= this.masterTransform.position.y;
+        myBox.position.z -= this.masterTransform.position.z;
+
+
         leftScale.getMesh().parent = this.masterTransform;
+        leftScale.getMesh().position.x -= this.masterTransform.position.x;
+        leftScale.getMesh().position.y -= this.masterTransform.position.y;
+        leftScale.getMesh().position.z -= this.masterTransform.position.z;
+
+
         rightScale.getMesh().parent = this.masterTransform;
-        
+        rightScale.getMesh().position.x -= this.masterTransform.position.x;
+        rightScale.getMesh().position.y -= this.masterTransform.position.y;
+        rightScale.getMesh().position.z -= this.masterTransform.position.z;
 
     }
 
@@ -521,6 +620,12 @@ class BarChart extends BaseChart {
 
             chartPlane.position.x = (this.elementWidth + this.padding) * this.seriesLength / 2 + this.padding / 2;
             chartPlane.position.y = this.planeHeight / 2;
+
+            chartPlane.parent = this.masterTransform;
+            chartPlane.position.x -= this.masterTransform.position.x;
+            chartPlane.position.y -= this.masterTransform.position.y;
+            chartPlane.position.z -= this.masterTransform.position.z;
+
             this.myPlanes.push(chartPlane);
 
             var chartMarginPlane = BABYLON.MeshBuilder.CreatePlane("chartMarginPlane", {
@@ -530,6 +635,12 @@ class BarChart extends BaseChart {
 
             chartMarginPlane.position.x = (this.elementWidth+this.padding)*this.seriesLength/2 + this.padding/2;
             chartMarginPlane.position.y = this.planeHeight/2;
+
+            chartMarginPlane.parent = this.masterTransform;
+            chartMarginPlane.position.x -= this.masterTransform.position.x;
+            chartMarginPlane.position.y -= this.masterTransform.position.y;
+            chartMarginPlane.position.z -= this.masterTransform.position.z;
+
             this.myPlanes.push(chartMarginPlane);
         }
 
@@ -548,6 +659,9 @@ class BarChart extends BaseChart {
             this.myScales.push(myBox);
 
             myBox.parent = this.masterTransform;
+            myBox.position.x -= this.masterTransform.position.x;
+            myBox.position.y -= this.masterTransform.position.y;
+            myBox.position.z -= this.masterTransform.position.z;
         }
 
         // add scales
@@ -566,6 +680,10 @@ class BarChart extends BaseChart {
                 this.lineMat);
             this.myTexts.push(text);
             text.getMesh().parent = this.masterTransform;
+            text.getMesh().position.x -= this.masterTransform.position.x;
+            text.getMesh().position.y -= this.masterTransform.position.y;
+            text.getMesh().position.z -= this.masterTransform.position.z;
+            
         });
 
         let titleText = this.gui3D.create3DText(this.scene, 6, this.titleDepth, this.options.title, this.planeWidth / 2 / 6, this.planeHeight / 6 + 6 / 2, -1.75, this.lineMat);
@@ -573,12 +691,20 @@ class BarChart extends BaseChart {
         // titleText.getMesh().setPivotPoint(titleText.getMesh().getBoundingInfo().boundingBox.centerWorld, BABYLON.Space.WORLD);
         // console.log(titleText.getMesh().getBoundingInfo().boundingBox.center);
         titleText.getMesh().parent = this.masterTransform;
+        titleText.getMesh().position.x -= this.masterTransform.position.x;
+        titleText.getMesh().position.y -= this.masterTransform.position.y;
+        titleText.getMesh().position.z -= this.masterTransform.position.z;
+
 
         for (let elementIndex = 0; elementIndex < this.seriesLength; elementIndex++) {
             for (let seriesIndex = 0; seriesIndex < this.seriesCount; seriesIndex++) {
                 
                 let bar = this.addBar(elementIndex, seriesIndex);
                 bar.parent = this.masterTransform;
+                bar.position.x -= this.masterTransform.position.x;
+                bar.position.y -= this.masterTransform.position.y;
+                bar.position.z -= this.masterTransform.position.z;
+
             }
         }
     }
@@ -625,12 +751,14 @@ class StackedBarChart extends BaseChart {
 
         this.titleDepth = this.options.titleDepth ? this.options.titleDepth : 1;
 
-        this.masterTransform.setPivotMatrix(BABYLON.Matrix.Translation(-this.planeWidth / 2, -this.planeHeight / 2, 0));
+
+        this.masterTransform.position.x = this.planeWidth / 2;
+        this.masterTransform.position.y = this.planeHeight / 2;
+
+        // this.masterTransform.setPivotMatrix(BABYLON.Matrix.Translation(-this.planeWidth / 2, -this.planeHeight / 2, 0));
 
         this.build(options);
 
-        this.masterTransform.position.x = -this.planeWidth / 2;
-        this.masterTransform.position.y = -this.planeHeight / 2;
     }
 
     addScale(yPosition, label, textScale, gui3D) {
@@ -655,8 +783,21 @@ class StackedBarChart extends BaseChart {
         this.myTexts.push(rightScale);
 
         myBox.parent = this.masterTransform;
+        myBox.position.x -= this.masterTransform.position.x;
+        myBox.position.y -= this.masterTransform.position.y;
+        myBox.position.z -= this.masterTransform.position.z;
+
+
         leftScale.getMesh().parent = this.masterTransform;
+        leftScale.getMesh().position.x -= this.masterTransform.position.x;
+        leftScale.getMesh().position.y -= this.masterTransform.position.y;
+        leftScale.getMesh().position.z -= this.masterTransform.position.z;
+
+
         rightScale.getMesh().parent = this.masterTransform;
+        rightScale.getMesh().position.x -= this.masterTransform.position.x;
+        rightScale.getMesh().position.y -= this.masterTransform.position.y;
+        rightScale.getMesh().position.z -= this.masterTransform.position.z;
     }
 
     addBar(elementIndex, seriesIndex, seriesOffset){
@@ -750,7 +891,11 @@ class StackedBarChart extends BaseChart {
             chartMarginPlane.position.y = this.planeHeight/2;
             chartMarginPlane.material = this.materials[0];
             chartMarginPlane.position.z = .25;
+
             chartMarginPlane.parent = this.masterTransform;
+            chartMarginPlane.position.x -= this.masterTransform.position.x;
+            chartMarginPlane.position.y -= this.masterTransform.position.y;
+            chartMarginPlane.position.z -= this.masterTransform.position.z;
 
             this.myPlanes.push(chartMarginPlane);
 
@@ -774,6 +919,9 @@ class StackedBarChart extends BaseChart {
             this.myScales.push(myBox);
 
             myBox.parent = this.masterTransform;
+            myBox.position.x -= this.masterTransform.position.x;
+            myBox.position.y -= this.masterTransform.position.y;
+            myBox.position.z -= this.masterTransform.position.z;
         }
 
         // add scales
@@ -792,6 +940,9 @@ class StackedBarChart extends BaseChart {
                 this.lineMat);
             this.myTexts.push(text);
             text.getMesh().parent = this.masterTransform;
+            text.getMesh().position.x -= this.masterTransform.position.x;
+            text.getMesh().position.y -= this.masterTransform.position.y;
+            text.getMesh().position.z -= this.masterTransform.position.z;
 
         });
 
@@ -800,6 +951,9 @@ class StackedBarChart extends BaseChart {
         // titleText.getMesh().setPivotPoint(titleText.getMesh().getBoundingInfo().boundingBox.centerWorld, BABYLON.Space.WORLD);
         // console.log(titleText.getMesh().getBoundingInfo().boundingBox.center);
         titleText.getMesh().parent = this.masterTransform;
+        titleText.getMesh().position.x -= this.masterTransform.position.x;
+        titleText.getMesh().position.y -= this.masterTransform.position.y;
+        titleText.getMesh().position.z -= this.masterTransform.position.z;
 
         this.stackedHeight = []
 
@@ -810,6 +964,9 @@ class StackedBarChart extends BaseChart {
                 let bar = this.addBar(elementIndex, seriesIndex, this.stackedHeight[elementIndex]);
                 // stackedHeight[elementIndex] += this.options.data[this.seriesNames[seriesIndex]][elementIndex].value;
                 bar.parent = this.masterTransform;
+                bar.position.x -= this.masterTransform.position.x;
+                bar.position.y -= this.masterTransform.position.y;
+                bar.position.z -= this.masterTransform.position.z;
             }
         }
     }
@@ -1072,12 +1229,12 @@ class LineChart extends BaseChart {
         this.options.planeHeight = this.planeHeight;
 
         this.titleDepth = this.options.titleDepth ? this.options.titleDepth : 1;
-        this.masterTransform.setPivotMatrix(BABYLON.Matrix.Translation(-this.planeWidth / 2, -this.planeHeight / 2, 0));
+
+        this.masterTransform.position.x = this.planeWidth / 2;
+        this.masterTransform.position.y = this.planeHeight / 2;
 
         this.build(options);
 
-        this.masterTransform.position.x = -this.planeWidth / 2;
-        this.masterTransform.position.y = -this.planeHeight / 2;
     }
 
     addScale(yPosition, label, textScale, gui3D) {
@@ -1102,12 +1259,25 @@ class LineChart extends BaseChart {
         this.myTexts.push(rightScale);
 
         myBox.parent = this.masterTransform;
+        myBox.position.x -= this.masterTransform.position.x;
+        myBox.position.y -= this.masterTransform.position.y;
+        myBox.position.z -= this.masterTransform.position.z;
+
+
         leftScale.getMesh().parent = this.masterTransform;
+        leftScale.getMesh().position.x -= this.masterTransform.position.x;
+        leftScale.getMesh().position.y -= this.masterTransform.position.y;
+        leftScale.getMesh().position.z -= this.masterTransform.position.z;
+
+
         rightScale.getMesh().parent = this.masterTransform;
+        rightScale.getMesh().position.x -= this.masterTransform.position.x;
+        rightScale.getMesh().position.y -= this.masterTransform.position.y;
+        rightScale.getMesh().position.z -= this.masterTransform.position.z;
         
     }
 
-    addBar(elementIndex, seriesIndex, tubePath){
+    addPoint(elementIndex, seriesIndex, tubePath){
 
         let element = this.options.data[this.seriesNames[seriesIndex]][elementIndex];
 
@@ -1187,9 +1357,15 @@ class LineChart extends BaseChart {
 
             chartMarginPlane.position.x = (this.elementWidth+this.padding)*this.seriesLength/2 + this.padding/2;
             chartMarginPlane.position.y = this.planeHeight/2;
-            chartMarginPlane.parent = this.masterTransform;
-            chartMarginPlane.material = this.materials[0];
             chartMarginPlane.position.z = .25;
+
+            chartMarginPlane.parent = this.masterTransform;
+            chartMarginPlane.position.x -= this.masterTransform.position.x;
+            chartMarginPlane.position.y -= this.masterTransform.position.y;
+            chartMarginPlane.position.z -= this.masterTransform.position.z;  
+
+
+            chartMarginPlane.material = this.materials[0];
             this.myPlanes.push(chartMarginPlane);
         }
 
@@ -1208,6 +1384,9 @@ class LineChart extends BaseChart {
             this.myScales.push(myBox);
 
             myBox.parent = this.masterTransform;
+            myBox.position.x -= this.masterTransform.position.x;
+            myBox.position.y -= this.masterTransform.position.y;
+            myBox.position.z -= this.masterTransform.position.z;
         }
 
         // add scales
@@ -1226,11 +1405,17 @@ class LineChart extends BaseChart {
                 this.lineMat);
             this.myTexts.push(text);
             text.getMesh().parent = this.masterTransform;
+            text.getMesh().position.x -= this.masterTransform.position.x;
+            text.getMesh().position.y -= this.masterTransform.position.y;
+            text.getMesh().position.z -= this.masterTransform.position.z;            
         });
 
         let titleText = this.gui3D.create3DText(this.scene, 6, this.titleDepth, this.options.title, this.planeWidth / 2 / 6, this.planeHeight / 6 + 6 / 2, -1.75, this.lineMat);
         this.myTexts.push(titleText);
         titleText.getMesh().parent = this.masterTransform;
+        titleText.getMesh().position.x -= this.masterTransform.position.x;
+        titleText.getMesh().position.y -= this.masterTransform.position.y;
+        titleText.getMesh().position.z -= this.masterTransform.position.z;
 
         // titleText.getMesh().setPivotPoint(titleText.getMesh().getBoundingInfo().boundingBox.centerWorld, BABYLON.Space.WORLD);
         // console.log(titleText.getMesh().getBoundingInfo().boundingBox.center);
@@ -1240,8 +1425,11 @@ class LineChart extends BaseChart {
         for (let elementIndex = 0; elementIndex < this.seriesLength; elementIndex++) {
 
                 
-                let point = this.addBar(elementIndex, seriesIndex, tubePath);
+                let point = this.addPoint(elementIndex, seriesIndex, tubePath);
                 point.parent = this.masterTransform;
+                point.position.x -= this.masterTransform.position.x;
+                point.position.y -= this.masterTransform.position.y;
+                point.position.z -= this.masterTransform.position.z;
             }
 
             for (let index = 0; index < tubePath.length-1; index++) {
@@ -1249,12 +1437,16 @@ class LineChart extends BaseChart {
                 
                 let tube = BABYLON.MeshBuilder.CreateTube("tube", {path: [ element, tubePath[index+1] ]}, this.scene);
                 tube.parent = this.masterTransform;
+                // tube.position.x -= this.masterTransform.position.x;
+                // tube.position.y -= this.masterTransform.position.y;
+                // tube.position.z -= this.masterTransform.position.z;
 
+                
 
                 if (this.seriesCount > 1) {
                     tube.material = this.materials[seriesIndex + 1];
                 } else {
-                    tube.material = this.materials[0];
+                    tube.material = this.lineMat;
                 }
             }
         }
@@ -1273,7 +1465,7 @@ class PieChart extends BaseChart {
     constructor(scene, options, gui3D, gui2D) {
         super(scene, options, gui3D, gui2D);
 
-        console.log(options);
+        // console.log(options);
 
         this.parseData();
 
@@ -1285,7 +1477,7 @@ class PieChart extends BaseChart {
 
         // this.fadeIn();
         if (options.transition){
-            this.moveMe(new BABYLON.Vector3(-400,0,0), new BABYLON.Vector3(150,-100,-350),30,2);
+            this.moveMe(new BABYLON.Vector3(-400,0,0), new BABYLON.Vector3(250,-150,350),30,2);
             this.scaleMe(new BABYLON.Vector3(0.00000001,0.00000001,0.00000001), new BABYLON.Vector3(.25,.25,.25),30,2);
             this.rotateMeY( 0,6*Math.PI,30,2);
         }
@@ -1419,6 +1611,15 @@ class PieChart extends BaseChart {
     build() {
         let titleText = this.gui3D.create3DText(this.scene, 6, this.options.titleDepth, this.options.title, 0, 20, -.2, this.lineMat);
         titleText.getMesh().parent = this.masterTransform;
+        console.log(this.options);
+        if (this.options.horizontal){
+            console.log('horizontal');
+            // titleText.getMesh().setPivotPoint(new BABYLON.Vector3(0,0,0));
+            titleText.getMesh().rotation.x = 0;
+            titleText.getMesh().rotation.y = -Math.PI/2;
+            titleText.getMesh().position.x = -420;
+            titleText.getMesh().position.y = 0;
+        }
         this.myTexts.push(titleText);
 
         let max_label_size = 0;

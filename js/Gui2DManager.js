@@ -760,9 +760,9 @@ class Gui2DManager {
 
     showObjectValue(mesh, x, y){
         let panelContainer = new BABYLON.GUI.Rectangle();
-        panelContainer.adaptWidthToChildren = true;
+        // panelContainer.adaptWidthToChildren = true;
         // panelContainer.padding = '5px';
-        panelContainer.height = '80px';
+        panelContainer.height = '70px';
         // panelContainer.color = 'black';
         panelContainer.background = "white";
 
@@ -780,10 +780,10 @@ class Gui2DManager {
         
         
         let panel = new BABYLON.GUI.StackPanel();
-        panelContainer.paddingTop = '10px';
+        // panelContainer.paddingTop = '10px';
         
         panel.adaptWidthToChildren = true;
-        panel.padding = '5px';
+        // panel.padding = '15px';
 
         // panel.adaptHeightToChildren = true;
         panel.color = 'black';
@@ -804,7 +804,7 @@ class Gui2DManager {
         let text1;
         for (var property in mesh.userData) {
 
-            if (property != 'details'){
+            if (property != 'details' && property != 'material'){
             // console.log(property, mesh.userData[property]);
             
             text1 = new BABYLON.GUI.TextBlock();
@@ -828,8 +828,8 @@ class Gui2DManager {
         }
 
         // text1.width = (largestText + 20) + "px";
-        panel.width = (largestText - 25) + "px";
-        // panelContainer.width = (largestText + 10) + "px";
+        panel.width = (largestText) + "px";
+        panelContainer.width = (largestText + 2) + "px";
 
         panelContainer.paddingTop = 30;
 

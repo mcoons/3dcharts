@@ -7,6 +7,8 @@ Developer will be able to use the scene manager to
     Add a chart to the scene                ** COMPLETED **
     Remove a chart                          ** COMPLETED **
     Update a chart
+    Export Custom Settings
+    Import Custom Settings
 
 
 Developer will be able to customize the scene at creation
@@ -31,11 +33,14 @@ Developer will be able to customize a chart at creation
     Initial chart transition onto Scene
     Keyframe transitions for presentation mode
     Disable User GUI
+    Designate data object keys  for 'label,'Value' and 'Details'
+
 
 Developer will be able to submit chart animations
     Move
     Rotate
     Scale
+
 
 Developer will be able to customize the palette
     Modify Single palette color             ** COMPLETED **
@@ -47,13 +52,15 @@ Developer will be able to customize the palette
 
 User will see a legend
 
-User will be able to hover over a chart element for details             ** COMPLETED **
+User will be able to hover over a chart element for info             ** COMPLETED **
 
 
 User will be able to Right Click on a chart element for a custom menu   ** COMPLETED **
 User will be able to select custom menu items
     Change element/series color
-    See details of the element (modal)
+    See details of the element 
+        Modal/slide in that keeps a running tab of element details
+        Allow for copy/clipboard and editing? Notes?
     Make element the cameras target/focus if applicable
 
 
