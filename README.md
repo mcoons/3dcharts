@@ -7,18 +7,18 @@ DESCRIPTION:
 USAGE:
 
 
-let sceneManager1 = new ChartSceneManager( {id: 'mixed',                // required - id of canvas element to use
-                                            width: 600,                 //  <default 300>
-                                            height: 350} );
+    let sceneManager1 = new ChartSceneManager( {id: 'mixed',                // required - id of canvas element to use
+                                                width: 600,                 //  <default 300>
+                                                height: 350} );
 
-let dataSeries = getDataProdecure();
+    let dataSeries = getDataProdecure();
 
-let chart1_1 = sceneManager1.addChart( {type: 'pie',                    // required - ['line', 'bar', 'stacked', '3D', 'pie']
-                                        title: 'Monthly Pie Sales',     // required
-                                        data: dataSeries,               // required
-                                        doughnut: true} );
+    let chart1_1 = sceneManager1.addChart( {type: 'pie',                    // required - ['line', 'bar', 'stacked', '3D', 'pie']
+                                            title: 'Monthly Pie Sales',     // required
+                                            data: dataSeries,               // required
+                                            doughnut: true} );
 
-sceneManager1.removeChart(chart1_1);
+    sceneManager1.removeChart(chart1_1);
 
 
 /////////////////////////////////////////////////////////////////////////
@@ -111,4 +111,3 @@ class ChartSceneManager
             // ...
         }
 
-*/
