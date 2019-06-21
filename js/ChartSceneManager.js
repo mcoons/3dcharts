@@ -14,7 +14,6 @@ class ChartSceneManager {
                 g: 1,
                 b: 1
             }
-
         }
         
         Object.assign(this.options, options);
@@ -43,9 +42,6 @@ class ChartSceneManager {
 
             this.chartsList.forEach(chart => {
                 chart.myUpdate();
-                // chart.masterTransform.rotation.x +=.01;
-                // chart.masterTransform.rotation.y +=.01;
-                // chart.masterTransform.rotation.z +=.01;
             })
 
             this.scene.render();
@@ -72,16 +68,16 @@ class ChartSceneManager {
         // light0.intensity = .55;
 
         let light1 = new BABYLON.PointLight("light1", new BABYLON.Vector3(1500, 1500, 1500), scene);
-        light1.intensity = .9;
+        light1.intensity = .8;
 
         let light2 = new BABYLON.PointLight("light2", new BABYLON.Vector3(-1500, -1500, -1500), scene);
-        light2.intensity = .9;
+        light2.intensity = .8;
 
         let light3 = new BABYLON.PointLight("light2", new BABYLON.Vector3(1500, 1500, -1500), scene);
-        light3.intensity = .9;
+        light3.intensity = .8;
 
         let light4 = new BABYLON.PointLight("light2", new BABYLON.Vector3(-1500, -1500, 1500), scene);
-        light4.intensity = .9;
+        light4.intensity = .8;
 
         let camera;
 
@@ -90,7 +86,7 @@ class ChartSceneManager {
             camera.setTarget(new BABYLON.Vector3(0,0,100));
             //camera.cameraDirection = new BABYLON.Vector3(0, 0, 0);
             //camera.rotation = new BABYLON.Vector3(0, 0, 0);
-//            camera.position = new BABYLON.Vector3(254, 150, -550);
+            //camera.position = new BABYLON.Vector3(254, 150, -550);
             // camera.position = new BABYLON.Vector3(0, 0, 0);
 
             // if (this.options.ucCameraSpeed) camera.speed = this.options.ucCameraSpeed;
@@ -103,8 +99,8 @@ class ChartSceneManager {
             // if (this.options.ucCameraPosZ) camera.position.z = this.options.ucCameraPosZ;
 
         } else {
-            camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI/2, Math.PI / 3, 600, new BABYLON.Vector3(0, 0, 0), scene);
-
+            camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI/2, Math.PI / 2, 600, new BABYLON.Vector3(0, 0, 0), scene);
+            
             // camera.lowerRadiusLimit = 5;
             // camera.upperRadiusLimit = 40;
             // camera.lowerAlphaLimit = Math.PI;
@@ -151,7 +147,11 @@ class ChartSceneManager {
 
             case 'pie':
                 chart = new PieChart(this.scene, options, this.gui3D, this.gui2D);
-            break
+            break;
+
+            case 'gauge':
+                chart = new Gauge(this.scene, options, this.gui3D, this.gui2D);
+            break;
 
         
             default:
@@ -244,7 +244,7 @@ class BaseChart {
         this.myPlanes = [];
 
         // this.masterTransform = new BABYLON.TransformNode("root", this.scene); 
-        this.masterTransform = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: 10, diameterX: 10}, this.scene);;
+        this.masterTransform = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: 1}, this.scene);
 
         this.materials = [];
         this.createMaterials(this.materials);
@@ -286,6 +286,7 @@ class BaseChart {
             let mat = new BABYLON.StandardMaterial("mat", this.scene);
             mat.diffuseColor = BABYLON.Color3.FromHexString(colorList[i]);
             mat.specularColor =  BABYLON.Color3.FromHexString(colorList[i]);
+            // mat.specularColor = new BABYLON.Color3(mat.diffuseColor.r*1.4,mat.diffuseColor.g*1.4,mat.diffuseColor.b*1.4)
             // let tex = new BABYLON.Texture("textures/normal2.jpg", this.scene);	
             // tex.coordinatesMode = 8;
             // mat.bumpTexture = tex;
@@ -299,6 +300,7 @@ class BaseChart {
 
             materials.push(mat);
         }
+        materials[0].specularColor = new BABYLON.Color3(.4,.4,.4);
     }
 
     updateMaterial(index, color){
@@ -745,7 +747,7 @@ class StackedBarChart extends BaseChart {
         this.planeWidth = (this.elementWidth + this.padding) * this.seriesLength + this.padding;
         this.planeHeight = 300;
 
-        this.scene.activeCamera.position.x = (this.elementWidth + this.padding) * this.seriesLength / 2 + this.padding / 2
+        // this.scene.activeCamera.position.x = (this.elementWidth + this.padding) * this.seriesLength / 2 + this.padding / 2
         this.options.planeWidth = this.planeWidth;
         this.options.planeHeight = this.planeHeight;
 
@@ -758,6 +760,9 @@ class StackedBarChart extends BaseChart {
         // this.masterTransform.setPivotMatrix(BABYLON.Matrix.Translation(-this.planeWidth / 2, -this.planeHeight / 2, 0));
 
         this.build(options);
+
+        this.masterTransform.position.x = 0;
+        this.masterTransform.position.y = 0;
 
     }
 
@@ -1116,7 +1121,7 @@ class BarChart3D extends BaseChart {
         return bar;
     }
 
-    build(barChartOptionsxx) {
+    build() {
         // console.log('barChartOptions: ', barChartOptionsxx);
 
         if (this.options.showBackplanes){
@@ -1337,7 +1342,7 @@ class LineChart extends BaseChart {
         return point;
     }
 
-    build(barChartOptionsxx) {
+    build() {
         // console.log('barChartOptions: ', barChartOptionsxx);
 
         if (this.options.showBackplanes){
@@ -1666,3 +1671,156 @@ class PieChart extends BaseChart {
         // this.masterTransform.rotation.z +=.01;
     }
 } //  end PieChart class
+
+
+class Gauge extends BaseChart {
+    
+    constructor(scene, options, gui3D, gui2D){
+        super(scene, options, gui3D, gui2D);
+
+        this.parseData();
+
+        this.build();
+    }
+
+    addNeedle(options){
+
+    }
+
+    addScale(options){
+
+    }
+
+    build(options){
+        let value = this.options.value;
+        let titleText = this.options.title;
+        let seriesMaterial = 15;
+
+        // basic settings for a cylinder
+        let settings = {
+            height: 20,
+            diameterTop: 500,
+            diameterBottom: 500,
+            tessellation: 40,
+            arc: .55, 
+            sideOrientation: BABYLON.Mesh.DOUBLESIDE
+        };
+
+        // create the slice pieces and side caps(planes) f
+        let slice1 = BABYLON.MeshBuilder.CreateCylinder('GuageFace', settings, this.scene);
+        slice1.rotation.y = Math.PI-.16;
+
+        settings.height = .01;
+        settings.arc = 1;
+        let slice2 = BABYLON.MeshBuilder.CreateCylinder('GuageTextArea', settings, this.scene);
+        settings.diameterTop = 50;
+        settings.diameterBottom = 50;
+        settings.height = 35;
+        
+        let slice3 = BABYLON.MeshBuilder.CreateCylinder('center', settings, this.scene);
+//        slice2.rotation.y = Math.PI/4 + Math.PI/2;
+        // slice2.rotation.y = Math.PI;
+        
+        let torus = BABYLON.MeshBuilder.CreateTorus("OuterRing", {thickness: 35, diameter: 500, tessellation: 64}, this.scene);
+
+        slice1.parent = this.masterTransform;
+        slice2.parent = this.masterTransform;
+        slice3.parent = this.masterTransform;
+        slice2.material = this.lineMat;
+        slice3.material = this.lineMat;
+
+        torus.parent = this.masterTransform;
+        torus.material = this.materials[0];
+
+        
+        let count = 0;
+        for (let t = Math.PI; t >= 0; t -= Math.PI / 10){
+            // let s = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: 10, diameterX: 10}, this.scene);
+            let x = Math.cos(t);
+            let z = Math.sin(t);
+            
+            // s.position.x = 50*x;
+            // s.position.z = 50*z;
+            // s.parent = this.masterTransform;
+
+
+            let path = [
+                new BABYLON.Vector3(175*x, 38, 175*z),
+                new BABYLON.Vector3(160*x, 38, 160*z)
+            ];
+        
+            let tube = BABYLON.MeshBuilder.CreateTube("tube", {path: path, radius: 2.5}, this.scene);
+            tube.material = this.lineMat;
+            tube.scaling.y = .4;
+            tube.parent = this.masterTransform;
+
+            let scale = 5.8;
+            let depth = .01;
+            let displayText = (10*count).toString();
+            let xPos = 200*x/scale;
+            let zPos = 195*z/scale;
+            let yPos = 15/scale;
+            let color = this.lineMat;
+            
+
+            let text = this.gui3D.create3DText(this.scene, scale, depth, displayText, xPos, yPos, zPos, color);
+            text.getMesh().parent = this.masterTransform;
+            text.getMesh().rotation.x = 0;
+
+            count++;
+        }
+
+        let scale = 8.8;
+        let depth = 1;
+        let displayText = value+'%';
+        let xPos =0;
+        let zPos = -150/scale;
+        let yPos = 10/scale;
+        let color = this.materials[this.options.materialIndex];
+        
+
+        let text = this.gui3D.create3DText(this.scene, scale, depth, displayText, xPos, yPos, zPos, color);
+        text.getMesh().parent = this.masterTransform;
+        text.getMesh().rotation.x = 0;
+
+
+        scale = 8.8;
+        depth = .01;
+        displayText = titleText;
+        xPos =0;
+        zPos = 300/scale;
+        yPos = 1/scale;
+        color = this.materials[0];
+        
+
+        let title = this.gui3D.create3DText(this.scene, scale, depth, displayText, xPos, yPos, zPos, color);
+        title.getMesh().parent = this.masterTransform;
+        title.getMesh().rotation.x = 0;
+
+
+
+        let theta = remap(value, 0, 100, Math.PI, 0)
+        let px = Math.cos(theta);
+        let pz = Math.sin(theta);
+
+        let path = [
+            new BABYLON.Vector3(0, 25, 0),
+            new BABYLON.Vector3(250*px, 15, 250*pz)
+        ];
+    
+        let tube = BABYLON.MeshBuilder.CreateTube("arrow", {path: path, radius: 8.8}, this.scene);
+        tube.material = this.materials[this.options.materialIndex];
+        tube.scaling.y = .4;
+
+        tube.parent = this.masterTransform;
+
+        this.masterTransform.rotation.x = -Math.PI/2;
+
+        // this.masterTransform.scaling = new BABYLON.Vector3(5,5,5);
+
+    }
+
+    myUpdate(){
+    }
+
+}

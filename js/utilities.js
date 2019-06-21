@@ -176,56 +176,7 @@ var colorList = [
     "#E85EBE"
 ];
 
-let months = {
-    1: {
-        long: 'January',
-        short: 'Jan'
-    },
-    2: {
-        long: 'February',
-        short: 'Feb'
-    },
-    3: {
-        long: 'March',
-        short: 'Mar'
-    },
-    4: {
-        long: 'April',
-        short: 'Apr'
-    },
-    5: {
-        long: 'May',
-        short: 'May'
-    },
-    6: {
-        long: 'June',
-        short: 'Jun'
-    },
-    7: {
-        long: 'July',
-        short: 'Jul'
-    },
-    8: {
-        long: 'August',
-        short: 'Aug'
-    },
-    9: {
-        long: 'September',
-        short: 'Sep'
-    },
-    10: {
-        long: 'October',
-        short: 'Oct'
-    },
-    11: {
-        long: 'November',
-        short: 'Nov'
-    },
-    12: {
-        long: 'December',
-        short: 'Dec'
-    }
-}
+
 
 // function Attach(object, parent) {
 //     var invParentMatrix = BABYLON.Matrix.Invert(parent.getWorldMatrix());  

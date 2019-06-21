@@ -109,3 +109,10 @@ Chart Types
     Bubble Chart
     Funnel Chart
     Box Plot
+
+
+Transitions
+    Fade In/Out
+    Emerge/Disappear into floor
+    Explode
+    
