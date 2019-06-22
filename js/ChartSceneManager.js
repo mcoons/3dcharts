@@ -157,6 +157,10 @@ class ChartSceneManager {
                 chart = new Gauge2(this.scene, options, this.gui3D, this.gui2D);
             break;
 
+            case 'area':
+                chart = new AreaChart(this.scene, options, this.gui3D, this.gui2D);
+            break;
+
         
             default:
                 console.log('ERROR: Invalid chart type');
@@ -248,7 +252,7 @@ class BaseChart {
         this.myPlanes = [];
 
         // this.masterTransform = new BABYLON.TransformNode("root", this.scene); 
-        this.masterTransform = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: 1}, this.scene);
+        this.masterTransform = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: 10}, this.scene);
 
         this.materials = [];
         this.createMaterials(this.materials);
@@ -269,8 +273,8 @@ class BaseChart {
         // Basic line/text material
         this.lineMat = new BABYLON.StandardMaterial("lineMat", this.scene);
         this.lineMat.alpha = 1;
-        this.lineMat.specularColor = new BABYLON.Color3(0, 0, 0);
-        this.lineMat.emissiveColor = new BABYLON.Color3(0, 0, 0);
+        // this.lineMat.specularColor = new BABYLON.Color3(0, 0, 0);
+        // this.lineMat.emissiveColor = new BABYLON.Color3(0, 0, 0);
 
         if (this.options.textColor) {
             this.lineMat.diffuseColor = new BABYLON.Color3(this.options.textColor.r, this.options.textColor.g, this.options.textColor.b);
@@ -310,7 +314,7 @@ class BaseChart {
     updateMaterial(index, color){
         if (index >= this.materials.length || index < 0) { 
             console.log('ERROR: Material index out of range.');
-            return;
+            // return;
         } else {
             this.materials[index].diffuseColor.r = color.r;
             this.materials[index].diffuseColor.g = color.g;
@@ -384,6 +388,46 @@ class BaseChart {
                     actionOptions[key]
                 ));
         });
+    }
+
+    addScale(yPosition, label, textScale, gui3D) {
+        let myBox = BABYLON.MeshBuilder.CreateBox("myBox", {
+            height: 1,
+            width: this.options.planeWidth,
+            depth: 1.2
+        }, this.scene);
+
+        myBox.material = this.lineMat;
+        myBox.position.x = this.options.planeWidth / 2;
+        myBox.position.y = yPosition;
+        myBox.position.z = 0;
+
+        // let leftScale = this.gui3D.create3DText(this.scene, textScale, this.textDepth, label, -6, yPosition / textScale - textScale / 3, -5, this.lineMat);
+        // let rightScale = this.gui3D.create3DText(this.scene, textScale, this.textDepth, label, this.planeWidth / textScale + 6, yPosition / textScale - textScale / 3, -5, this.lineMat);
+        let leftScale = this.gui3D.create3DText(this.scene, textScale, this.textDepth, label, -6, yPosition/textScale -textScale/3, -1.75, this.lineMat);
+        let rightScale = this.gui3D.create3DText(this.scene, textScale, this.textDepth, label, this.planeWidth / textScale + 6, yPosition / textScale, -1.75, this.lineMat);
+
+        this.myScales.push(myBox)
+        this.myTexts.push(leftScale);
+        this.myTexts.push(rightScale);
+
+        myBox.parent = this.masterTransform;
+        myBox.position.x -= this.masterTransform.position.x;
+        myBox.position.y -= this.masterTransform.position.y;
+        myBox.position.z -= this.masterTransform.position.z;
+
+
+        leftScale.getMesh().parent = this.masterTransform;
+        leftScale.getMesh().position.x -= this.masterTransform.position.x;
+        leftScale.getMesh().position.y -= this.masterTransform.position.y;
+        leftScale.getMesh().position.z -= this.masterTransform.position.z;
+
+
+        rightScale.getMesh().parent = this.masterTransform;
+        rightScale.getMesh().position.x -= this.masterTransform.position.x;
+        rightScale.getMesh().position.y -= this.masterTransform.position.y;
+        rightScale.getMesh().position.z -= this.masterTransform.position.z;
+
     }
 
     destroySelf(chart) {
@@ -503,45 +547,45 @@ class BarChart extends BaseChart {
         // this.fadeIn();
     }
 
-    addScale(yPosition, label, textScale, gui3D) {
-        let myBox = BABYLON.MeshBuilder.CreateBox("myBox", {
-            height: 1,
-            width: this.options.planeWidth,
-            depth: 1.2
-        }, this.scene);
+    // addScale(yPosition, label, textScale, gui3D) {
+    //     let myBox = BABYLON.MeshBuilder.CreateBox("myBox", {
+    //         height: 1,
+    //         width: this.options.planeWidth,
+    //         depth: 1.2
+    //     }, this.scene);
 
-        myBox.material = this.lineMat;
-        myBox.position.x = this.options.planeWidth / 2;
-        myBox.position.y = yPosition;
-        myBox.position.z = 0;
+    //     myBox.material = this.lineMat;
+    //     myBox.position.x = this.options.planeWidth / 2;
+    //     myBox.position.y = yPosition;
+    //     myBox.position.z = 0;
 
-        // let leftScale = this.gui3D.create3DText(this.scene, textScale, this.textDepth, label, -6, yPosition / textScale - textScale / 3, -5, this.lineMat);
-        // let rightScale = this.gui3D.create3DText(this.scene, textScale, this.textDepth, label, this.planeWidth / textScale + 6, yPosition / textScale - textScale / 3, -5, this.lineMat);
-        let leftScale = this.gui3D.create3DText(this.scene, textScale, this.textDepth, label, -6, yPosition/textScale -textScale/3, -1.75, this.lineMat);
-        let rightScale = this.gui3D.create3DText(this.scene, textScale, this.textDepth, label, this.planeWidth / textScale + 6, yPosition / textScale, -1.75, this.lineMat);
+    //     // let leftScale = this.gui3D.create3DText(this.scene, textScale, this.textDepth, label, -6, yPosition / textScale - textScale / 3, -5, this.lineMat);
+    //     // let rightScale = this.gui3D.create3DText(this.scene, textScale, this.textDepth, label, this.planeWidth / textScale + 6, yPosition / textScale - textScale / 3, -5, this.lineMat);
+    //     let leftScale = this.gui3D.create3DText(this.scene, textScale, this.textDepth, label, -6, yPosition/textScale -textScale/3, -1.75, this.lineMat);
+    //     let rightScale = this.gui3D.create3DText(this.scene, textScale, this.textDepth, label, this.planeWidth / textScale + 6, yPosition / textScale, -1.75, this.lineMat);
 
-        this.myScales.push(myBox)
-        this.myTexts.push(leftScale);
-        this.myTexts.push(rightScale);
+    //     this.myScales.push(myBox)
+    //     this.myTexts.push(leftScale);
+    //     this.myTexts.push(rightScale);
 
-        myBox.parent = this.masterTransform;
-        myBox.position.x -= this.masterTransform.position.x;
-        myBox.position.y -= this.masterTransform.position.y;
-        myBox.position.z -= this.masterTransform.position.z;
-
-
-        leftScale.getMesh().parent = this.masterTransform;
-        leftScale.getMesh().position.x -= this.masterTransform.position.x;
-        leftScale.getMesh().position.y -= this.masterTransform.position.y;
-        leftScale.getMesh().position.z -= this.masterTransform.position.z;
+    //     myBox.parent = this.masterTransform;
+    //     myBox.position.x -= this.masterTransform.position.x;
+    //     myBox.position.y -= this.masterTransform.position.y;
+    //     myBox.position.z -= this.masterTransform.position.z;
 
 
-        rightScale.getMesh().parent = this.masterTransform;
-        rightScale.getMesh().position.x -= this.masterTransform.position.x;
-        rightScale.getMesh().position.y -= this.masterTransform.position.y;
-        rightScale.getMesh().position.z -= this.masterTransform.position.z;
+    //     leftScale.getMesh().parent = this.masterTransform;
+    //     leftScale.getMesh().position.x -= this.masterTransform.position.x;
+    //     leftScale.getMesh().position.y -= this.masterTransform.position.y;
+    //     leftScale.getMesh().position.z -= this.masterTransform.position.z;
 
-    }
+
+    //     rightScale.getMesh().parent = this.masterTransform;
+    //     rightScale.getMesh().position.x -= this.masterTransform.position.x;
+    //     rightScale.getMesh().position.y -= this.masterTransform.position.y;
+    //     rightScale.getMesh().position.z -= this.masterTransform.position.z;
+
+    // }
 
     addBar(elementIndex, seriesIndex){
 
@@ -790,44 +834,44 @@ class StackedBarChart extends BaseChart {
 
     }
 
-    addScale(yPosition, label, textScale, gui3D) {
-        let myBox = BABYLON.MeshBuilder.CreateBox("myBox", {
-            height: 1,
-            width: this.options.planeWidth,
-            depth: 1.2
-        }, this.scene);
+    // addScale(yPosition, label, textScale, gui3D) {
+    //     let myBox = BABYLON.MeshBuilder.CreateBox("myBox", {
+    //         height: 1,
+    //         width: this.options.planeWidth,
+    //         depth: 1.2
+    //     }, this.scene);
 
-        myBox.material = this.lineMat;
-        myBox.position.x = this.options.planeWidth / 2;
-        myBox.position.y = yPosition;
-        myBox.position.z = 0;
+    //     myBox.material = this.lineMat;
+    //     myBox.position.x = this.options.planeWidth / 2;
+    //     myBox.position.y = yPosition;
+    //     myBox.position.z = 0;
 
-        // let leftScale = this.gui3D.create3DText(this.scene, textScale, this.textDepth, label, -6, yPosition / textScale - textScale / 3, -5);
-        // let rightScale = this.gui3D.create3DText(this.scene, textScale, this.textDepth, label, this.planeWidth / textScale + 6, yPosition / textScale - textScale / 3, -5);
-        let leftScale = this.gui3D.create3DText(this.scene, textScale, this.textDepth, label, -6, yPosition/textScale -textScale/3, -1.75, this.lineMat);
-        let rightScale = this.gui3D.create3DText(this.scene, textScale, this.textDepth, label, this.planeWidth / textScale + 6, yPosition / textScale, -1.75, this.lineMat);
+    //     // let leftScale = this.gui3D.create3DText(this.scene, textScale, this.textDepth, label, -6, yPosition / textScale - textScale / 3, -5);
+    //     // let rightScale = this.gui3D.create3DText(this.scene, textScale, this.textDepth, label, this.planeWidth / textScale + 6, yPosition / textScale - textScale / 3, -5);
+    //     let leftScale = this.gui3D.create3DText(this.scene, textScale, this.textDepth, label, -6, yPosition/textScale -textScale/3, -1.75, this.lineMat);
+    //     let rightScale = this.gui3D.create3DText(this.scene, textScale, this.textDepth, label, this.planeWidth / textScale + 6, yPosition / textScale, -1.75, this.lineMat);
 
-        this.myScales.push(myBox)
-        this.myTexts.push(leftScale);
-        this.myTexts.push(rightScale);
+    //     this.myScales.push(myBox)
+    //     this.myTexts.push(leftScale);
+    //     this.myTexts.push(rightScale);
 
-        myBox.parent = this.masterTransform;
-        myBox.position.x -= this.masterTransform.position.x;
-        myBox.position.y -= this.masterTransform.position.y;
-        myBox.position.z -= this.masterTransform.position.z;
-
-
-        leftScale.getMesh().parent = this.masterTransform;
-        leftScale.getMesh().position.x -= this.masterTransform.position.x;
-        leftScale.getMesh().position.y -= this.masterTransform.position.y;
-        leftScale.getMesh().position.z -= this.masterTransform.position.z;
+    //     myBox.parent = this.masterTransform;
+    //     myBox.position.x -= this.masterTransform.position.x;
+    //     myBox.position.y -= this.masterTransform.position.y;
+    //     myBox.position.z -= this.masterTransform.position.z;
 
 
-        rightScale.getMesh().parent = this.masterTransform;
-        rightScale.getMesh().position.x -= this.masterTransform.position.x;
-        rightScale.getMesh().position.y -= this.masterTransform.position.y;
-        rightScale.getMesh().position.z -= this.masterTransform.position.z;
-    }
+    //     leftScale.getMesh().parent = this.masterTransform;
+    //     leftScale.getMesh().position.x -= this.masterTransform.position.x;
+    //     leftScale.getMesh().position.y -= this.masterTransform.position.y;
+    //     leftScale.getMesh().position.z -= this.masterTransform.position.z;
+
+
+    //     rightScale.getMesh().parent = this.masterTransform;
+    //     rightScale.getMesh().position.x -= this.masterTransform.position.x;
+    //     rightScale.getMesh().position.y -= this.masterTransform.position.y;
+    //     rightScale.getMesh().position.z -= this.masterTransform.position.z;
+    // }
 
     addBar(elementIndex, seriesIndex, seriesOffset){
 
@@ -1065,32 +1109,32 @@ class BarChart3D extends BaseChart {
         this.masterTransform.position.y = -this.planeHeight / 2;
     }
 
-    addScale(yPosition, label, textScale, gui3D) {
-        let myBox = BABYLON.MeshBuilder.CreateBox("myBox", {
-            height: 1,
-            width: this.options.planeWidth,
-            depth: 1.2
-        }, this.scene);
+    // addScale(yPosition, label, textScale, gui3D) {
+    //     let myBox = BABYLON.MeshBuilder.CreateBox("myBox", {
+    //         height: 1,
+    //         width: this.options.planeWidth,
+    //         depth: 1.2
+    //     }, this.scene);
 
-        myBox.material = this.lineMat;
-        myBox.position.x = this.options.planeWidth / 2;
-        myBox.position.y = yPosition;
-        myBox.position.z = 0;
+    //     myBox.material = this.lineMat;
+    //     myBox.position.x = this.options.planeWidth / 2;
+    //     myBox.position.y = yPosition;
+    //     myBox.position.z = 0;
 
-        // let leftScale = this.gui3D.create3DText(this.scene, textScale, this.textDepth, label, -6, yPosition / textScale - textScale / 3, -5);
-        // let rightScale = this.gui3D.create3DText(this.scene, textScale, this.textDepth, label, this.planeWidth / textScale + 6, yPosition / textScale - textScale / 3, -5);
-        let leftScale = this.gui3D.create3DText(this.scene, textScale, this.textDepth, label, -6, yPosition/textScale -textScale/3, -1.75, this.lineMat);
-        let rightScale = this.gui3D.create3DText(this.scene, textScale, this.textDepth, label, this.planeWidth / textScale + 6, yPosition / textScale, -1.75, this.lineMat);
+    //     // let leftScale = this.gui3D.create3DText(this.scene, textScale, this.textDepth, label, -6, yPosition / textScale - textScale / 3, -5);
+    //     // let rightScale = this.gui3D.create3DText(this.scene, textScale, this.textDepth, label, this.planeWidth / textScale + 6, yPosition / textScale - textScale / 3, -5);
+    //     let leftScale = this.gui3D.create3DText(this.scene, textScale, this.textDepth, label, -6, yPosition/textScale -textScale/3, -1.75, this.lineMat);
+    //     let rightScale = this.gui3D.create3DText(this.scene, textScale, this.textDepth, label, this.planeWidth / textScale + 6, yPosition / textScale, -1.75, this.lineMat);
 
-        this.myScales.push(myBox)
-        this.myTexts.push(leftScale);
-        this.myTexts.push(rightScale);
+    //     this.myScales.push(myBox)
+    //     this.myTexts.push(leftScale);
+    //     this.myTexts.push(rightScale);
 
-        myBox.parent = this.masterTransform;
-        leftScale.getMesh().parent = this.masterTransform;
-        rightScale.getMesh().parent = this.masterTransform;
+    //     myBox.parent = this.masterTransform;
+    //     leftScale.getMesh().parent = this.masterTransform;
+    //     rightScale.getMesh().parent = this.masterTransform;
         
-    }
+    // }
 
     addBar(elementIndex, seriesIndex){
 
@@ -1282,45 +1326,45 @@ class LineChart extends BaseChart {
 
     }
 
-    addScale(yPosition, label, textScale, gui3D) {
-        let myBox = BABYLON.MeshBuilder.CreateBox("myBox", {
-            height: 1,
-            width: this.options.planeWidth,
-            depth: 1.2
-        }, this.scene);
+    // addScale(yPosition, label, textScale, gui3D) {
+    //     let myBox = BABYLON.MeshBuilder.CreateBox("myBox", {
+    //         height: 1,
+    //         width: this.options.planeWidth,
+    //         depth: 1.2
+    //     }, this.scene);
 
-        myBox.material = this.lineMat;
-        myBox.position.x = this.options.planeWidth / 2;
-        myBox.position.y = yPosition;
-        myBox.position.z = 0;
+    //     myBox.material = this.lineMat;
+    //     myBox.position.x = this.options.planeWidth / 2;
+    //     myBox.position.y = yPosition;
+    //     myBox.position.z = 0;
 
-        // let leftScale = this.gui3D.create3DText(this.scene, textScale, this.textDepth, label, -6, yPosition / textScale - textScale / 3, -5);
-        // let rightScale = this.gui3D.create3DText(this.scene, textScale, this.textDepth, label, this.planeWidth / textScale + 6, yPosition / textScale - textScale / 3, -5);
-        let leftScale = this.gui3D.create3DText(this.scene, textScale, this.textDepth, label, -6, yPosition/textScale -textScale/3, -1.75, this.lineMat);
-        let rightScale = this.gui3D.create3DText(this.scene, textScale, this.textDepth, label, this.planeWidth / textScale + 6, yPosition / textScale, -1.75, this.lineMat);
+    //     // let leftScale = this.gui3D.create3DText(this.scene, textScale, this.textDepth, label, -6, yPosition / textScale - textScale / 3, -5);
+    //     // let rightScale = this.gui3D.create3DText(this.scene, textScale, this.textDepth, label, this.planeWidth / textScale + 6, yPosition / textScale - textScale / 3, -5);
+    //     let leftScale = this.gui3D.create3DText(this.scene, textScale, this.textDepth, label, -6, yPosition/textScale -textScale/3, -1.75, this.lineMat);
+    //     let rightScale = this.gui3D.create3DText(this.scene, textScale, this.textDepth, label, this.planeWidth / textScale + 6, yPosition / textScale, -1.75, this.lineMat);
 
-        this.myScales.push(myBox)
-        this.myTexts.push(leftScale);
-        this.myTexts.push(rightScale);
+    //     this.myScales.push(myBox)
+    //     this.myTexts.push(leftScale);
+    //     this.myTexts.push(rightScale);
 
-        myBox.parent = this.masterTransform;
-        myBox.position.x -= this.masterTransform.position.x;
-        myBox.position.y -= this.masterTransform.position.y;
-        myBox.position.z -= this.masterTransform.position.z;
-
-
-        leftScale.getMesh().parent = this.masterTransform;
-        leftScale.getMesh().position.x -= this.masterTransform.position.x;
-        leftScale.getMesh().position.y -= this.masterTransform.position.y;
-        leftScale.getMesh().position.z -= this.masterTransform.position.z;
+    //     myBox.parent = this.masterTransform;
+    //     myBox.position.x -= this.masterTransform.position.x;
+    //     myBox.position.y -= this.masterTransform.position.y;
+    //     myBox.position.z -= this.masterTransform.position.z;
 
 
-        rightScale.getMesh().parent = this.masterTransform;
-        rightScale.getMesh().position.x -= this.masterTransform.position.x;
-        rightScale.getMesh().position.y -= this.masterTransform.position.y;
-        rightScale.getMesh().position.z -= this.masterTransform.position.z;
+    //     leftScale.getMesh().parent = this.masterTransform;
+    //     leftScale.getMesh().position.x -= this.masterTransform.position.x;
+    //     leftScale.getMesh().position.y -= this.masterTransform.position.y;
+    //     leftScale.getMesh().position.z -= this.masterTransform.position.z;
+
+
+    //     rightScale.getMesh().parent = this.masterTransform;
+    //     rightScale.getMesh().position.x -= this.masterTransform.position.x;
+    //     rightScale.getMesh().position.y -= this.masterTransform.position.y;
+    //     rightScale.getMesh().position.z -= this.masterTransform.position.z;
         
-    }
+    // }
 
     addPoint(elementIndex, seriesIndex, tubePath){
 
@@ -1724,7 +1768,7 @@ class PieChart extends BaseChart {
         // this.masterTransform.rotation.y +=.01;
         // this.masterTransform.rotation.z +=.01;
     }
-} //  end PieChart class
+} 
 
 
 class Gauge extends BaseChart {
@@ -2030,25 +2074,26 @@ class Gauge2 extends BaseChart {
         // let slice1 = BABYLON.MeshBuilder.CreateCylinder('GuageFace', settings, this.scene);
         // slice1.rotation.y = Math.PI-.16;
 
-        // settings.height = .01;
-        // settings.arc = 1;
+        settings.height = .01;
+        settings.arc = 1;
 
         // let slice2 = BABYLON.MeshBuilder.CreateCylinder('GuageTextArea', settings, this.scene);
-        // settings.diameterTop = 50;
-        // settings.diameterBottom = 50;
-        // settings.height = 35;
+        settings.diameterTop = 50;
+        settings.diameterBottom = 50;
+        settings.height = 35;
         
-        // let slice3 = BABYLON.MeshBuilder.CreateCylinder('center', settings, this.scene);
-//        slice2.rotation.y = Math.PI/4 + Math.PI/2;
+        let slice3 = BABYLON.MeshBuilder.CreateCylinder('center', settings, this.scene);
+    //    slice2.rotation.y = Math.PI/4 + Math.PI/2;
         // slice2.rotation.y = Math.PI;
-        
+        slice3.position.y = 15;
+
         // let torus = BABYLON.MeshBuilder.CreateTorus("OuterRing", {thickness: 35, diameter: 500, tessellation: 64}, this.scene);
 
         // slice1.parent = this.masterTransform;
         // slice2.parent = this.masterTransform;
-        // slice3.parent = this.masterTransform;
+        slice3.parent = this.masterTransform;
         // slice2.material = this.lineMat;
-        // slice3.material = this.lineMat;
+        slice3.material = this.lineMat;
 
         // torus.parent = this.masterTransform;
         // torus.material = this.materials[0];
@@ -2129,7 +2174,7 @@ class Gauge2 extends BaseChart {
             new BABYLON.Vector3(250*px, 15, 250*pz)
         ];
     
-        let tube = BABYLON.MeshBuilder.CreateTube("arrow", {path: path, radius: 8.8}, this.scene);
+        let tube = BABYLON.MeshBuilder.CreateTube("arrow", {path: path, radius: 6.8}, this.scene);
         tube.material = this.materials[this.options.materialIndex];
         tube.scaling.y = .4;
 
@@ -2174,7 +2219,7 @@ class Gauge2 extends BaseChart {
 }
 
 
-class areaChart extends BaseChart {
+class AreaChart extends BaseChart {
 
     constructor(scene, options, gui3D, gui2D) {
         super(scene, options, gui3D, gui2D);
@@ -2214,45 +2259,45 @@ class areaChart extends BaseChart {
 
     }
 
-    addScale(yPosition, label, textScale, gui3D) {
-        let myBox = BABYLON.MeshBuilder.CreateBox("myBox", {
-            height: 1,
-            width: this.options.planeWidth,
-            depth: 1.2
-        }, this.scene);
+    // addScale(yPosition, label, textScale, gui3D) {
+    //     let myBox = BABYLON.MeshBuilder.CreateBox("myBox", {
+    //         height: 1,
+    //         width: this.options.planeWidth,
+    //         depth: 1.2
+    //     }, this.scene);
 
-        myBox.material = this.lineMat;
-        myBox.position.x = this.options.planeWidth / 2;
-        myBox.position.y = yPosition;
-        myBox.position.z = 0;
+    //     myBox.material = this.lineMat;
+    //     myBox.position.x = this.options.planeWidth / 2;
+    //     myBox.position.y = yPosition;
+    //     myBox.position.z = 0;
 
-        // let leftScale = this.gui3D.create3DText(this.scene, textScale, this.textDepth, label, -6, yPosition / textScale - textScale / 3, -5);
-        // let rightScale = this.gui3D.create3DText(this.scene, textScale, this.textDepth, label, this.planeWidth / textScale + 6, yPosition / textScale - textScale / 3, -5);
-        let leftScale = this.gui3D.create3DText(this.scene, textScale, this.textDepth, label, -6, yPosition/textScale -textScale/3, -1.75, this.lineMat);
-        let rightScale = this.gui3D.create3DText(this.scene, textScale, this.textDepth, label, this.planeWidth / textScale + 6, yPosition / textScale, -1.75, this.lineMat);
+    //     // let leftScale = this.gui3D.create3DText(this.scene, textScale, this.textDepth, label, -6, yPosition / textScale - textScale / 3, -5);
+    //     // let rightScale = this.gui3D.create3DText(this.scene, textScale, this.textDepth, label, this.planeWidth / textScale + 6, yPosition / textScale - textScale / 3, -5);
+    //     let leftScale = this.gui3D.create3DText(this.scene, textScale, this.textDepth, label, -6, yPosition/textScale -textScale/3, -1.75, this.lineMat);
+    //     let rightScale = this.gui3D.create3DText(this.scene, textScale, this.textDepth, label, this.planeWidth / textScale + 6, yPosition / textScale, -1.75, this.lineMat);
 
-        this.myScales.push(myBox)
-        this.myTexts.push(leftScale);
-        this.myTexts.push(rightScale);
+    //     this.myScales.push(myBox)
+    //     this.myTexts.push(leftScale);
+    //     this.myTexts.push(rightScale);
 
-        myBox.parent = this.masterTransform;
-        myBox.position.x -= this.masterTransform.position.x;
-        myBox.position.y -= this.masterTransform.position.y;
-        myBox.position.z -= this.masterTransform.position.z;
-
-
-        leftScale.getMesh().parent = this.masterTransform;
-        leftScale.getMesh().position.x -= this.masterTransform.position.x;
-        leftScale.getMesh().position.y -= this.masterTransform.position.y;
-        leftScale.getMesh().position.z -= this.masterTransform.position.z;
+    //     myBox.parent = this.masterTransform;
+    //     myBox.position.x -= this.masterTransform.position.x;
+    //     myBox.position.y -= this.masterTransform.position.y;
+    //     myBox.position.z -= this.masterTransform.position.z;
 
 
-        rightScale.getMesh().parent = this.masterTransform;
-        rightScale.getMesh().position.x -= this.masterTransform.position.x;
-        rightScale.getMesh().position.y -= this.masterTransform.position.y;
-        rightScale.getMesh().position.z -= this.masterTransform.position.z;
+    //     leftScale.getMesh().parent = this.masterTransform;
+    //     leftScale.getMesh().position.x -= this.masterTransform.position.x;
+    //     leftScale.getMesh().position.y -= this.masterTransform.position.y;
+    //     leftScale.getMesh().position.z -= this.masterTransform.position.z;
+
+
+    //     rightScale.getMesh().parent = this.masterTransform;
+    //     rightScale.getMesh().position.x -= this.masterTransform.position.x;
+    //     rightScale.getMesh().position.y -= this.masterTransform.position.y;
+    //     rightScale.getMesh().position.z -= this.masterTransform.position.z;
         
-    }
+    // }
 
     addPoint(elementIndex, seriesIndex, shapePoints){
 
@@ -2271,7 +2316,7 @@ class areaChart extends BaseChart {
 
         // point.position.x = elementIndex * (this.elementWidth + this.padding) + seriesIndex * this.elementWidth / this.seriesCount + this.pointWidth / 2 + this.padding;
         position.x = elementIndex * (this.elementWidth + this.padding) + this.barWidth / 2 + this.padding;
-        position.y = pointHeight;
+        position.z = pointHeight;
         // point.position.z = seriesIndex * (this.elementWidth + this.padding);
 
         shapePoints.push(position);
@@ -2408,6 +2453,8 @@ class areaChart extends BaseChart {
 
         for (let seriesIndex = 0; seriesIndex < this.seriesCount; seriesIndex++) {
             let shapePoints = [];
+            shapePoints.push(new BABYLON.Vector3(0,0,0));
+
         for (let elementIndex = 0; elementIndex < this.seriesLength; elementIndex++) {
 
                 
@@ -2423,12 +2470,24 @@ class areaChart extends BaseChart {
             	//Polygon shape in XoZ plane
 
   
-//Holes in XoZ plane
-var holes = [];
+            //Holes in XoZ plane
+            var holes = [];
+            console.log('shapePoints');
+            console.log(shapePoints);
+            shapePoints.push(new BABYLON.Vector3(500,0,0));
 
-var polygon = BABYLON.MeshBuilder.ExtrudePolygon("polygon", {shape:shapePoints, holes:holes, depth: 2, sideOrientation: BABYLON.Mesh.DOUBLESIDE },this.scene);
+            shapePoints.reverse();
+            var polygon = BABYLON.MeshBuilder.ExtrudePolygon("polygon", {shape:shapePoints, holes:holes, depth: this.options.depth, sideOrientation: BABYLON.Mesh.DOUBLESIDE },this.scene);
+            console.log(polygon);
+            polygon.material = this.materials[seriesIndex+2];
+            polygon.position.z += (seriesIndex + .01)*this.options.depth;
 
+            polygon.rotation.x = -Math.PI/2;
 
+            polygon.parent = this.masterTransform;
+                polygon.position.x -= this.masterTransform.position.x;
+                polygon.position.y -= this.masterTransform.position.y;
+                polygon.position.z -= this.masterTransform.position.z;
         }
     }
 

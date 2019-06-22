@@ -103,9 +103,9 @@ Chart Types
     Pie Chart
     Point/Line Chart
     Gauge
-
-
     Area Chart
+
+
     Scatter Plot
     Bubble Chart
     Funnel Chart

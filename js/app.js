@@ -195,14 +195,39 @@ for (let seriesCount = 0; seriesCount < 3; seriesCount++) {
 
 // console.log('dataSeries2:')
 // console.log(dataSeries2)
-
 // parseData(dataSeries2);
-buildIt(dataSeries, dataSeries2)
+
+
+let dataSeries3 = {};
+
+for (let seriesCount = 6; seriesCount < 7; seriesCount++) {
+    dataSeries3['Series' + seriesCount] = [];
+    for (let dataPoints = 1; dataPoints <= 12; dataPoints++) {
+
+        let data = {
+            label: months[dataPoints].long,
+            // label: 'Label'+ dataPoints,
+            value: 20 + 75 * (Math.abs(6 - dataPoints / (seriesCount + 1) + 2 + 3 * Math.sin(seriesCount * dataPoints))),
+            details: {
+                detail1: dataPoints,
+                detail2: dataPoints * dataPoints,
+                detail3: 1 / dataPoints
+            }
+        };
+        dataSeries3['Series' + seriesCount].push(data);
+    }
+}
+
+
+
+
+
+buildIt(dataSeries, dataSeries2, dataSeries3)
 
 
 ////////////////////////////////////////////////////////////////////
 
-function buildIt(data, data2) {
+function buildIt(data, data2, data3) {
     // console.log('data in buildIt' )
     // console.log(data);
 
@@ -317,6 +342,35 @@ function buildIt(data, data2) {
 
     let sceneManager7 = new ChartSceneManager(sceneOptions);
 
+
+
+
+
+    ////////////////////////////////////////////////////////////////////
+
+    sceneOptions = {
+        id: 'area', // required - id of canvas element to use
+        width: 600, //  <default 300>
+        height: 350, //  <default 200>
+        cameraFirstPerson: false, //  <default true>
+        backgroundColor: { //  <default white>
+            r: .95,
+            g: .95,
+            b: 1
+        }
+    };
+
+    let sceneManager8 = new ChartSceneManager(sceneOptions);
+
+
+
+
+
+    ////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////
 
 
@@ -389,7 +443,6 @@ function buildIt(data, data2) {
     chartOptions.showBackplanes = true;
     chartOptions.data = data2;
 
-
     let chart2_1 = sceneManager2.addChart(chartOptions);
     chart2_1.masterTransform.position.z = 500;
 
@@ -432,10 +485,6 @@ function buildIt(data, data2) {
         b: 0
     };
 
-
-
-
-
     chartOptions.data = data;
     chartOptions.title = 'Doughnut Sales';
     chartOptions.type = 'pie';
@@ -443,6 +492,8 @@ function buildIt(data, data2) {
     chartOptions.doughnut = true;
 
     let chart2_4 = sceneManager2.addChart(chartOptions);  //  left
+
+
 
     chart2_4.masterTransform.position.x = -500;
     chart2_4.masterTransform.position.y = 0;
@@ -605,7 +656,7 @@ function buildIt(data, data2) {
 
     chartOptions = {
         type: 'gauge',
-        title: 'Project Summary',
+        title: 'Project Completion Status',
         data: data,
 
         titleDepth: .01, //  < default .01 >
@@ -636,7 +687,7 @@ function buildIt(data, data2) {
     chartOptions.type = 'gauge2';
     chartOptions.materialIndex =  10;
     chartOptions.value = 74.6;
-    chartOptions.title = 'Project Status';
+    chartOptions.title = 'Project Completion Status';
     let chart7_2 = sceneManager7.addChart(chartOptions);  //  left
     // chart7_2.masterTransform.position.x = 500;
     chart7_2.masterTransform.position.y = 80;
@@ -673,4 +724,40 @@ function buildIt(data, data2) {
     chart7_6.masterTransform.position.x = 220;
     chart7_6.masterTransform.position.y = -130;
     chart7_6.masterTransform.scaling = new BABYLON.Vector3(.27,.27,.27);    
+
+    ////////////////////////////////////////////////////////////////////
+
+    chartOptions = {
+        type: 'area',
+        title: 'Area Summary',
+        data: data2,
+
+        titleDepth: .01, //  < default .01 >
+        doughnut: false,  // applies to pie chart only
+
+        round: false, //  < default false >  applies to bar chart only        
+        depth: 15, //  < default .25 >          
+        alpha: 1, //  < default 1 >
+
+        textDepth: .01, //  < default .01 >
+        textColor: { //  < default black >
+            r: 0,
+            g: 0,
+            b: 0
+        },
+        transition: true
+    };
+
+    let chart8_1 = sceneManager8.addChart(chartOptions);  //  left
+    chart8_1.masterTransform.position.x = 0;
+    chart8_1.masterTransform.position.y = 0;
+    // chart8_1.masterTransform.scaling = new BABYLON.Vector3(.27,.27,.27);
+    
+
+
+
+
+
+
+
 }
