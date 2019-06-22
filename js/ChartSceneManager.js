@@ -153,6 +153,10 @@ class ChartSceneManager {
                 chart = new Gauge(this.scene, options, this.gui3D, this.gui2D);
             break;
 
+            case 'gauge2':
+                chart = new Gauge2(this.scene, options, this.gui3D, this.gui2D);
+            break;
+
         
             default:
                 console.log('ERROR: Invalid chart type');
@@ -283,7 +287,7 @@ class BaseChart {
 
     createMaterials(materials) {
         for (let i = 0; i < colorList.length; i++) {
-            let mat = new BABYLON.StandardMaterial("mat", this.scene);
+            let mat = new BABYLON.StandardMaterial("mat"+i, this.scene);
             mat.diffuseColor = BABYLON.Color3.FromHexString(colorList[i]);
             mat.specularColor =  BABYLON.Color3.FromHexString(colorList[i]);
             // mat.specularColor = new BABYLON.Color3(mat.diffuseColor.r*1.4,mat.diffuseColor.g*1.4,mat.diffuseColor.b*1.4)
@@ -593,7 +597,8 @@ class BarChart extends BaseChart {
                 // bar.material.emissiveColor = new BABYLON.Color3(.1, .1, .1);
                 this.hoverPanel = this.gui2D.showObjectValue(bar, this.scene.pointerX, this.scene.pointerY);
                 // console.log('mouseOver', bar);
-
+                // var pickInfo = this.scene.pick(this.scene.pointerX, this.scene.pointerY);
+                // console.log(pickInfo)
             },
             OnPointerOutTrigger: () => {
                 // bar.material.emissiveColor = new BABYLON.Color3(0, 0, 0)
@@ -615,20 +620,20 @@ class BarChart extends BaseChart {
         // console.log('barChartOptions: ', barChartOptionsxx);
 
         if (this.options.showBackplanes){
-            var chartPlane = BABYLON.MeshBuilder.CreatePlane("chartPlane", {
-                width: this.planeWidth,
-                height: this.planeHeight
-            }, this.scene);
+            // var chartPlane = BABYLON.MeshBuilder.CreatePlane("chartPlane", {
+            //     width: this.planeWidth,
+            //     height: this.planeHeight
+            // }, this.scene);
 
-            chartPlane.position.x = (this.elementWidth + this.padding) * this.seriesLength / 2 + this.padding / 2;
-            chartPlane.position.y = this.planeHeight / 2;
+            // chartPlane.position.x = (this.elementWidth + this.padding) * this.seriesLength / 2 + this.padding / 2;
+            // chartPlane.position.y = this.planeHeight / 2;
 
-            chartPlane.parent = this.masterTransform;
-            chartPlane.position.x -= this.masterTransform.position.x;
-            chartPlane.position.y -= this.masterTransform.position.y;
-            chartPlane.position.z -= this.masterTransform.position.z;
+            // chartPlane.parent = this.masterTransform;
+            // chartPlane.position.x -= this.masterTransform.position.x;
+            // chartPlane.position.y -= this.masterTransform.position.y;
+            // chartPlane.position.z -= this.masterTransform.position.z;
 
-            this.myPlanes.push(chartPlane);
+            // this.myPlanes.push(chartPlane);
 
             var chartMarginPlane = BABYLON.MeshBuilder.CreatePlane("chartMarginPlane", {
                 width: this.planeWidth+400, 
@@ -642,6 +647,25 @@ class BarChart extends BaseChart {
             chartMarginPlane.position.x -= this.masterTransform.position.x;
             chartMarginPlane.position.y -= this.masterTransform.position.y;
             chartMarginPlane.position.z -= this.masterTransform.position.z;
+
+
+
+
+            // Add actions to bar
+            var actionsObject = {
+
+                OnPointerOverTrigger: () => {
+                    // bar.material.emissiveColor = new BABYLON.Color3(.1, .1, .1);
+                    // this.hoverPanel = this.gui2D.showObjectValue(bar, this.scene.pointerX, this.scene.pointerY);
+                    // console.log('mouseOver', bar);
+                    
+                },
+
+            }
+
+            this.addActions(chartMarginPlane, actionsObject);
+
+
 
             this.myPlanes.push(chartMarginPlane);
         }
@@ -901,6 +925,22 @@ class StackedBarChart extends BaseChart {
             chartMarginPlane.position.x -= this.masterTransform.position.x;
             chartMarginPlane.position.y -= this.masterTransform.position.y;
             chartMarginPlane.position.z -= this.masterTransform.position.z;
+
+            // Add actions to bar
+            var actionsObject = {
+
+                OnPointerOverTrigger: () => {
+                    // bar.material.emissiveColor = new BABYLON.Color3(.1, .1, .1);
+                    // this.hoverPanel = this.gui2D.showObjectValue(bar, this.scene.pointerX, this.scene.pointerY);
+                    // console.log('mouseOver', bar);
+                    
+                },
+
+            }
+
+            this.addActions(chartMarginPlane, actionsObject);
+
+
 
             this.myPlanes.push(chartMarginPlane);
 
@@ -1369,6 +1409,20 @@ class LineChart extends BaseChart {
             chartMarginPlane.position.y -= this.masterTransform.position.y;
             chartMarginPlane.position.z -= this.masterTransform.position.z;  
 
+                        // Add actions to bar
+                        var actionsObject = {
+
+                            OnPointerOverTrigger: () => {
+                                // bar.material.emissiveColor = new BABYLON.Color3(.1, .1, .1);
+                                // this.hoverPanel = this.gui2D.showObjectValue(bar, this.scene.pointerX, this.scene.pointerY);
+                                // console.log('mouseOver', bar);
+                                
+                            },
+            
+                        }
+            
+                        this.addActions(chartMarginPlane, actionsObject);
+            
 
             chartMarginPlane.material = this.materials[0];
             this.myPlanes.push(chartMarginPlane);
@@ -1691,6 +1745,48 @@ class Gauge extends BaseChart {
 
     }
 
+    createOverlay(start, end, mat){  // % 0-1
+
+        // basic settings for a cylinder
+        var settings = {
+            height: 20.5,
+            diameterTop: 350,
+            diameterBottom: 350,
+            tessellation: 40,
+            // arc: end - start, // update size of slice % [0..1]
+            arc: remap(end, 0, 100, 0, .5)  - remap(start, 0, 100, 0, .5), // update size of slice % [0..1]
+            sideOrientation: BABYLON.Mesh.DOUBLESIDE
+        };
+
+        // create the slice pieces and side caps(planes) f
+        var slice = BABYLON.MeshBuilder.CreateCylinder('test', settings, this.scene);
+
+        var cylinder = BABYLON.MeshBuilder.CreateCylinder("cone", {height:  30, diameter: 250, tessellation: 40, arc: remap(end, 0, 100, 0, .5)  - remap(start, 0, 100, 0, .5)}, this.scene);
+
+        let csgSlice = BABYLON.CSG.FromMesh(slice);
+        let csgCyl = BABYLON.CSG.FromMesh(cylinder );
+    
+        var subCSG = csgSlice.subtract(csgCyl);
+        let newSlice = subCSG.toMesh("csg", mat, this.scene);
+        slice.dispose();
+        cylinder.dispose();
+        slice = newSlice;
+
+
+
+
+
+        slice.material = mat;
+
+        slice.rotation.y = remap(start, 0, 100, 0, Math.PI)
+        slice.rotation.x = -Math.PI
+        slice.rotation.z = Math.PI
+
+
+
+        return slice;
+    }
+
     build(options){
         let value = this.options.value;
         let titleText = this.options.title;
@@ -1712,6 +1808,7 @@ class Gauge extends BaseChart {
 
         settings.height = .01;
         settings.arc = 1;
+
         let slice2 = BABYLON.MeshBuilder.CreateCylinder('GuageTextArea', settings, this.scene);
         settings.diameterTop = 50;
         settings.diameterBottom = 50;
@@ -1814,6 +1911,33 @@ class Gauge extends BaseChart {
 
         tube.parent = this.masterTransform;
 
+        // let oMat1 = new BABYLON.StandardMaterial("oMat1", this.scene);
+        // oMat1.diffuseColor = new BABYLON.Color3(1,0,0);
+        // oMat1.specularColor =  new BABYLON.Color3(.5,0,0);
+        // oMat1.alpha = .5;
+
+        // let oMat2 = new BABYLON.StandardMaterial("oMat2", this.scene);
+        // oMat2.diffuseColor = new BABYLON.Color3(0,1,0);
+        // oMat2.specularColor =  new BABYLON.Color3(0,.5,0);
+        // oMat2.alpha = .5;
+        
+        // let oMat3 = new BABYLON.StandardMaterial("oMat3", this.scene);
+        // oMat3.diffuseColor = new BABYLON.Color3(1,1,0);
+        // oMat3.specularColor =  new BABYLON.Color3(.5,.5,0);
+        // oMat3.alpha = .5;
+        
+        // let overlay1 = this.createOverlay(0,25, oMat1);
+        // overlay1.parent = this.masterTransform;
+
+        // let overlay2 = this.createOverlay(75,100, oMat2);
+        // overlay2.parent = this.masterTransform;
+
+        // let overlay3 = this.createOverlay(25,75, oMat3);
+        // overlay3.parent = this.masterTransform;
+
+
+        
+
         this.masterTransform.rotation.x = -Math.PI/2;
 
         // this.masterTransform.scaling = new BABYLON.Vector3(5,5,5);
@@ -1823,4 +1947,494 @@ class Gauge extends BaseChart {
     myUpdate(){
     }
 
+}
+
+
+
+class Gauge2 extends BaseChart {
+    
+    constructor(scene, options, gui3D, gui2D){
+        super(scene, options, gui3D, gui2D);
+
+        this.parseData();
+
+        this.build();
+    }
+
+    addNeedle(options){
+
+    }
+
+    addScale(options){
+
+    }
+
+    createOverlay(start, end, mat){  // % 0-1
+
+        // basic settings for a cylinder
+        var settings = {
+            height: 40,
+            diameterTop: 350,
+            diameterBottom: 350,
+            tessellation: 40,
+            // arc: end - start, // update size of slice % [0..1]
+            arc: remap(end, 0, 100, 0, .5)  - remap(start, 0, 100, 0, .5), // update size of slice % [0..1]
+            sideOrientation: BABYLON.Mesh.DOUBLESIDE
+        };
+
+        // create the slice pieces and side caps(planes) f
+        var slice = BABYLON.MeshBuilder.CreateCylinder('test', settings, this.scene);
+
+        var cylinder = BABYLON.MeshBuilder.CreateCylinder("cone", {height:  43, diameter: 250, tessellation: 40, arc: remap(end, 0, 100, 0, .5)  - remap(start, 0, 100, 0, .5)}, this.scene);
+
+        let csgSlice = BABYLON.CSG.FromMesh(slice);
+        let csgCyl = BABYLON.CSG.FromMesh(cylinder );
+    
+        var subCSG = csgSlice.subtract(csgCyl);
+        let newSlice = subCSG.toMesh("csg", mat, this.scene);
+        slice.dispose();
+        cylinder.dispose();
+        slice = newSlice;
+
+
+
+
+
+        slice.material = mat;
+
+        slice.rotation.y = remap(start, 0, 100, 0, Math.PI)
+        slice.rotation.x = -Math.PI
+        slice.rotation.z = Math.PI
+        slice.position.y = 15;
+
+
+
+        return slice;
+    }
+
+    build(options){
+        let value = this.options.value;
+        let titleText = this.options.title;
+        // let seriesMaterial = 15;
+
+        // basic settings for a cylinder
+        let settings = {
+            height: 20,
+            diameterTop: 500,
+            diameterBottom: 500,
+            tessellation: 40,
+            arc: .55, 
+            sideOrientation: BABYLON.Mesh.DOUBLESIDE
+        };
+
+        // let slice1 = BABYLON.MeshBuilder.CreateCylinder('GuageFace', settings, this.scene);
+        // slice1.rotation.y = Math.PI-.16;
+
+        // settings.height = .01;
+        // settings.arc = 1;
+
+        // let slice2 = BABYLON.MeshBuilder.CreateCylinder('GuageTextArea', settings, this.scene);
+        // settings.diameterTop = 50;
+        // settings.diameterBottom = 50;
+        // settings.height = 35;
+        
+        // let slice3 = BABYLON.MeshBuilder.CreateCylinder('center', settings, this.scene);
+//        slice2.rotation.y = Math.PI/4 + Math.PI/2;
+        // slice2.rotation.y = Math.PI;
+        
+        // let torus = BABYLON.MeshBuilder.CreateTorus("OuterRing", {thickness: 35, diameter: 500, tessellation: 64}, this.scene);
+
+        // slice1.parent = this.masterTransform;
+        // slice2.parent = this.masterTransform;
+        // slice3.parent = this.masterTransform;
+        // slice2.material = this.lineMat;
+        // slice3.material = this.lineMat;
+
+        // torus.parent = this.masterTransform;
+        // torus.material = this.materials[0];
+
+        
+        let count = 0;
+        for (let t = Math.PI; t >= 0; t -= Math.PI / 10){
+            // let s = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: 10, diameterX: 10}, this.scene);
+            let x = Math.cos(t);
+            let z = Math.sin(t);
+            
+            // s.position.x = 50*x;
+            // s.position.z = 50*z;
+            // s.parent = this.masterTransform;
+
+
+            let path = [
+                new BABYLON.Vector3(175*x, 38, 175*z),
+                new BABYLON.Vector3(160*x, 38, 160*z)
+            ];
+        
+            let tube = BABYLON.MeshBuilder.CreateTube("tube", {path: path, radius: 2.5}, this.scene);
+            tube.material = this.lineMat;
+            tube.scaling.y = .4;
+            tube.parent = this.masterTransform;
+
+            let scale = 5.8;
+            let depth = .01;
+            let displayText = (10*count).toString();
+            let xPos = 200*x/scale;
+            let zPos = 195*z/scale;
+            let yPos = 15/scale;
+            let color = this.lineMat;
+            
+
+            let text = this.gui3D.create3DText(this.scene, scale, depth, displayText, xPos, yPos, zPos, color);
+            text.getMesh().parent = this.masterTransform;
+            text.getMesh().rotation.x = 0;
+
+            count++;
+        }
+
+        let scale = 8.8;
+        let depth = 1;
+        let displayText = value+'%';
+        let xPos =0;
+        let zPos = -150/scale;
+        let yPos = 10/scale;
+        let color = this.materials[this.options.materialIndex];
+        
+
+        let text = this.gui3D.create3DText(this.scene, scale, depth, displayText, xPos, yPos, zPos, color);
+        text.getMesh().parent = this.masterTransform;
+        text.getMesh().rotation.x = 0;
+
+
+        scale = 8.8;
+        depth = .01;
+        displayText = titleText;
+        xPos =0;
+        zPos = 300/scale;
+        yPos = 1/scale;
+        color = this.materials[0];
+        
+
+        let title = this.gui3D.create3DText(this.scene, scale, depth, displayText, xPos, yPos, zPos, color);
+        title.getMesh().parent = this.masterTransform;
+        title.getMesh().rotation.x = 0;
+
+
+
+        let theta = remap(value, 0, 100, Math.PI, 0)
+        let px = Math.cos(theta);
+        let pz = Math.sin(theta);
+
+        let path = [
+            new BABYLON.Vector3(0, 25, 0),
+            new BABYLON.Vector3(250*px, 15, 250*pz)
+        ];
+    
+        let tube = BABYLON.MeshBuilder.CreateTube("arrow", {path: path, radius: 8.8}, this.scene);
+        tube.material = this.materials[this.options.materialIndex];
+        tube.scaling.y = .4;
+
+        tube.parent = this.masterTransform;
+
+        let oMat1 = new BABYLON.StandardMaterial("oMat1", this.scene);
+        oMat1.diffuseColor = new BABYLON.Color3(1,0,0);
+        oMat1.specularColor =  new BABYLON.Color3(.5,0,0);
+        oMat1.alpha = .5;
+
+        let oMat2 = new BABYLON.StandardMaterial("oMat2", this.scene);
+        oMat2.diffuseColor = new BABYLON.Color3(0,1,0);
+        oMat2.specularColor =  new BABYLON.Color3(0,.5,0);
+        oMat2.alpha = .5;
+        
+        let oMat3 = new BABYLON.StandardMaterial("oMat3", this.scene);
+        oMat3.diffuseColor = new BABYLON.Color3(1,1,0);
+        oMat3.specularColor =  new BABYLON.Color3(.5,.5,0);
+        oMat3.alpha = .5;
+        
+        let overlay1 = this.createOverlay(0,25, oMat1);
+        overlay1.parent = this.masterTransform;
+
+        let overlay2 = this.createOverlay(75,100, oMat2);
+        overlay2.parent = this.masterTransform;
+
+        let overlay3 = this.createOverlay(25,75, oMat3);
+        overlay3.parent = this.masterTransform;
+
+
+        
+
+        this.masterTransform.rotation.x = -Math.PI/2;
+
+        // this.masterTransform.scaling = new BABYLON.Vector3(5,5,5);
+
+    }
+
+    myUpdate(){
+    }
+
+}
+
+
+class areaChart extends BaseChart {
+
+    constructor(scene, options, gui3D, gui2D) {
+        super(scene, options, gui3D, gui2D);
+        // console.log('options:', options);
+
+        // this.padding = 10;
+
+        // this.labelScale = 3.5;
+
+        // if (this.options.textDepth) {
+        //     this.textDepth = this.options.textDepth;
+        // } else {
+        //     this.textDepth = .01;
+        // }
+
+        this.parseData();
+
+        this.scaleInfo = calculateScale(this.highVal);
+
+        this.elementWidth = Math.trunc(500 / this.seriesLength) - this.padding;
+        // this.barWidth = (this.elementWidth) / this.seriesCount;
+        this.barWidth = this.elementWidth;
+
+        this.planeWidth = (this.elementWidth + this.padding) * this.seriesLength + this.padding;
+        this.planeHeight = 300;
+
+        // this.scene.activeCamera.position.x = (this.elementWidth + this.padding) * this.seriesLength / 2 + this.padding / 2
+        this.options.planeWidth = this.planeWidth;
+        this.options.planeHeight = this.planeHeight;
+
+        this.titleDepth = this.options.titleDepth ? this.options.titleDepth : 1;
+
+        this.masterTransform.position.x = this.planeWidth / 2;
+        this.masterTransform.position.y = this.planeHeight / 2;
+
+        this.build(options);
+
+    }
+
+    addScale(yPosition, label, textScale, gui3D) {
+        let myBox = BABYLON.MeshBuilder.CreateBox("myBox", {
+            height: 1,
+            width: this.options.planeWidth,
+            depth: 1.2
+        }, this.scene);
+
+        myBox.material = this.lineMat;
+        myBox.position.x = this.options.planeWidth / 2;
+        myBox.position.y = yPosition;
+        myBox.position.z = 0;
+
+        // let leftScale = this.gui3D.create3DText(this.scene, textScale, this.textDepth, label, -6, yPosition / textScale - textScale / 3, -5);
+        // let rightScale = this.gui3D.create3DText(this.scene, textScale, this.textDepth, label, this.planeWidth / textScale + 6, yPosition / textScale - textScale / 3, -5);
+        let leftScale = this.gui3D.create3DText(this.scene, textScale, this.textDepth, label, -6, yPosition/textScale -textScale/3, -1.75, this.lineMat);
+        let rightScale = this.gui3D.create3DText(this.scene, textScale, this.textDepth, label, this.planeWidth / textScale + 6, yPosition / textScale, -1.75, this.lineMat);
+
+        this.myScales.push(myBox)
+        this.myTexts.push(leftScale);
+        this.myTexts.push(rightScale);
+
+        myBox.parent = this.masterTransform;
+        myBox.position.x -= this.masterTransform.position.x;
+        myBox.position.y -= this.masterTransform.position.y;
+        myBox.position.z -= this.masterTransform.position.z;
+
+
+        leftScale.getMesh().parent = this.masterTransform;
+        leftScale.getMesh().position.x -= this.masterTransform.position.x;
+        leftScale.getMesh().position.y -= this.masterTransform.position.y;
+        leftScale.getMesh().position.z -= this.masterTransform.position.z;
+
+
+        rightScale.getMesh().parent = this.masterTransform;
+        rightScale.getMesh().position.x -= this.masterTransform.position.x;
+        rightScale.getMesh().position.y -= this.masterTransform.position.y;
+        rightScale.getMesh().position.z -= this.masterTransform.position.z;
+        
+    }
+
+    addPoint(elementIndex, seriesIndex, shapePoints){
+
+        let element = this.options.data[this.seriesNames[seriesIndex]][elementIndex];
+
+        // console.log('element',element)
+
+        let position = new BABYLON.Vector3();
+        let pointHeight = this.options.planeHeight * (element.value / this.scaleInfo.maxScale);
+
+        // console.log('this.options.planeHeight',this.options.planeHeight);
+
+        // // create the bar
+        // point = BABYLON.MeshBuilder.CreateSphere("mySphere", {diameter: 7}, this.scene);
+
+
+        // point.position.x = elementIndex * (this.elementWidth + this.padding) + seriesIndex * this.elementWidth / this.seriesCount + this.pointWidth / 2 + this.padding;
+        position.x = elementIndex * (this.elementWidth + this.padding) + this.barWidth / 2 + this.padding;
+        position.y = pointHeight;
+        // point.position.z = seriesIndex * (this.elementWidth + this.padding);
+
+        shapePoints.push(position);
+
+        // point.userData = element;
+        // point.userData.seriesName = this.seriesNames[seriesIndex];
+        // point.userData.material = this.seriesNames[seriesIndex];
+
+        // Add actions to point
+        // var actionsObject = {
+        //     OnLeftPickTrigger: () => {
+        //         console.log('left clicked ' + point.name)
+        //     },
+        //     OnRightPickTrigger: () => {
+        //         // console.log(point);
+        //         // console.log(this.scene.pointerX);
+        //         // console.log(this.scene.pointerY);
+                
+        //         this.gui2D.menuObjectOptions(point, this.scene.pointerX, this.scene.pointerY)
+        //     },
+        //     OnPointerOverTrigger: () => {
+        //         // point.material.emissiveColor = new BABYLON.Color3(.1, .1, .1)
+        //         this.hoverPanel = this.gui2D.showObjectValue(point, this.scene.pointerX, this.scene.pointerY);
+        //     },
+        //     OnPointerOutTrigger: () => {
+        //         // point.material.emissiveColor = new BABYLON.Color3(0, 0, 0)
+        //         this.gui2D.advancedTexture.removeControl( this.hoverPanel);
+        //     }
+        // }
+
+        // this.addActions(point, actionsObject);
+
+        // this.myBars.push(point);
+
+        // return point;
+    }
+
+    build() {
+        // console.log('barChartOptions: ', barChartOptionsxx);
+
+        if (this.options.showBackplanes){
+            // var chartPlane = BABYLON.MeshBuilder.CreatePlane("chartPlane", {
+            //     width: this.planeWidth,
+            //     height: this.planeHeight
+            // }, this.scene);
+
+            // chartPlane.position.x = (this.elementWidth + this.padding) * this.seriesLength / 2 + this.padding / 2;
+            // chartPlane.position.y = this.planeHeight / 2;
+            // this.myPlanes.push(chartPlane);
+
+            var chartMarginPlane = BABYLON.MeshBuilder.CreatePlane("chartMarginPlane", {
+                width: this.planeWidth+400, 
+                height: this.planeHeight+300
+            }, this.scene);
+
+            chartMarginPlane.position.x = (this.elementWidth+this.padding)*this.seriesLength/2 + this.padding/2;
+            chartMarginPlane.position.y = this.planeHeight/2;
+            chartMarginPlane.position.z = .25;
+
+            chartMarginPlane.parent = this.masterTransform;
+            chartMarginPlane.position.x -= this.masterTransform.position.x;
+            chartMarginPlane.position.y -= this.masterTransform.position.y;
+            chartMarginPlane.position.z -= this.masterTransform.position.z;  
+
+                        // Add actions to bar
+                        var actionsObject = {
+
+                            OnPointerOverTrigger: () => {
+                                // bar.material.emissiveColor = new BABYLON.Color3(.1, .1, .1);
+                                // this.hoverPanel = this.gui2D.showObjectValue(bar, this.scene.pointerX, this.scene.pointerY);
+                                // console.log('mouseOver', bar);
+                                
+                            },
+            
+                        }
+            
+                        this.addActions(chartMarginPlane, actionsObject);
+            
+
+            chartMarginPlane.material = this.materials[0];
+            this.myPlanes.push(chartMarginPlane);
+        }
+
+        // draw vertical lines separating elements
+        for (let index = 0; index < this.seriesLength; index++) {
+            let myBox = BABYLON.MeshBuilder.CreateBox("myBox", {
+                height: 305,
+                width: .5,
+                depth: .1
+            }, this.scene);
+            myBox.material = this.lineMat;
+            myBox.position.x = index * (this.elementWidth + this.padding) + this.barWidth / 2 + this.padding;
+            myBox.position.y = 146;
+            myBox.position.z = 0;
+
+            this.myScales.push(myBox);
+
+            myBox.parent = this.masterTransform;
+            myBox.position.x -= this.masterTransform.position.x;
+            myBox.position.y -= this.masterTransform.position.y;
+            myBox.position.z -= this.masterTransform.position.z;
+        }
+
+        // add scales
+        for (let index = 0; index <= this.scaleInfo.maxScale; index += this.scaleInfo.interval) {
+            this.addScale(index * (this.planeHeight) / (this.scaleInfo.maxScale), index.toString(), this.labelScale);
+        }
+
+        let textScale = this.labelScale;
+
+        this.options.data[this.seriesNames[0]].forEach((element, index) => {
+            // console.log(element);
+            let text = this.gui3D.create3DText(this.scene, textScale, this.textDepth, element.label,
+                index * this.planeWidth / this.seriesLength / textScale + this.planeWidth / this.seriesLength / textScale / 2,
+                -7 - (index % 2) * textScale*2,
+                -1.75, 
+                this.lineMat);
+            this.myTexts.push(text);
+            text.getMesh().parent = this.masterTransform;
+            text.getMesh().position.x -= this.masterTransform.position.x;
+            text.getMesh().position.y -= this.masterTransform.position.y;
+            text.getMesh().position.z -= this.masterTransform.position.z;            
+        });
+
+        let titleText = this.gui3D.create3DText(this.scene, 6, this.titleDepth, this.options.title, this.planeWidth / 2 / 6, this.planeHeight / 6 + 6 / 2, -1.75, this.lineMat);
+        this.myTexts.push(titleText);
+        titleText.getMesh().parent = this.masterTransform;
+        titleText.getMesh().position.x -= this.masterTransform.position.x;
+        titleText.getMesh().position.y -= this.masterTransform.position.y;
+        titleText.getMesh().position.z -= this.masterTransform.position.z;
+
+        // titleText.getMesh().setPivotPoint(titleText.getMesh().getBoundingInfo().boundingBox.centerWorld, BABYLON.Space.WORLD);
+        // console.log(titleText.getMesh().getBoundingInfo().boundingBox.center);
+
+        for (let seriesIndex = 0; seriesIndex < this.seriesCount; seriesIndex++) {
+            let shapePoints = [];
+        for (let elementIndex = 0; elementIndex < this.seriesLength; elementIndex++) {
+
+                
+                this.addPoint(elementIndex, seriesIndex, shapePoints);
+                // point.parent = this.masterTransform;
+                // point.position.x -= this.masterTransform.position.x;
+                // point.position.y -= this.masterTransform.position.y;
+                // point.position.z -= this.masterTransform.position.z;
+            }
+
+                
+            // let tube = BABYLON.MeshBuilder.CreateTube("tube", {path: [ element, shapePoints[index+1] ]}, this.scene);
+            	//Polygon shape in XoZ plane
+
+  
+//Holes in XoZ plane
+var holes = [];
+
+var polygon = BABYLON.MeshBuilder.ExtrudePolygon("polygon", {shape:shapePoints, holes:holes, depth: 2, sideOrientation: BABYLON.Mesh.DOUBLESIDE },this.scene);
+
+
+        }
+    }
+
+    myUpdate(){
+        // this.masterTransform.rotation.x +=.007;
+        // this.masterTransform.rotation.y +=.007;
+        // this.masterTransform.rotation.z +=.007;
+    }
 }

@@ -102,8 +102,9 @@ Chart Types
     3D Bar Chart
     Pie Chart
     Point/Line Chart
-
     Gauge
+
+
     Area Chart
     Scatter Plot
     Bubble Chart
@@ -115,4 +116,3 @@ Transitions
     Fade In/Out
     Emerge/Disappear into floor
     Explode
-    

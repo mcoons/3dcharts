@@ -143,56 +143,7 @@ function parseData(objectData) {
     }
 }
 
-var months = {
-    1: {
-        long: 'January',
-        short: 'Jan'
-    },
-    2: {
-        long: 'February',
-        short: 'Feb'
-    },
-    3: {
-        long: 'March',
-        short: 'Mar'
-    },
-    4: {
-        long: 'April',
-        short: 'Apr'
-    },
-    5: {
-        long: 'May',
-        short: 'May'
-    },
-    6: {
-        long: 'June',
-        short: 'Jun'
-    },
-    7: {
-        long: 'July',
-        short: 'Jul'
-    },
-    8: {
-        long: 'August',
-        short: 'Aug'
-    },
-    9: {
-        long: 'September',
-        short: 'Sep'
-    },
-    10: {
-        long: 'October',
-        short: 'Oct'
-    },
-    11: {
-        long: 'November',
-        short: 'Nov'
-    },
-    12: {
-        long: 'December',
-        short: 'Dec'
-    }
-}
+
 
 let dataSeries = {};
 
@@ -269,6 +220,7 @@ function buildIt(data, data2) {
 
     let sceneManager1 = new ChartSceneManager(sceneOptions);
 
+    ////////////////////////////////////////////////////////////////////
 
     sceneOptions = {
         id: 'bar1', // required - id of canvas element to use
@@ -284,6 +236,7 @@ function buildIt(data, data2) {
 
     let sceneManager2 = new ChartSceneManager(sceneOptions);
 
+    ////////////////////////////////////////////////////////////////////
 
     sceneOptions = {
         id: 'bar2', // required - id of canvas element to use
@@ -299,6 +252,7 @@ function buildIt(data, data2) {
 
     let sceneManager3 = new ChartSceneManager(sceneOptions);
 
+    ////////////////////////////////////////////////////////////////////
 
     sceneOptions = {
         id: 'bar3', // required - id of canvas element to use
@@ -315,6 +269,8 @@ function buildIt(data, data2) {
     let sceneManager4 = new ChartSceneManager(sceneOptions);
     sceneManager4.scene.activeCamera.position.z = -500;
 
+    ////////////////////////////////////////////////////////////////////
+
     sceneOptions = {
         id: 'bar4', // required - id of canvas element to use
         width: 1200, //  <default 300>
@@ -329,20 +285,23 @@ function buildIt(data, data2) {
 
     let sceneManager5 = new ChartSceneManager(sceneOptions);
 
-    sceneOptions = {
-        id: 'pie', // required - id of canvas element to use
-        width: 600, //  <default 300>
-        height: 350, //  <default 200>
-        cameraFirstPerson: false, //  <default true>
-        backgroundColor: { //  <default white>
-            r: 1,
-            g: .95,
-            b: .95
-        }
-    };
+    ////////////////////////////////////////////////////////////////////
+
+    // sceneOptions = {
+    //     id: 'pie', // required - id of canvas element to use
+    //     width: 600, //  <default 300>
+    //     height: 350, //  <default 200>
+    //     cameraFirstPerson: false, //  <default true>
+    //     backgroundColor: { //  <default white>
+    //         r: 1,
+    //         g: .95,
+    //         b: .95
+    //     }
+    // };
 
     // let sceneManager6 = new ChartSceneManager(sceneOptions);
 
+    ////////////////////////////////////////////////////////////////////
 
     sceneOptions = {
         id: 'gauge', // required - id of canvas element to use
@@ -358,6 +317,7 @@ function buildIt(data, data2) {
 
     let sceneManager7 = new ChartSceneManager(sceneOptions);
 
+    ////////////////////////////////////////////////////////////////////
 
 
 
@@ -426,7 +386,7 @@ function buildIt(data, data2) {
         g: 0,
         b: 0
     };
-    chartOptions.showBackplanes = false;
+    chartOptions.showBackplanes = true;
     chartOptions.data = data2;
 
 
@@ -440,6 +400,7 @@ function buildIt(data, data2) {
 
     chartOptions.title = 'Defect Analysis';
     chartOptions.type = 'stacked';
+    chartOptions.textColor = {r:1, g:1, b:1};
 
     let chart2_2 = sceneManager2.addChart(chartOptions);
     chart2_2.masterTransform.position.z = -500;
@@ -465,7 +426,11 @@ function buildIt(data, data2) {
 
 
 
-
+    chartOptions.textColor = {
+        r: 0,
+        g: 0,
+        b: 0
+    };
 
 
 
@@ -668,6 +633,7 @@ function buildIt(data, data2) {
     chart7_1.masterTransform.position.y = 70;
     chart7_1.masterTransform.scaling = new BABYLON.Vector3(.27,.27,.27);
     
+    chartOptions.type = 'gauge2';
     chartOptions.materialIndex =  10;
     chartOptions.value = 74.6;
     chartOptions.title = 'Project Status';
@@ -676,6 +642,7 @@ function buildIt(data, data2) {
     chart7_2.masterTransform.position.y = 80;
     chart7_2.masterTransform.scaling = new BABYLON.Vector3(.43,.43,.43);    
     
+    chartOptions.type = 'gauge';
     chartOptions.materialIndex = 14;
     chartOptions.value = 65;
     chartOptions.title = 'DB Modifications';
