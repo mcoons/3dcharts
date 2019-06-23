@@ -623,7 +623,6 @@ function buildIt(data, data2, data3) {
 
 
     let chart5_3 = sceneManager5.addChart(chartOptions);
-    // chart5_1.masterTransform.position.z = 500;
     chart5_3.masterTransform.position.x= -450;
     chart5_3.masterTransform.rotation.y= Math.PI/2;
 
@@ -631,14 +630,12 @@ function buildIt(data, data2, data3) {
 
     
     let chart5_4 = sceneManager5.addChart(chartOptions);
-    // chart5_1.masterTransform.position.z = 500;
     chart5_4.masterTransform.position.x= 450;
     chart5_4.masterTransform.rotation.y= -Math.PI/2;
     
     
     sceneManager5.scene.activeCamera.radius = 1000;
     sceneManager5.scene.activeCamera.beta = Math.PI/2;
-    console.log(sceneManager5.scene.activeCamera.radius);
 
     sceneManager5.scene.masterTransform =  BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: 10, diameterX: 10}, sceneManager5.scene);
     
@@ -646,10 +643,6 @@ function buildIt(data, data2, data3) {
     chart5_2.masterTransform.parent = sceneManager5.scene.masterTransform;
     chart5_3.masterTransform.parent = sceneManager5.scene.masterTransform;
     chart5_4.masterTransform.parent = sceneManager5.scene.masterTransform;
-
-    // sceneManager5.scene.masterTransform.position.y = 300;
-
-    // setInterval( ()=> {sceneManager5.scene.masterTransform.rotation.y += .003}, 1)
 
 
     ////////////////////////////////////////////////////////////////////

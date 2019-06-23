@@ -8,17 +8,31 @@ USAGE:
 
 
     let sceneManager1 = new ChartSceneManager( {id: 'mixed',                // required - id of canvas element to use
-                                                width: 600,                 //  <default 300>
-                                                height: 350} );
+                                                width: 600,                 // <default 300>
+                                                height: 350} );             // <default 200>
 
     let dataSeries = getDataProdecure();
 
     let chart1_1 = sceneManager1.addChart( {type: 'pie',                    // required - ['line', 'bar', 'stacked', '3D', 'pie']
                                             title: 'Monthly Pie Sales',     // required
                                             data: dataSeries,               // required
-                                            doughnut: true} );
+                                            doughnut: true} );              // <default false>
 
     sceneManager1.removeChart(chart1_1);
+
+
+/////////////////////////////////////////////////////////////////////////
+
+PIE TYPES:
+
+    line -
+    bar -
+    stacked -
+    3D - 
+    pie -
+    gauge -
+    gauge2 -
+    area -
 
 
 /////////////////////////////////////////////////////////////////////////
@@ -33,7 +47,7 @@ class ChartSceneManager
 
         scene options:
             let sceneOptions = {
-                id: 'mixed',                // required - id of canvas element to use
+                id: 'sceneCanvas',          // required - id of canvas element to use
 
                 width: 600,                 //  <default 300>
                 height: 350,                //  <default 200>
@@ -51,9 +65,9 @@ class ChartSceneManager
             usage: 
                 let chart1_1 = sceneManager1.addChart(chartOptions);
 
-        updateChart(chartOptions);
+        updateChart(chartID, chartOptions);
             usage: 
-                sceneManager1.updateChart(chartOptions);
+                sceneManager1.updateChart(chart1_1, chartOptions);
 
         removeChart(chartID);
             usage: 
@@ -105,6 +119,7 @@ class ChartSceneManager
                     } 
                 }
             ],
+            
             'series2Name':  [
                 // ...
             ]
