@@ -112,7 +112,10 @@ Chart Types
     Box Plot
 
 
-Transitions
-    Fade In/Out
-    Emerge/Disappear into floor
-    Explode
+
+
+
+
+
+
+

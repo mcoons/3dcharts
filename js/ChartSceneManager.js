@@ -1,5 +1,4 @@
 
-
 class ChartSceneManager {
 
     constructor(options) { // scene options object
@@ -474,9 +473,11 @@ class BaseChart {
         BABYLON.Animation.CreateAndStartAnimation('rotatez', this.masterTransform, 'rotation.z', fps, fps * seconds, start, end, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
     }
 
+
     myUpdate() {
         // Placeholder for chart specific overload
     }
+
 }
 
 
@@ -515,6 +516,8 @@ class BarChart extends BaseChart {
 
         this.masterTransform.position.x = 0;
         this.masterTransform.position.y = 0;
+
+        console.log(this.options.data);
 
     }
 
@@ -675,6 +678,125 @@ class BarChart extends BaseChart {
         // this.masterTransform.rotation.x +=.01;
         // this.masterTransform.rotation.y +=.01;
         // this.masterTransform.rotation.z +=.01;
+    }
+
+
+    addChartAPI(url, labelField, valueField){
+        console.log('Adding API info: ', url, labelField, valueField);
+
+    }
+
+    getAPIData(url, labelField, valueField){
+        console.log('Fetching from: ', url);
+        console.log('Plotting field ' + labelField + ' with data from ' + valueField);
+    }
+
+
+
+    myUpdate() {
+        // Placeholder for chart specific overload
+        if (!this.options.data){
+            if (!this.options.apiInfo){
+                console.log('ERROR: "data" or "API info" must be defined');
+            } else {
+                console.log('Fetching API data');
+                this.options.data = {
+                    "rovers": [{
+                        "id": 5,
+                        "name": "Curiosity",
+                        "landing_date": "2012-08-06",
+                        "launch_date": "2011-11-26",
+                        "status": "active",
+                        "max_sol": 2422,
+                        "max_date": "2019-05-30",
+                        "total_photos": 352391,
+                        "cameras": [{
+                            "name": "FHAZ",
+                            "full_name": "Front Hazard Avoidance Camera"
+                        }, {
+                            "name": "NAVCAM",
+                            "full_name": "Navigation Camera"
+                        }, {
+                            "name": "MAST",
+                            "full_name": "Mast Camera"
+                        }, {
+                            "name": "CHEMCAM",
+                            "full_name": "Chemistry and Camera Complex"
+                        }, {
+                            "name": "MAHLI",
+                            "full_name": "Mars Hand Lens Imager"
+                        }, {
+                            "name": "MARDI",
+                            "full_name": "Mars Descent Imager"
+                        }, {
+                            "name": "RHAZ",
+                            "full_name": "Rear Hazard Avoidance Camera"
+                        }]
+                    }, {
+                        "id": 7,
+                        "name": "Spirit",
+                        "landing_date": "2004-01-04",
+                        "launch_date": "2003-06-10",
+                        "status": "complete",
+                        "max_sol": 2208,
+                        "max_date": "2010-03-21",
+                        "total_photos": 124550,
+                        "cameras": [{
+                            "name": "FHAZ",
+                            "full_name": "Front Hazard Avoidance Camera"
+                        }, {
+                            "name": "NAVCAM",
+                            "full_name": "Navigation Camera"
+                        }, {
+                            "name": "PANCAM",
+                            "full_name": "Panoramic Camera"
+                        }, {
+                            "name": "MINITES",
+                            "full_name": "Miniature Thermal Emission Spectrometer (Mini-TES)"
+                        }, {
+                            "name": "ENTRY",
+                            "full_name": "Entry, Descent, and Landing Camera"
+                        }, {
+                            "name": "RHAZ",
+                            "full_name": "Rear Hazard Avoidance Camera"
+                        }]
+                    }, {
+                        "id": 6,
+                        "name": "Opportunity",
+                        "landing_date": "2004-01-25",
+                        "launch_date": "2003-07-07",
+                        "status": "complete",
+                        "max_sol": 5111,
+                        "max_date": "2018-06-11",
+                        "total_photos": 198439,
+                        "cameras": [{
+                            "name": "FHAZ",
+                            "full_name": "Front Hazard Avoidance Camera"
+                        }, {
+                            "name": "NAVCAM",
+                            "full_name": "Navigation Camera"
+                        }, {
+                            "name": "PANCAM",
+                            "full_name": "Panoramic Camera"
+                        }, {
+                            "name": "MINITES",
+                            "full_name": "Miniature Thermal Emission Spectrometer (Mini-TES)"
+                        }, {
+                            "name": "ENTRY",
+                            "full_name": "Entry, Descent, and Landing Camera"
+                        }, {
+                            "name": "RHAZ",
+                            "full_name": "Rear Hazard Avoidance Camera"
+                        }]
+                    }]
+                }
+                
+
+            }
+
+
+
+        }
     }
 
 }
@@ -1614,16 +1736,16 @@ class Gauge extends BaseChart {
         let pz = Math.sin(theta);
 
         let path = [
-            new BABYLON.Vector3(0, 25, 0),
-            new BABYLON.Vector3(250 * px, 15, 250 * pz)
+            new BABYLON.Vector3(0, 35, 0),
+            new BABYLON.Vector3(250 * px, 13, 250 * pz)
         ];
 
-        let tube = BABYLON.MeshBuilder.CreateTube("arrow", {
+        let tube = BABYLON.MeshBuilder.CreateTube("needle", {
             path: path,
-            radius: 8.8
+            radius: 12.8
         }, this.scene);
         tube.material = this.materials[this.options.materialIndex];
-        tube.scaling.y = .4;
+        tube.scaling.y = .34;
 
         tube.parent = this.masterTransform;
 
