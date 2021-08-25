@@ -102,3 +102,54 @@ Chart Types
     Bubble Chart
     Funnel Chart
     Box Plot
+
+
+
+
+data.seriesName[seriesIndex].label
+data.seriesName[seriesIndex].value
+data.seriesName[seriesIndex].details
+data.seriesName[seriesIndex].details.detail1
+data.seriesName[seriesIndex].details.detail2
+
+
+sceneOptions.id
+sceneOptions.width
+sceneOptions.height
+sceneOptions.cameraFirstPerson
+sceneOptions.backgroundColor
+sceneOptions.
+sceneOptions.
+
+
+
+chartOptions.type
+chartOptions.title
+chartOptions.data = data ****
+chartOptions.titleDepth
+chartOptions.doughnut
+chartOptions.round
+chartOptions.depth
+chartOptions.alpha
+chartOptions.textDepth
+chartOptions.textColor
+chartOptions.transition
+chartOptions.horizontalLabels
+chartOptions.verticalLabels
+
+
+
+mesh.userData.chartOptions = chartOptions ****
+mesh.userData.sceneOptions = sceneOptions ****
+mesh.userData.
+mesh.userData.
+mesh.userData.
+mesh.userData.
+mesh.userData.
+mesh.userData.
+mesh.userData.
+mesh.userData.
+mesh.userData.
+mesh.userData.
+mesh.userData.
+mesh.userData.

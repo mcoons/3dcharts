@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel='stylesheet' href='/css/index.css' />
-    <title>Charts</title>
+    <title>Charts 2.0</title>
     
     <!-- 
     <script src="https://preview.babylonjs.com/babylon.max.js"></script>
@@ -24,24 +24,19 @@
     <script src="/lib/babylonjs/meshwriter.min.js"></script>
 </head>
 <body>
+    <center><h1>3D Chart API POC</h1></center>
+    <center><h2>Select a chart and use the mouse and arrow keys to interact with it in 3D.</h2></center>
     <canvas class='mixed' id='mixed'></canvas>
-    <canvas class='bar' id='bar1'></canvas>
     <canvas class='bar' id='bar2'></canvas>
-    <canvas id='pie'></canvas>
-    <canvas class='bar' id='bar3'></canvas>
-    <canvas class='line' id='line1'></canvas>
-    <canvas class='bar' id='bar1H'></canvas>
-    <canvas id='sceneTest'></canvas>
+    <canvas class='bar' id='bar4'></canvas>
+    <canvas id='gauge'></canvas>
+    <canvas id='area'></canvas>
+    <canvas class='bar' id='bar1'></canvas>    <!--  room -->
+    <canvas id='api'></canvas>
 
-    <!-- <canvas id='doughnut'></canvas> -->
+    <canvas class='bar' id='bar3'></canvas>  <!-- 3D Barchart -->
 
-    <script src="/js/utilities.js"></script>
-    <!-- <script src="/js/MaterialManager.js"></script> -->
-    <script src="/js/Gui2DManager.js"></script>
-    <script src="/js/Gui3DManager.js"></script>
-    <!-- <script src="/js/ChartManager.2.js"></script> -->
-    <!-- <script src="/js/refactor.js"></script> -->
-    <script src="/js/ChartSceneManager.js"></script>
-    <script src="/js/app.js"></script>
+
+    <script src="/js/app.js" type='module'></script>
 </body>
 </html>
