@@ -124,10 +124,10 @@ class Gui3DManager {
 
 
     create3dLegend (scene, elements, options){
-        console.log(elements);
-        console.log('inside create3dLegend');
-        console.log('options ---------');
-        console.log(options);
+        // console.log(elements);
+        // console.log('inside create3dLegend');
+        // console.log('options ---------');
+        // console.log(options);
 
         let yPos2 = 0;
         if (elements.length > 0)
@@ -147,7 +147,7 @@ class Gui3DManager {
 
             //Set text
             var text = element.userData.name;// + '      ' + element.userData.myOptions.value;
-            console.log('inside ' + text);
+            // console.log('inside ' + text);
 
             //Create dynamic texture
             var dynamicTexture = new BABYLON.DynamicTexture("DynamicTexture", {width:DTWidth, height:DTHeight}, scene);

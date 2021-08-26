@@ -846,7 +846,7 @@ class Gui2DManager {
         panelContainer.adaptHeightToChildren = true;
         panelContainer.color = 'black';
         panelContainer.background = "lightgray";
-console.log(this)
+        // console.log(this)
         // panelContainer.left = this.mouseCanvasX-this.parentThis.scene.width/2;
         // panelContainer.top = this.mouseCanvasY-this.parentThis.scene.height/2;
         panelContainer.left = this.mouseCanvasX-this.parentThis.canvas.width/2;

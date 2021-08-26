@@ -183,18 +183,18 @@ class ChartSceneManager {
 
     updateChart(chart, options) {
 
-        console.log('chart in update');
-        console.log(chart);
+        // console.log('chart in update');
+        // console.log(chart);
 
         // if (options.type === chart.)
     }
 
     removeChart(id) {
-        console.log('in removeChart');
-        console.log('id:');
-        console.log(id);
-        console.log('this:');
-        console.log(this);
+        // console.log('in removeChart');
+        // console.log('id:');
+        // console.log(id);
+        // console.log('this:');
+        // console.log(this);
 
         id.destroySelf();
 
@@ -570,7 +570,7 @@ class BarChart extends BaseChart {
         // Add actions to bar
         var actionsObject = {
             OnLeftPickTrigger: () => {
-                console.log('left clicked ' + bar.name)
+                // console.log('left clicked ' + bar.name)
             },
             OnRightPickTrigger: () => {
                 this.gui2D.menuObjectOptions(bar, this.scene.pointerX, this.scene.pointerY)
@@ -697,13 +697,13 @@ class BarChart extends BaseChart {
 
 
     addChartAPI(url, labelField, valueField) {
-        console.log('Adding API info: ', url, labelField, valueField);
+        // console.log('Adding API info: ', url, labelField, valueField);
 
     }
 
     getAPIData(url, labelField, valueField) {
-        console.log('Fetching from: ', url);
-        console.log('Plotting field ' + labelField + ' with data from ' + valueField);
+        // console.log('Fetching from: ', url);
+        // console.log('Plotting field ' + labelField + ' with data from ' + valueField);
     }
 
 
@@ -896,7 +896,7 @@ class StackedBarChart extends BaseChart {
         // Add actions to bar
         var actionsObject = {
             OnLeftPickTrigger: () => {
-                console.log('left clicked ' + bar.name)
+                // console.log('left clicked ' + bar.name)
             },
             OnRightPickTrigger: () => {
                 this.gui2D.menuObjectOptions(bar, this.scene.pointerX, this.scene.pointerY)
@@ -1093,7 +1093,7 @@ class BarChart3D extends BaseChart {
         // Add actions to bar
         var actionsObject = {
             OnLeftPickTrigger: () => {
-                console.log('left clicked ' + bar.name)
+                // console.log('left clicked ' + bar.name)
             },
             OnRightPickTrigger: () => {
                 this.gui2D.menuObjectOptions(bar, this.scene.pointerX, this.scene.pointerY)
@@ -1254,7 +1254,7 @@ class LineChart extends BaseChart {
         // Add actions to point
         var actionsObject = {
             OnLeftPickTrigger: () => {
-                console.log('left clicked ' + point.name)
+                // console.log('left clicked ' + point.name)
             },
             OnRightPickTrigger: () => {
                 // console.log(point);
@@ -1486,7 +1486,7 @@ class PieChart extends BaseChart {
 
         var actionsObject = {
             OnLeftPickTrigger: () => {
-                console.log('left clicked ' + slice.name)
+                // console.log('left clicked ' + slice.name)
             },
             OnRightPickTrigger: () => {
                 this.gui2D.menuObjectOptions(slice, this.scene.pointerX, this.scene.pointerY)

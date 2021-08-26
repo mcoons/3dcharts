@@ -144,11 +144,11 @@ class ChartSceneManager {
     }
 
     removeChart(id){
-        console.log('in removeChart');
-        console.log('id:');
-        console.log(id);
-        console.log('this:');
-        console.log(this);
+        // console.log('in removeChart');
+        // console.log('id:');
+        // console.log(id);
+        // console.log('this:');
+        // console.log(this);
 
         id.destroySelf();
 
@@ -183,7 +183,7 @@ class BaseChart {
         this.materials = [];
         this.createMaterials(this.materials);
 
-        console.log(this.materials);
+        // console.log(this.materials);
 
         this.padding = 10;
 
@@ -241,7 +241,7 @@ class BaseChart {
         let length = endIndex - startIndex;
         for (let index = 0; index <= length; index++) {
             let newColor = getColor(startColor, endColor, 0, length, index);     
-            console.log(newColor);       
+            // console.log(newColor);       
             this.materials[index+startIndex].diffuseColor.r = newColor.r;
             this.materials[index+startIndex].diffuseColor.g = newColor.g;
             this.materials[index+startIndex].diffuseColor.b = newColor.b;
@@ -403,8 +403,8 @@ class BarChart extends BaseChart {
 
         this.build(options);
 
-        console.log('masterTransform:');
-        console.log(this.masterTransform);
+        // console.log('masterTransform:');
+        // console.log(this.masterTransform);
         this.masterTransform.position.x = -this.planeWidth / 2;
         this.masterTransform.position.y = -this.planeHeight / 2;
         // this.fadeIn();
@@ -481,7 +481,7 @@ class BarChart extends BaseChart {
         // Add actions to bar
         var actionsObject = {
             OnLeftPickTrigger: () => {
-                console.log('left clicked ' + bar.name)
+                // console.log('left clicked ' + bar.name)
             },
             OnRightPickTrigger: () => {
                 // console.log(bar);
@@ -708,12 +708,12 @@ class StackedBarChart extends BaseChart {
         // Add actions to bar
         var actionsObject = {
             OnLeftPickTrigger: () => {
-                console.log('left clicked ' + bar.name)
+                // console.log('left clicked ' + bar.name)
             },
             OnRightPickTrigger: () => {
-                console.log(bar);
-                console.log(this.scene.pointerX);
-                console.log(this.scene.pointerY);
+                // console.log(bar);
+                // console.log(this.scene.pointerX);
+                // console.log(this.scene.pointerY);
                 
                 this.gui2D.menuObjectOptions(bar, this.scene.pointerX, this.scene.pointerY)
             },
@@ -935,12 +935,12 @@ class BarChart3D extends BaseChart {
         // Add actions to bar
         var actionsObject = {
             OnLeftPickTrigger: () => {
-                console.log('left clicked ' + bar.name)
+                // console.log('left clicked ' + bar.name)
             },
             OnRightPickTrigger: () => {
-                console.log(bar);
-                console.log(this.scene.pointerX);
-                console.log(this.scene.pointerY);
+                // console.log(bar);
+                // console.log(this.scene.pointerX);
+                // console.log(this.scene.pointerY);
                 
                 this.gui2D.menuObjectOptions(bar, this.scene.pointerX, this.scene.pointerY)
             },
@@ -1143,7 +1143,7 @@ class LineChart extends BaseChart {
         // Add actions to point
         var actionsObject = {
             OnLeftPickTrigger: () => {
-                console.log('left clicked ' + point.name)
+                // console.log('left clicked ' + point.name)
             },
             OnRightPickTrigger: () => {
                 // console.log(point);
@@ -1275,7 +1275,7 @@ class PieChart extends BaseChart {
     constructor(scene, options, gui3D, gui2D) {
         super(scene, options, gui3D, gui2D);
 
-        console.log(options);
+        // console.log(options);
 
         this.parseData();
 
@@ -1337,7 +1337,7 @@ class PieChart extends BaseChart {
         var slice = BABYLON.Mesh.MergeMeshes([slice1, myPlane1, myPlane2]);
 
         if (options.doughnut) {
-            console.log('options.doughnut true')
+            // console.log('options.doughnut true')
             var cylinder = BABYLON.MeshBuilder.CreateCylinder("cone", {height: height + 10, diameter: 250, tessellation: 40, arc: options.percent}, options.graph);
 
             let csgSlice = BABYLON.CSG.FromMesh(slice);

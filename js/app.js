@@ -1,4 +1,4 @@
-console.log('starting app.js');
+// console.log('starting app.js');
 
 import { ChartSceneManager } from './ChartSceneManager.js';
 import {months} from './utilities.js';
@@ -100,8 +100,8 @@ function getRESTData() {
         var data = JSON.parse(this.response);
         
         if (request.status >= 200 && request.status < 400) {
-            console.log('API data:');
-            console.log(data);
+            // console.log('API data:');
+            // console.log(data);
             parseData(data);
             // buildIt(apiData);
             // buildIt(dataSet1, dataSet2, dataSet3, apiData)

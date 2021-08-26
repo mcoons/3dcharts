@@ -124,7 +124,7 @@ let sampleJSONData = {
 var newData = {};
 
 function parseData(objectData) {
-    console.log('started parsing')
+    // console.log('started parsing')
     let seriesNames = Object.keys(objectData);
     let seriesCount = seriesNames.length;
     let seriesLength = objectData[seriesNames[0]].length;
@@ -167,8 +167,8 @@ for (let seriesCount = 0; seriesCount < 3; seriesCount++) {
     }
 }
 
-console.log('dataSeries:')
-console.log(dataSeries)
+// console.log('dataSeries:')
+// console.log(dataSeries)
 
 parseData(dataSeries);
 buildIt(dataSeries)

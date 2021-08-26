@@ -496,7 +496,7 @@ class Gui2DManager {
         formatButton(buttonDownload);
         buttonDownload.onPointerUpObservable.add(() =>{
             let ratio = 1000/this.parentThis.options.width;
-            console.log(ratio);
+            // console.log(ratio);
             BABYLON.Tools.CreateScreenshotUsingRenderTarget(this.parentThis.engine, this.parentThis.scene.cameras[0],  { width: this.parentThis.options.width*6, height: this.parentThis.options.height*6 })});
         panelDLOptions.addControl(buttonDownload);  
 
@@ -846,7 +846,7 @@ class Gui2DManager {
         panelContainer.adaptHeightToChildren = true;
         panelContainer.color = 'black';
         panelContainer.background = "lightgray";
-console.log(this)
+        // console.log(this)
         // panelContainer.left = this.mouseCanvasX-this.parentThis.scene.width/2;
         // panelContainer.top = this.mouseCanvasY-this.parentThis.scene.height/2;
         panelContainer.left = this.mouseCanvasX-this.parentThis.canvas.width/2;
